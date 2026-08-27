@@ -1,0 +1,41 @@
+project:
+  type: website
+  output-dir: docs
+  execute-dir: project
+  render:
+    - "*.qmd"     
+    - "**/*.qmd"  
+    - "!data/reports"     
+   
+website:
+  title: "Das Register der Kulturgüter der Republik Kroatien"
+  navbar:
+    pinned: true
+    right:
+      - href: index.qmd
+        text: Home
+  
+
+bibliography: sources.bib
+csl: ieee-access.csl
+
+glossary:
+  path: glossary.yml
+  popup: click
+  show: true
+
+author: Sonja K. Bauer
+
+format:
+  html:
+    theme:
+      light: flatly
+    toc: true
+    # code-fold: show
+    code-fold: true
+    link-external-newwindow: true
+    grid:
+      body-width: 1100px      
+      sidebar-width: 250px
+      margin-width: 200px
+    

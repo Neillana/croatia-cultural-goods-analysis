@@ -1,0 +1,260 @@
+## Geoportal NIPP
+
+```{python}
+from pathlib import Path
+import sys
+import duckdb
+import pandas as pd
+import requests
+import geopandas as gpd
+
+import logging
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+
+# Projektordner
+PROJECT_ROOT = next(
+    folder for folder in [Path.cwd(), *Path.cwd().parents]
+    if (folder / "_quarto.yml").exists()
+)
+
+# Module
+sys.path.insert(0, str(PROJECT_ROOT))
+
+DATA_RAW = PROJECT_ROOT / "data" / "raw"
+DATA_RAW.mkdir(parents=True, exist_ok=True)
+
+```
+
+
+Das kroatische [Geoportal NIPP](https://geoportal.nipp.hr/) ist das nationale INSPIRE-Portal.
+
+
+
+https://geoportal.nipp.hr/geonetwork/srv/eng/catalog.search#/metadata/4fcbe012-0bdc-496a-95a2-bd6436714af6
+
+
+ACHTUNG: "Heisenbug"
+
+API:
+https://geoportal.kulturnadobra.hr/servisi/grafika/ProtectedSites/RKD_MK_INSPIRE/wfs?service=WFS&request=GetFeature&version=2.0.0&typeNames=RKD_MK_INSPIRE:PS.ProtectedSite&outputFormat=application/json
+
+PS.ProtectedSite
+PS.ProtectedSitesArcheological
+PS.ProtectedSitesCultural
+PS.ProtectedSitesLandscape
+
+### Metadaten
+
+"Podaci nisu u skladu s INSPIRE provedbenim pravilima za međuoperativnost skupova prostornih podataka i usluga."
+
+"Die Daten entsprechen nicht den INSPIRE-Durchführungsbestimmungen für die Interoperabilität von Geodatensätzen und -diensten."
+
+Degree
+Not Conformant
+
+```{python}
+#| label: pure-xml-view
+#| echo: true
+
+import requests
+import xml.etree.ElementTree as ET
+import pandas as pd
+
+# 1. XML abrufen
+url = "https://geoportal.nipp.hr/geonetwork/srv/api/records/4fcbe012-0bdc-496a-95a2-bd6436714af6/formatters/xml"
+response = requests.get(url)
+response.raise_for_status()
+
+# 2. XML parsen und hierarchielos in Schlüssel-Wert-Paare zerlegen
+root = ET.fromstring(response.content)
+parsed_data = []
+
+for elem in root.iter():
+    # Wir filtern die ISO-Namensraum-Präfixe aus dem Tag-Namen für bessere Lesbarkeit
+    clean_tag = elem.tag.split("}")[-1]
+    
+    # Nur Elemente mit tatsächlichem Textinhalt aufnehmen
+    if elem.text and elem.text.strip():
+        parsed_data.append({
+            "Metadaten_Feld": clean_tag,
+            "Wert": elem.text.strip()
+        })
+
+# 3. Als Tabelle anzeigen
+df_view = pd.DataFrame(parsed_data).drop_duplicates().reset_index(drop=True)
+
+# Spaltenbreite anpassen, damit Sie die langen Beschreibungen komplett lesen können
+pd.set_option("display.max_columns", None)  # Alle Spalten anzeigen
+pd.set_option("display.max_rows", None)  # Alle Zeilen anzeigen
+pd.set_option(
+    "display.max_colwidth", None
+)  # Volle Textlänge in den Zellen anzeigen
+
+df_view
+```
+
+Der Eintrag EPSG:3907 steht für das Koordinatenreferenzsystem "MGI 1901 / Balkans zone 5". Es handelt sich dabei um ein historisches, projiziertes Koordinatensystem (eingeführt 1924), das für den Westen Kroatiens verwendet wurde und in Metern (Rechtswert/Hochwert) statt in Grad gemessen wird. Inzwischen ist es in Kroatien eigentlich durch HTRS96 / Croatia TM (EPSG:3765) abgelöst worden. [KI]
+
+### Download der GeoJSON-Datei
+
+```python
+import requests
+from datetime import datetime, timezone
+
+utc_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+full_path = DATA_RAW / f"{utc_date}_geoportalnipp_rkd.geojson"
+
+url = "https://geoportal.kulturnadobra.hr/servisi/grafika/ProtectedSites/RKD_MK_INSPIRE/wfs?service=WFS&request=GetFeature&version=2.0.0&typeNames=RKD_MK_INSPIRE:PS.ProtectedSite&outputFormat=application/json"
+headers = {"User-Agent": "Mozilla/5.0"}
+
+response = requests.get(url, headers=headers)
+response.raise_for_status()
+
+with open(full_path, "wb") as file:
+    file.write(response.content)
+
+```
+
+### Umwandlung in GeoParquet und Bewertung der Rohdaten
+
+```{python}
+#| code-fold: true
+
+from pathlib import Path
+import duckdb
+import geopandas as gpd
+import pandas as pd
+
+
+def convert_latest_geojson_to_geoparquet(data_raw: Path) -> Path:
+    geojson_files = sorted(data_raw.glob("*_geoportalnipp_rkd.geojson"))
+
+    if not geojson_files:
+        raise FileNotFoundError(
+            "Keine passenden GeoJSON-Dateien im Verzeichnis gefunden."
+        )
+
+    latest_geojson = geojson_files[-1]
+    parquet_output = latest_geojson.with_suffix(".parquet")
+    print(f"Aktuellste Datei: {latest_geojson.name}")
+
+    # GeoJSON mit GeoPandas laden
+    gdf = gpd.read_file(latest_geojson)
+
+    if gdf.crs is None:
+        gdf.set_crs(epsg=3907, inplace=True)
+
+    gdf.to_parquet(parquet_output)
+
+    print("Konvertierung zu GeoParquet erfolgreich abgeschlossen.")
+    print(f"Parquet-Datei: {parquet_output.name}\n")
+    return parquet_output
+
+
+def extract_metadata(df: pd.DataFrame) -> pd.DataFrame:
+    total_rows = len(df)
+    metadata = []
+    for idx, col in enumerate(df.columns):
+        dtype = df[col].dtype
+        num_nan = df[col].isna().sum()
+        num_unique = df[col].nunique()
+        valid_rows = total_rows - num_nan
+        pct_nan = (num_nan / total_rows) * 100
+        pct_unique = (num_unique / valid_rows * 100) if valid_rows > 0 else 0.0
+
+        max_str_len = None
+        starts_with_whitespace = 0
+        contains_newline = 0
+
+        if pd.api.types.is_string_dtype(dtype) or dtype == "object":
+            col_as_str = df[col].astype(str)
+            if num_nan < total_rows:
+                max_str_len = df[col].str.len().max()
+            starts_with_whitespace = col_as_str.str.match(r'^\s').sum()
+            contains_newline = col_as_str.str.contains(r"[\r\n]").sum()
+
+        metadata.append(
+            {
+                "index": idx,
+                "column_name": col,
+                "type": str(dtype),
+                "nan": num_nan,
+                "nan_pct": f"{pct_nan:.1f}%",
+                "uniques": num_unique,
+                "uniques_pct": f"{pct_unique:.1f}%",
+                "max_len": (
+                    int(max_str_len) if pd.notna(max_str_len) else "-"
+                ),
+                "starts_whitespace": starts_with_whitespace,
+                "contains_newline": contains_newline,
+            }
+        )
+    return pd.DataFrame(metadata).set_index("index")
+
+parquet_output = convert_latest_geojson_to_geoparquet(DATA_RAW)
+
+df = gpd.read_parquet(parquet_output)
+
+total_rows = len(df)
+total_cols = len(df.columns)
+print(f"Spalten: {total_cols}")
+print(f"Zeilen: {total_rows}\n")
+
+# 3. Metadaten-Tabelle generieren und für Quarto anzeigen
+pd.set_option("display.max_colwidth", 20)
+pd.set_option("display.max_rows", None)
+
+geoportal_df = extract_metadata(df)
+geoportal_df
+
+```
+
+```{python}
+#| label: plot-unique-values-geoportal
+#| code-fold: true
+#| echo: true
+
+import plotly.express as px
+
+plot_df = geoportal_df.reset_index()
+
+fig = px.bar(
+    plot_df,
+    x="uniques",
+    y="column_name",
+    orientation="h",
+    text="uniques",
+    title="Anzahl der Unique-Werte pro Spalte",
+    labels={
+        "uniques": "Anzahl eindeutiger Werte",
+        "column_name": "Spaltenname",
+        "uniques_pct": "Anteil"
+        },
+    hover_data={"uniques_pct": True, "uniques": True, "column_name": True},
+    color="uniques",       
+    color_continuous_scale="Plasma",
+    template="seaborn",
+)
+
+fig.update_layout(
+    height=max(400, len(plot_df) * 30),  
+    xaxis_title="Eindeutige Werte",
+    yaxis={"categoryorder": "trace", "autorange": "reversed"}, 
+    coloraxis_showscale=False  
+)
+
+fig.update_traces(textposition="outside")
+
+fig.show()
+
+```
+
+```{python}
+%reset -f
+
+```

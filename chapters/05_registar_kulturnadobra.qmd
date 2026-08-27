@@ -1,0 +1,300 @@
+## Register der Kulturgüter der Republik Kroatien
+
+Das kroatische [Ministerium für Kultur und Medien](https://min-kulture.gov.hr/en) führt und veröffentlicht das nationale ***Register der Kulturgüter***. Dieses Register ist die Grundlage für das High-value dataset im Open-Data-Portal und die Daten im nationalen [Geoportal NIPP](https://geoportal.nipp.hr/).
+
+Im Menü findet man unter ***Highlights*** den Eintrag [Register of Cultural Property](https://min-kulture.gov.hr/register-of-cultural-property/16777). Dort werden Informationen zur Rechtsgrundlage und dem Aufbau des öffentlichen Registers gegeben.
+
+:::{.callout-note collapse="true" icon="false" title="Öffentliche Inhalte der Registerdatenbank"}
+Das Register, das auf den Webseiten des Kulturministeriums veröffentlicht wird (offizieller Titel: das Web-Register), umfasst die folgenden Informationen aus der Registerdatenbank:
+
+* Name des Kulturguts
+* Bezeichnung der Liste, in die ein bestimmtes Kulturgut eingetragen ist
+* Die Registrierungsnummer des Kulturguts
+* Bezeichnung der Art des Kulturguts (beweglich, unbeweglich, immateriell)
+* Klassifikation des Kulturguts (gemäß Artikel 8 der Verordnung über die Form, den Inhalt und die Art und Weise der Führung des Registers der Kulturgüter der Republik Kroatien)
+* Standort des Kulturguts (Adresse, Dorf, Gemeinde/Stadt, Landkreis/Gespanschaft)
+* Urheber/Autor des Kulturguts
+* Datierung
+* Zuständige Denkmalschutzbehörde (Konservierungsabteilung)
+* Kurze Beschreibung des Kulturguts
+* Abbildung des Kulturguts
+
+*[Übersetzung: Google Gemini, geprüft durch die Autorin]*
+:::
+
+### Das Web-Register
+
+Über den Link [Search of cultural properties](https://registar.kulturnadobra.hr/#/) gelangt man zum offiziellen Web-Register, das nur in kroatischer Sprache verfügbar ist. Eine Umstellung auf Englisch bewirkt lediglich, dass sich die Beschriftung einer einzigen Schlatfläche ändert. Eine Anleitung zur Benutzung des Registers findet man unten rechts in der Statusleiste, allerdings ebenfalls nur auf Kroatisch: ***Preuzmi korisničke upute***.
+
+> Das Web-Register der Kulturgüter der Republik Kroatien zeigt die Ergebnisse für unbewegliche und immaterielle Kulturgüter sowie Daten für öffentliches Archivgut und öffentliches Bibliotheksgut in Übereinstimmung mit der Verordnung über die Form, den Inhalt und die Art und Weise der Führung des Registers der Kulturgüter der Republik Kroatien (Amtsblatt / Narodne novine NN 128/25). Daten zu den übrigen beweglichen Kulturgütern, sowohl zu den einzeln geschützten als auch zu den Sammelschutzgütern, müssen per E-Mail angefordert werden unter: registar-upiti@min-kulture.hr, Abteilung für das Register der Kulturgüter.
+>
+> Geoportal der Kulturgüter der Republik Kroatien – ein Viewer/Browser, über den Sie auf Geodaten für unbewegliche Kulturgüter zugreifen können.
+>
+> *[Übersetzung: Google Gemini, geprüft durch die Autorin]*
+
+Zur Zeit (Stand: 25.08.2026) enthält das Register 6973 Einträge bei der Auswahl aller Listen. Es beinhaltet die unter Schutz gestellten Kulturgüter (Z-Liste), die vorläufig unter Schutz gestellten Kulturgüter (P-Liste) und die Kultürgüter von lokaler Bedeutung (L-Liste). Die gelöschten Kulturgüter (die ihren Schutzstatus verloren haben), also die B-Liste, ist nicht enthalten.
+
+Die Tabelle zeigt die Werte für:
+
+|Kroatische Bezeichnung|Übersetzung|
+|:---|:---|
+|Rbr|Tabellen-Index (Suchergebnisse)|
+|Registarski Broj|Registernummer|
+|Naziv kulturnog dobra|Titel des Kulturguts|
+|Naselje|Lokalisation (Ort)|
+|Vrsta kulturnog dobra|Art des Kulturguts (Kategorie)|
+|Pravni status|Rechtsstatus|
+
+---
+
+Es können Spalten ausgeblendet, jedoch keine zusätzlichen Spalten eingeblendet werden.
+
+Über das Downloadzeichen neben ***Preuzmi rezultate*** können die Ergebnisse entweder als Excel-Datei oder als PDF heruntergeladen werden. Man kann sowohl eine Auswahl als auch alle Ergebnisse herunterladen, entweder in einer kurzen Version, die den angezeigten Spalten entspricht oder als erweiterte Version, die mehr Informationen enthält. Die erweiterte Version entspricht den im Dropdown ***Öffentliche Inhalte der Registerdatenbank*** aufgeführten Daten abzüglich der Abbildung des Kulturguts.
+
+Jeder Titel ist mit einem Detaildatensatz verlinkt. Dieser zeigt alle öffentlich zugänglichen Daten, eine Beschreibung und Fotografien. Auffälig ist, dass hier das Datum der Eintragung in das Register als ***Datum upisa*** zu finden ist. Der Datensatz ist lediglich als PDF herunterladbar.
+
+Eine Analyse der übertragenen Daten mit den Developer Tools über F12 ergibt, dass die Fotografien nicht verlinkt sind, sondern als Base64 direkt in das JSON eingebettet werden. Daraus folgt, dass bei sehr vielen Detaildatensätzen die JSON-Antwort abgeschnitten wird.
+
+### Das Geoportal des Webregisters
+
+Das [Geoportal](https://geoportal.kulturnadobra.hr/geoportal.html?lang=eng#/) des Webregisters kann auf Englisch angezeigt werden.
+
+Es können keine Layer heruntergeladen werden und eine API ist ebenfalls nicht ersichtlich. Über die Option "Search" (Lupe) kann eine Suche am unteren Bildschirmrand geöffnet werden. Die Suchergebnisse lassen sich nur als Excel-Datei speichern und enthalten keinerlei Geodaten.
+
+Über das graue Icon "Informations" gelangt man zu "Terms of use". Dort findet man folgende Klauseln:
+
+> **Inhalt und Zweck**
+> 
+> Die auf dem Geoportal für Kulturgüter der Republik Kroatien veröffentlichten Daten dienen ausschließlich Informationszwecken und dem persönlichen Gebrauch. Sie dürfen nicht für kommerzielle Zwecke verwendet oder an Dritte weitergegeben werden. Der Ausdruck des Inhalts des Geoportals für Kulturgüter der Republik Kroatien dient ebenfalls nur zu Informationszwecken und kann nicht als öffentliches Dokument, sondern ausschließlich für den persönlichen Gebrauch verwendet werden.
+>
+> [Übersetzung: Google Gemini, geprüft durch die Autorin]
+
+> **Nutzungsbedingungen und Haftung**
+>
+> Das Ministerium für Kultur und Medien haftet nicht für direkte oder indirekte, zufällige, immaterielle oder materielle Schäden, Verluste oder Ausgaben, die durch die Nutzung oder die Unfähigkeit zur Nutzung der auf der Website des Geoportals für Kulturgüter der Republik Kroatien veröffentlichten Daten/Dienste entstehen. Die auf dem Geoportal für Kulturgüter der Republik Kroatien veröffentlichten Daten/Dienste werden gemäß den Bestimmungen des Gesetzes zum Schutz und Erhalt von Kulturgütern (Amtsblatt Nr. 145/24) und der Verordnung über Form, Inhalt und Art der Führung des Registers der Kulturgüter der Republik Kroatien (Amtsblatt Nr. 128/25, 151/25) aktualisiert und ergänzt. Daher übernimmt das Ministerium für Kultur und Medien keine Verantwortung für etwaige Folgen, die sich aus solchen Änderungen ergeben. Durch die Nutzung der auf dem Geoportal für Kulturgüter der Republik Kroatien veröffentlichten Daten/Dienste akzeptiert der Nutzer jedes aus deren Nutzung resultierende Risiko und erklärt sich damit einverstanden, die Daten/Dienste ausschließlich für persönliche Zwecke und auf eigene Gefahr zu nutzen.
+>
+> Der Nutzer erklärt sich damit einverstanden, dass das Ministerium für Kultur und Medien sich das Recht vorbehält, das Recht auf Zugriff auf die auf dem Geoportal für Kulturgüter der Republik Kroatien veröffentlichten Daten/Dienste ohne vorherige Benachrichtigung einzuschränken oder zu beenden. Das Ministerium für Kultur und Medien garantiert zu keinem Zeitpunkt die Verfügbarkeit des Internetstandorts des Geoportals für Kulturgüter der Republik Kroatien. Jegliche Modifikation, Vervielfältigung oder Verbreitung von Daten, die auf dem Geoportal für Kulturgüter der Republik Kroatien veröffentlicht wurden, auf Medien jeglicher Art ist strengstens untersagt.
+>
+> Der Nutzer darf das Design, den Hintergrund sowie sonstige Software- und Designlösungen der Website des Geoportals für Kulturgüter der Republik Kroatien nicht kopieren.
+>
+> Ebenso darf der Nutzer auf dem Geoportal für Kulturgüter der Republik Kroatien veröffentlichte Fotos nicht herunterladen, ohne zuvor den Autor zu kontaktieren und eine entsprechende Vereinbarung zu treffen, die durch einen zusätzlichen Vertrag geregelt wird.
+>
+> Das Ministerium für Kultur und Medien behält sich das Recht vor, diese Nutzungsbedingungen der Website des Geoportals für Kulturgüter der Republik Kroatien jederzeit zu ändern und zu ergänzen, und haftet nicht für die aus solchen Änderungen und Ergänzungen resultierenden Folgen.
+
+::: {.callout-caution collapse="false" icon="false" title="Folgen der Nutzungsbedingungen"}
+
+Durch diese Nutzungsbedingungen ist es mir rechtlich untersagt, die Daten des Registers der Kulturgüter in meiner Datenanalyse zu verwenden und diese mit den Daten der anderen beiden Quellen (Geoportal NIPP, Open Data Portal) zu vergleichen.
+
+Zugleich entsteht ein rechtliches Paradoxon: Laut EU-Recht sind die Daten der Kulturgüter des Ministeriums nicht nur Open Data, sondern ein High-Value-Dataset, dass der Öffentlichkeit inklusive der Geodaten zur Verfügung gestellt werden muss.
+
+In der aktuellen ***Verordnung über Form, Inhalt und Art und Weise der Führung des Registers der Kulturgüter der Republik Kroatien***, steht in Kapitel VIII. Veröffentlichung der Eintragung in das Register: Artikel 13, Abs (3):
+
+> Räumliche Daten zu unbeweglichen Kulturgütern werden zudem im System des Geoportals der Kulturgüter der Republik Kroatien auf den Webseiten des Ministeriums veröffentlicht und stehen den Nutzern über Webdienste zur Ansicht und zum Download zur Verfügung.
+
+Es lässt sich keine Angabe zu den Nutzungsbedingungen ableiten, es handelt sich dabei also wahrscheinlich um eine Auslegung des Ministeriums.
+:::
+
+### Gesetzesgrundlagen
+
+**Gesetze zum Schutz und zur Erhaltung von Kulturgütern**
+
+::: {.callout-caution collapse="true" icon="false" title="{{< fa section >}} Nachweise in der Narodne Novine: Rechtsgrundlage des Registers"}
+
+**Aktuelles Gesetz zur Änderung des Gesetzes zum Schutz und zur Erhaltung von Kulturgütern (2025)**
+
+***Zakon o izmjeni Zakona o zaštiti i očuvanju kulturnih dobara ***
+
+```
+Dio NN: Službeni
+Vrsta dokumenta: Zakon
+Izdanje: NN 151/2025
+Broj dokumenta u izdanju: 2252
+Stranica tiskanog izdanja: 25
+Donositelj:Hrvatski sabor
+Datum tiskanog izdanja: 15.12.2025.
+ELI: /eli/sluzbeni/2025/151/2252
+```
+
+**Aktuelles Gesetz zum Schutz und zur Erhaltung von Kulturgütern (2024)**
+
+***Zakon o zaštiti i očuvanju kulturnih dobara***
+
+```
+Dio NN: Službeni
+Vrsta dokumenta: Zakon
+Izdanje: NN 145/2024
+Broj dokumenta u izdanju: 2369
+Stranica tiskanog izdanja: 9
+Donositelj:Hrvatski sabor
+Datum tiskanog izdanja: 13.12.2024.
+ELI: /eli/sluzbeni/2024/145/2369
+```
+
+**Erstes Gesetz zum Schutz und zur Erhaltung von Kulturgütern (1999)**
+
+***Zakon o zaštiti i očuvanju kulturnih dobara***
+
+```
+Dio NN: Službeni
+Vrsta dokumenta: Zakon
+Izdanje: NN 69/1999   
+Broj dokumenta u izdanju: 1284
+Donositelj:ZASTUPNIČKI DOM HRVATSKOGA DRŽAVNOG SABORA
+Datum tiskanog izdanja: 5.7.1999.
+ELI: /eli/sluzbeni/1999/69/1284
+```
+
+:::
+
+
+**Verordnung über Form, Inhalt und Art und Weise der Führung des Registers der Kulturgüter der Republik Kroatien**
+
+::: {.callout-caution collapse="true" icon="false" title="{{< fa section >}} Nachweise in der Narodne Novine: Aktuelle Verordnung und Vorgänger"}
+
+**Aktuell rechtsgültige Fassung**
+
+***Pravilnik o obliku, sadržaju i načinu vođenja Registra kulturnih dobara Republike Hrvatske***
+
+```
+Dio NN: Službeni
+Vrsta dokumenta: Pravilnik
+Izdanje: NN 128/2025
+Broj dokumenta u izdanju: 1842
+Stranica tiskanog izdanja: 2
+Donositelj:Ministarstvo kulture i medija
+Datum tiskanog izdanja: 10.10.2025.
+ELI: /eli/sluzbeni/2025/128/1842
+```
+
+**Liste der Vorgänger**
+
+```
+Dio NN: Službeni
+Vrsta dokumenta: Pravilnik
+Izdanje: NN 19/2023
+Broj dokumenta u izdanju: 328
+Stranica tiskanog izdanja: 15
+Donositelj:Ministarstvo kulture i medija
+Datum tiskanog izdanja: 17.2.2023.
+ELI: /eli/sluzbeni/2023/19/328
+
+Dio NN: Službeni
+Vrsta dokumenta: Pravilnik
+Izdanje: NN 130/2013   
+Broj dokumenta u izdanju: 2838
+Donositelj:Ministarstvo kulture
+Datum tiskanog izdanja: 28.10.2013.
+ELI: /eli/sluzbeni/2013/130/2838
+
+Dio NN: Službeni
+Vrsta dokumenta: Pravilnik
+Izdanje: NN 89/2011   
+Broj dokumenta u izdanju: 1905
+Donositelj:Ministarstvo kulture
+Datum tiskanog izdanja: 29.7.2011.
+ELI: /eli/sluzbeni/2011/89/1905
+```
+:::
+
+**Auszüge aus der aktuell rechtsgültigen Fassung der Verordnung**
+
+::: {.callout-caution collapse="true" icon="false" title="{{< fa section >}} III. Inhalt des Registers: Artikel 5, Abs (1) bis (5)"}
+
+\(1\) In das Register wird für jedes Kulturgut oder vorläufig geschützte Kulturgut ein Registereintrag aufgenommen, der folgende Grunddaten enthält:<br>
+a\) Name des Kulturguts<br>
+b\) Ort (Landkreis, Gemeinde, Stadt, Siedlung, Fundort/Standortangabe, Adresse, topografischer Name)<br>
+c\) Vor- und Nachname bzw. Name und Anschrift des Eigentümers, des Inhabers von Rechten am Kulturgut, des Nutzers, des Besitzers<br>
+d\) Art (unbewegliches, bewegliches, immaterielles Kulturgut)<br>
+e\) Klassifikation im Register:<br>
+– unbeweglich: einzeln geschützt (einschließlich Komplexe, Anlagen und Sammelschutz), kulturhistorische Einheit, archäologische Fundstätte/Zone, Kulturlandschaft (detailliertere Ausarbeitung gemäß der 3. Klassifikationsebene im Informationssystem für Kulturgüter (im Folgenden: ISKB))<br>
+– beweglich: einzeln geschützt, Sammlung (detailliertere Ausarbeitung gemäß der 3. Klassifikationsebene im ISKB)<br>
+– immaterielles Kulturgut aus den in Artikel 9 dieser Verordnung genannten Bereichen<br>
+f\) Entstehungszeit, Urheber (Werkstatt, Umkreis, Nachfolger, Kopie nach)<br>
+g\) Kurzbeschreibung des Kulturguts<br>
+h\) Beschreibung des Zustands des Kulturguts<br>
+i\) Bewertung nach den Kriterien aus Artikel 9 dieser Verordnung<br>
+j\) Schutzmaßnahmen<br>
+k\) charakteristische Fotografien.<br>
+
+\(2\) In den Registereintrag werden je nach Art des Kulturguts zudem folgende besondere Daten aufgenommen:<br>
+a) bei unbeweglichen Kulturgütern werden die Katastergemeinden und Katasterparzellen innerhalb des Umfangs des Kulturguts eingetragen, und bei Bedarf werden georeferenzierte Punkte angegeben<br>
+b) ausnahmsweise kann der Umfang für Kulturlandschaften beschreibend festgelegt werden, und für unterwasser-archäologische Fundstätten und Zonen durch Angabe georeferenzierter Punkte/Koordinaten, die in den digitalen Katasterplan eingezeichnet werden, welcher Bestandteil des Registers ist<br>
+c) bei beweglichen Kulturgütern:<br>
+– Ort der ursprünglichen Unterbringung/Aufbewahrung, Art des beweglichen Kulturguts gemäß der 3. Klassifikationsebene des ISKB, Material, Technik/technische Daten und Abmessungen<br>
+– Verzeichnis/Katalog der Gegenstände in der Sammlung mit Identifikationsdaten für jeden Gegenstand (Name, Urheber, Entstehungszeit, Abmessungen, Material, Technik/technische Daten, Fotografie)<br>
+d) bei immateriellen Kulturgütern:<br>
+– Verbreitungsgebiet<br>
+– Verzeichnis der Träger.<br>
+
+\(3\) Der Registereintrag eines Kulturguts umfasst zudem folgende Eintragungsdaten:<br>
+a\) Bezeichnung der Liste, in die das Gut eingetragen ist (Z – geschützte Kulturgüter, P – vorläufig geschützte Kulturgüter)<br>
+b\) Bezeichnung des Nachweises/der Evidenz (L – Evidenz der Güter von lokaler Bedeutung, B – aus dem Register gelöscht)<br>
+c\) Laufende Nummer der Eintragung, Datum der Eintragung, Datum des Ablaufs des vorläufigen Schutzes des Kulturguts<br>
+d\) Name der zuständigen regionalen Denkmalschutzbehörde/Dienststelle<br>
+e\) Nummer und Datum des Bescheids/der Entscheidung, auf deren Grundlage die Eintragung, die Änderung der Eintragung oder die Löschung aus dem Register erfolgt<br>
+f\) Angaben zur Vollstreckbarkeit und Rechtskraft des Bescheids/der Entscheidung, auf deren Grundlage die Eintragung, die Änderung der Eintragung oder die Löschung aus dem Register vorgenommen wurde<br>
+g\) Datum der Vormerkung des unbeweglichen Kulturguts in der Grundbuchabteilung des zuständigen Gerichts<br>
+h\) Datum der Eintragung in die Welterbeliste, die Liste des gefährdeten Welterbes, die Repräsentative Liste des immateriellen Kulturerbes der Menschheit, die Liste des immateriellen Kulturerbes, deren Erbringung dringender Schutzmaßnahmen bedarf, oder das Register guter Praxisbeispiele für die Erhaltung des immateriellen Kulturerbes der Welt<br>
+i\) Angaben zum Beschwerdeverfahren / Verwaltungsstreitverfahren<br>
+j\) Verknüpfungen mit anderen Arten geschützter Kulturgüter sowie eventuelle zusätzliche Eintragungen – Begründungen für die Eintragung in eine andere Liste oder die Streichung von der Liste.<br>
+
+\(4\) Für jedes Kulturgut wird eine Dokumentensammlung geführt, die Folgendes enthält:<br>
+a\) Bescheide/Entscheidungen, auf deren Grundlage die für die Registerangelegenheiten zuständige Organisationseinheit Eintragungen, Änderungen der Eintragung oder Löschungen aus dem Register vornimmt<br>
+b\) die dem Vorschlag für den Erlass des Bescheids/der Entscheidung beigefügte Dokumentation.
+
+\(5\) Die Bestimmungen dieses Artikels finden entsprechend auch auf vorläufig geschützte Kulturgüter Anwendung.
+
+*[Übersetzung: Google Gemini, geprüft durch die Autorin]*
+:::
+
+
+::: {.callout-caution collapse="true" icon="false" title="{{< fa section >}} VIII. Veröffentlichung der Eintragung in das Register: Artikel 13, Abs (1) bis (6)"}
+
+\(1\) Daten zu Kulturgütern und vorläufig geschützten Kulturgütern werden auf den Webseiten des Ministeriums im Register-Browser veröffentlicht.
+
+\(2\) Räumliche Daten zu unbeweglichen Kulturgütern werden zudem im System des Geoportals der Kulturgüter der Republik Kroatien auf den Webseiten des Ministeriums veröffentlicht und stehen den Nutzern über Webdienste zur Ansicht und zum Download zur Verfügung.
+
+\(3\) Daten zu beweglichen Kulturgütern in Privatbesitz werden auf den Webseiten des Ministeriums nicht veröffentlicht. Die Daten können auf der Grundlage einer schriftlichen Anfrage und eines dargelegten berechtigten Interesses unter Beachtung der Vorschriften zum Schutz personenbezogener Daten eingesehen werden.
+
+\(4\) Das Verzeichnis der Güter von lokaler Bedeutung wird auf den Webseiten des Ministeriums öffentlich bekannt gegeben.
+
+\(5\) Die Daten gemäß Absatz 1 dieses Artikels umfassen:
+
+* Name des Kulturguts
+* Liste und Registriernummer
+* Schutzstatus
+* Art des Kulturguts
+* Klassifikation
+* Entstehungszeit
+* Urheber
+* Standortdaten (Adresse, Siedlung, Stadt/Gemeinde, Landkreis/Gespanschaft)
+* zuständiges regionales Denkmalschutzamt / zuständige Dienststelle
+* Kurzbeschreibung des Kulturguts
+* Begründung des Wertes
+* Schutzmaßnahmen
+* charakteristische Fotografien.
+
+\(6\) Die Daten gemäß Absatz 4 dieses Artikels enthalten:
+
+* Eintragungsnummer in die L-Liste
+* Name des Guts von lokaler Bedeutung
+* Standortdaten (Adresse, Siedlung, Stadt/Gemeinde, Landkreis/Gespanschaft)
+* Art des Guts
+* Datum der Eintragung
+* Kurzbeschreibung.
+
+*[Übersetzung: Google Gemini, geprüft durch die Autorin]*
+
+:::
+
+### Vergleich zwischen internen und veröffentlichten Daten
+
+Ein Vergleich von Kapitel III und Kapitel VIII der aktuellen Verordnung zur Führung des Registers macht deutlich, dass intern wesentlich mehr Daten vorhanden sind, als veröffentlich werden und welche Problematik sich daraus für die Qualität und tatsächliche Offenheit der Daten ergibt. So fehlen in den veröffentlichten Daten zentrale Angaben wie:
+
+* Beschreibung des Zustands des Kulturguts
+* Bezeichnung des Nachweises/der Evidenz: Link zu ELI
+* Datum der Eintragung in das Register
+* B-Liste: aus dem Register gelöschte Kulturgüter mit Löschdatum
+* charakteristische Fotografien: Link zu eKultura/Europeana (CC-Lizenzen)
+
+Das explizite Ausschließen von Datumsangaben und Verlinkungen und das Fehlen der B-Liste stellt aus meiner Sicht nicht nur eine erhebliche Minderung der Nutzbarkeit der Daten dar, sondern führt zugleich zu einem ***Survival-Bias***. Die Liste ist tatsächlich lediglich eine Momentaufnahme (***Snapshot***) des tatsächlichen Registers und verhindert Zeitreihen-Analysen. Der Missstand wird noch durch die rechtlichen Widersprüche bezüglich der Verwendung der Daten verschärft.

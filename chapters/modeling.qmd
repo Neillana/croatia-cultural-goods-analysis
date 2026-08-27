@@ -1,0 +1,3 @@
+## Modeling
+
+***Passende Algorithmen oder Machine-Learning-Modelle auswählen, das Modell trainieren und testen.***
