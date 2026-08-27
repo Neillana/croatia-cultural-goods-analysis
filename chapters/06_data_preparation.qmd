@@ -23,6 +23,9 @@ from src.column_grad_cleaning import clean_column_grad
 from src.drop_adresa import drop_column_adresa
 from src.vrsta_mapping import rename_vrsta_categories
 from src.replace_column_values import replace_value_in_column
+from src.normalize_register_number import extract_register_artefacts
+from src.normalize_datacija import parse_datacija_columns
+from src.vector_transition import extract_centroid_coordinates
 
 DATA_RAW = PROJECT_ROOT / "data" / "raw"
 DATA_RAW.mkdir(parents=True, exist_ok=True)
@@ -99,50 +102,104 @@ logger.info(f"STARTE ANALYSE & BEREINIGUNG FÜR: {latest_file.name}")
 ### Grundbereinigung der Strings
 Wie bereits festgestellt, müssen führende Leerzeichen (und ggf. am Ende) und Excel-Artefakte (Zeilenumbrüche) entfernt werden. Hinzu kommt, dass fehlende Werte in den Daten mit dem String "-" ersetzt wurden.
 
+Diese Bereinigung hat sich als ein wahrer Härtefall erwiesen. Es hat sich herausgestellt, dass Excel noch mehr Artefakte hinterlassen hat. Erst nach mehrfachen verschiedenen Versuchen und dem Löschen von '\s\xa0' konnten alle nicht vorhandenen Werte korrekt gesetzt werden.
+
 ::: {.callout-note collapse="true" icon="false" title="Modul: text_cleaning.py"}
 ```python
+from collections import defaultdict
+
 import geopandas as gpd
+import numpy as np
 
 
 def clean_text_columns(gdf: gpd.GeoDataFrame, logger) -> gpd.GeoDataFrame:
-    """Cleans text columns within a GeoDataFrame and logs the modifications.
+    """Cleans text columns within a GeoDataFrame and logs detailed modifications.
 
-    Iterates through all columns of type 'object' or 'string', removes carriage
-    returns, strips leading/trailing whitespaces, and converts specific empty 
-    or placeholder values into Python None objects. Each modification is 
-    tracked and summarized using the provided logger instance.
-
-    Args:
-        gdf: The input GeoDataFrame containing spatial and attribute data.
-        logger: A logging.Logger instance configured to record the cleaning 
-            process details and summary statistics.
-
-    Returns:
-        A new GeoDataFrame instance containing the cleaned and normalized 
-        text fields, while maintaining the original geometry and CRS.
+    Iterates through all columns of type 'object' or 'string', fixes linebreaks,
+    excel artifacts, whitespaces, and converts specific empty or placeholder values 
+    into Python None (np.nan) objects. Each modification is tracked and 
+    summarized statistically per column and globally using the provided logger.
     """
-    logger.info("Schritt 1: Allgemeiner Text-Clean (Strip, Linebreaks, Platzhalter)...")
+    logger.info("Schritt 1: Detaillierter Text-Clean gestartet...")
     gdf = gdf.copy()
     text_columns = gdf.select_dtypes(include=["object", "string"]).columns
-    total_updates = 0
+
+    col_stats = defaultdict(lambda: {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 0,
+        "placeholders": 0,
+        "invalid_to_nan": 0
+    })
+    
+    global_stats = {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 0,
+        "placeholders": 0,
+        "invalid_to_nan": 0
+    }
 
     for col in text_columns:
-        orig_series = gdf[col].astype(str)
-        cleaned_series = (
-            orig_series.str.replace(r"\n\r", " ", regex=True)
-            .str.strip()
-            .str.replace(r"^-$", "", regex=True)
-            .replace(["", "nan", "None"], None)
-        )
-        changed_mask = orig_series != cleaned_series.astype(str)
-        num_changed = changed_mask.sum()
+        s = gdf[col]
+        
+        is_original_na = s.isna()
+        s_str = s.astype(str)
+        s_str[is_original_na] = np.nan 
+        
+        mask_linebreaks = s_str.str.contains(r'[\r\n]', regex=True, na=False)
+        cnt_linebreaks = mask_linebreaks.sum()
+        col_stats[col]["linebreaks"] += cnt_linebreaks
+        global_stats["linebreaks"] += cnt_linebreaks
+        s_str = s_str.str.replace(r'[\r\n]+', ' ', regex=True)
+        
+        mask_artifacts = s_str.str.contains(r'\xa0|_x[0-9A-Fa-f]{4}_', regex=True, na=False)
+        cnt_artifacts = mask_artifacts.sum()
+        col_stats[col]["excel_artifacts"] += cnt_artifacts
+        global_stats["excel_artifacts"] += cnt_artifacts
+        s_str = s_str.str.replace(r'\xa0|_x[0-9A-Fa-f]{4}_', ' ', regex=True)
+        
+        mask_whitespaces = s_str.str.contains(r'^\s+|\s+$|\s{2,}', regex=True, na=False)
+        cnt_whitespaces = mask_whitespaces.sum()
+        col_stats[col]["whitespaces"] += cnt_whitespaces
+        global_stats["whitespaces"] += cnt_whitespaces
+        s_str = s_str.str.replace(r'\s+', ' ', regex=True).str.strip()
+        
+        mask_placeholders = s_str.str.match(r'^-$', na=False)
+        cnt_placeholders = mask_placeholders.sum()
+        col_stats[col]["placeholders"] += cnt_placeholders
+        global_stats["placeholders"] += cnt_placeholders
+        s_str = s_str.str.replace(r'^-$', '', regex=True)
+        
+        invalid_texts = ["", "nan", "NaN", "None", "null", "<NA>"]
+        mask_invalid = s_str.isin(invalid_texts) & ~is_original_na
+        cnt_invalid = mask_invalid.sum()
+        col_stats[col]["invalid_to_nan"] += cnt_invalid
+        global_stats["invalid_to_nan"] += cnt_invalid
+        s_str = s_str.replace(invalid_texts, np.nan)
+        
+        gdf[col] = s_str
 
-        if num_changed > 0:
-            gdf[col] = cleaned_series
-            logger.info(f"Spalte '{col}': {num_changed}")
-            total_updates += num_changed
+    logger.info("--- Fehlerstatistik pro Spalte ---")
+    for col, stats in col_stats.items():
+        col_total = sum(stats.values())
+        if col_total > 0:
+            details = ", ".join([f"{k}: {v}" for k, v in stats.items() if v > 0])
+            logger.info(f"> Spalte '{col}': {col_total} Änderungen ({details})")
+            
+    logger.info("--- Globale Fehlerzusammenfassung ---")
+    logger.info(f"> Zeilenumbrüche entfernt: {global_stats['linebreaks']}")
+    logger.info(f"> Excel-Artefakte entfernt: {global_stats['excel_artifacts']}")
+    logger.info(f"> Whitespace-Korrekturen: {global_stats['whitespaces']}")
+    logger.info(f"> Platzhalter entfernt: {global_stats['placeholders']}")
+    logger.info(f"> Ungültige Texte zu NaN konvertiert: {global_stats['invalid_to_nan']}")
+    
+    total_updates = sum(global_stats.values())
+    logger.info(f"Gesamtanzahl behobener Anomalien über alle Spalten: {total_updates}")
+    
+    gdf.attrs["global_stats"] = global_stats
+    gdf.attrs["col_stats"] = col_stats
 
-    logger.info(f"Allgemeiner Text-Clean beendet. {total_updates} Änderungen.")
     return gdf
 ```
 :::
@@ -157,6 +214,9 @@ gdf.sample(10)
 
 ```
 
+### Spalte 'naziv'
+
+Hier erfolgt nur die automatische Bereinigung
 
 ### Spalte 'zupanija' prüfen
 
@@ -307,6 +367,8 @@ def rename_vrsta_categories(
 
 
 ### Spalte 'klasifikacija' prüfen
+
+**Ofizielle Bezeichnungen (Webregister):**
 
 ```{default}
 Nepokretna pojedinačna:
@@ -465,12 +527,23 @@ def replace_value_in_column(
 
 Benötigt Normalisierung.
 
-```{python}
-#| code-fold: false
-with pd.option_context("display.max_rows", 100):
-    print(gdf["registarski_broj"].value_counts(dropna=False).sort_index())
-    print(f"\nGesamtzahl eindeutiger Werte: {gdf['registarski_broj'].nunique()}")
-```
+Die Standardform der Registernummern ist 1-n Buchstaben, gefolgt von einem Bindestrich, gefolgt von 1-n Zahlen. Die alten Registernummern, die aus dem ehemaligen Jugoslawien übernommen wurden, haben als Suffix mit einem Bindestrich die Jahreszahl aus dem alten Register, gefolgt von einem Punkt (kroatische Schreibweise der Jahreszahlen).
+
+Dank dem Logging, das eine Liste fehlerhafter Einträge anzeigt, konnte ich Ausnahmen Identifizieren, die von der Schreibweise abweichen und nicht automatisch bereinigt wurden:
+
+`['RRI 381-1975', 'ZDU_191', 'RRI 380-1975']`
+
+In der neuen Spalte "register_artifacts" konnte ich folgende Ausnahmen identifizieren:
+
+`['73', '1973. OD 9.5. 1973', '1973. od 9.5.1973', '1973. od 16.1. 1973', ', Bg-171/1-78', '/2-76', '24-65']`
+
+::: {.callout-warning icon="false" title="Schwerwiegendes Bereinigungsproblem"}
+Diese Artefakte verhindern eine saubere, rein automatisierte Bereinigungspipeline. Selbst nach manueller Bereinigung verbleiben 3 Werte, die nicht einer Jahreszahl entsprechen und ohne weitere Recherche nicht aufgelöst werden können:
+
+`[', Bg-171/1-78', '/2-76', '24-65']`
+
+:::
+
 
 ### Spalte 'registarki_broj_n' prüfen
 Im Spaltennamen ist ein Rechtschreibfehler. Da die Spalten im weiteren Projektverlauf noch umbenannt werden, lass ich es so stehen.
@@ -479,7 +552,7 @@ Bei den N-Nummern handelt es sicht um Kulturgüter, die zusätzlich das Attribut
 
 ```{python}
 #| code-fold: false
-with pd.option_context("display.max_rows", 100):
+with pd.option_context("display.max_rows", 10):
     print(gdf["registarki_broj_n"].value_counts(dropna=False).sort_index())
     print(f"\nGesamtzahl eindeutiger Werte: {gdf['registarki_broj_n'].nunique()}")
 ```
@@ -499,15 +572,130 @@ Kein Handlungsbedarf.
 
 Benötigt Normalisierung.
 
+::: {.callout-note collapse="true" icon="false" title="Modul: normalize_datacija.py"}
+```python
+import re
+
+import geopandas as gpd
+import pandas as pd
+
+
+def _parse_datacija_logic(text):
+    """Hilfsfunktion für das Parsing einzelner Textwerte in Start- und Endjahr."""
+    if pd.isna(text) or not isinstance(text, str) or text.strip() == "":
+        return pd.Series([pd.NA, pd.NA])
+
+    text_lower = text.lower()
+
+    text_lower = re.sub(r'1\.\s*pol', 'prva_pol', text_lower)
+    text_lower = re.sub(r'2\.\s*pol', 'druga_pol', text_lower)
+
+    is_bc = bool(re.search(r'p\.?\s*n\.?\s*e|pr\.|p\.?\s*kr', text_lower))
+    multiplier = -1 if is_bc else 1
+
+    is_century = "st" in text_lower
+
+    offset_start, offset_end = 1, 100
+    if "poč" in text_lower:
+        offset_start, offset_end = 1, 30
+    elif "sred" in text_lower:
+        offset_start, offset_end = 31, 70
+    elif "kraj" in text_lower:
+        offset_start, offset_end = 71, 100
+    elif "prva_pol" in text_lower:
+        offset_start, offset_end = 1, 50
+    elif "druga_pol" in text_lower:
+        offset_start, offset_end = 51, 100
+
+    numbers = [int(num) for num in re.findall(r'\d+', text_lower)]
+
+    if not numbers:
+        return pd.Series([pd.NA, pd.NA])
+
+    start_num = numbers[0]
+    end_num = numbers[-1] if len(numbers) > 1 else start_num
+
+    if is_century:
+        if is_bc:
+            start_year = (start_num * 100 * -1) + offset_start - 1
+            end_year = (end_num * 100 * -1) + offset_end - 1
+        else:
+            start_year = (start_num - 1) * 100 + offset_start
+            end_year = (end_num - 1) * 100 + offset_end
+    else:
+        start_year = start_num * multiplier
+        end_year = end_num * multiplier
+
+    if start_year > end_year:
+        start_year, end_year = end_year, start_year
+
+    return pd.Series([start_year, end_year])
+
+def parse_datacija_columns(gdf: gpd.GeoDataFrame, logger) -> gpd.GeoDataFrame:
+    """Parses the 'datacija' column into numerical 'year_start' and 'year_end' columns.
+
+    Extracts centuries (st.) and negative years for B.C. (p.n.e.).
+    Uses Pandas Nullable Integer (Int64) to support missing values.
+    """
+    logger.info("Schritt 3: Parsing von 'datacija' in numerische Jahreszahlen...")
+    gdf = gdf.copy()
+
+    gdf["year_start"] = pd.NA
+    gdf["year_end"] = pd.NA
+
+    if "datacija" not in gdf.columns:
+        logger.error("Spalte 'datacija' wurde im GeoDataFrame nicht gefunden!")
+        return gdf
+
+    if gdf["datacija"].isna().all():
+        logger.warning("Spalte 'datacija' enthält nur Nullwerte. Kein Parsing notwendig.")
+    
+        gdf["year_start"] = gdf["year_start"].astype("Int64")
+        gdf["year_end"] = gdf["year_end"].astype("Int64")
+        return gdf
+
+    parsed_df = gdf["datacija"].apply(_parse_datacija_logic)
+    parsed_df.columns = ["parsed_start", "parsed_end"]
+
+    has_value_mask = gdf["datacija"].notna() & (gdf["datacija"].astype(str).str.strip() != "")
+
+    valid_pattern_mask = has_value_mask & parsed_df["parsed_start"].notna()
+    num_changed = valid_pattern_mask.sum()
+
+    failed_pattern_mask = has_value_mask & ~valid_pattern_mask
+    num_failed = failed_pattern_mask.sum()
+
+    gdf.loc[valid_pattern_mask, "year_start"] = parsed_df.loc[valid_pattern_mask, "parsed_start"]
+    gdf.loc[valid_pattern_mask, "year_end"] = parsed_df.loc[valid_pattern_mask, "parsed_end"]
+
+    gdf["year_start"] = gdf["year_start"].astype("Int64")
+    gdf["year_end"] = gdf["year_end"].astype("Int64")
+
+    if num_changed > 0:
+        logger.info(f"Spalte 'datacija': {num_changed} Werte erfolgreich in 'year_start' und 'year_end' (als Integer) umgewandelt.")
+
+    if num_failed > 0:
+        invalid_values = gdf.loc[failed_pattern_mask, "datacija"].unique().tolist()
+        logger.warning(
+            f"Spalte 'datacija': {num_failed} Zeilen konnten nicht als "
+            f"gültige Jahreszahl/Jahrhundert interpretiert werden (keine Zahlen gefunden). "
+            f"Betroffene Werte: {invalid_values}"
+        )
+
+    logger.info("Parsing von 'datacija' beendet.")
+    return gdf
+```
+:::
+
 ### Spalte 'autor' prüfen
 
-Benötigt Normalisierung.
+Benötigt Normalisierung. Da sie momentan nicht relevant ist, belasse ich sie einfach so.
 
 ### Spalte 'zona' prüfen
 
 * Zona A (145 Objekte): Vollständiger Schutz (strengster)
 * Zona B (140 Objekte): Teilschutz / Pufferzone (Kontaktzone)
-* Zona C (85 Objekte): Archäologischer Schutz / Lokaler Schutz
+* Zona C (85 Objekte): Archäologischer Schutz
 * Zona G (7140 Objekte): Registrierte Einzelobjekte / Hauptinventar / Gradevina
 * Zona K (7 Objekte): Komplexer Schutz / Spezifische Zonen / Kompleks
 
@@ -520,6 +708,87 @@ with pd.option_context("display.max_rows", None):
 ```
 
 Kein Handlungsbedarf.
+
+### Manuelle Korrektur einzelner Registernummern
+
+```{python}
+def fix_manual_register_errors(gdf: gpd.GeoDataFrame, logger) -> gpd.GeoDataFrame:
+    logger.info("Manuelle Korrektur spezieller Register-Fehler...")
+    gdf = gdf.copy()
+    
+    mask1 = gdf["registarski_broj"] == "RRI 381-1975"
+    gdf.loc[mask1, ["registarski_broj", "register_artefacts"]] = ["PRI-381", "1975"]
+
+    mask2 = gdf["registarski_broj"] == "RRI 380-1975"
+    gdf.loc[mask2, ["registarski_broj", "register_artefacts"]] = ["RRI-380", "1975"]
+
+    mask3 = gdf["registarski_broj"] == "ZDU_191"
+    gdf.loc[mask3, "registarski_broj"] = "ZDU-191"
+    
+    mask4 = gdf["register_artefacts"] == "73"
+    gdf.loc[mask4, "register_artefacts"] = "1973"
+
+    mask5 = gdf["register_artefacts"] == "1973. OD 9.5. 1973"
+    gdf.loc[mask5, "register_artefacts"] = "1973"
+    
+    mask6 = gdf["register_artefacts"] == "1973. od 9.5.1973"
+    gdf.loc[mask6, "register_artefacts"] = "1973"
+
+    mask7 = gdf["register_artefacts"] == "1973. od 16.1. 1973"
+    gdf.loc[mask7, "register_artefacts"] = "1973"
+
+    mask8 = gdf["register_artefacts"] == ", Bg-171/1-78"
+    gdf.loc[mask8, "register_artefacts"] = "Bg-171/1-78"
+
+    mask9 = gdf["register_artefacts"] == "/2-76"
+    gdf.loc[mask9, "register_artefacts"] = "2-76"
+
+    return gdf
+```
+
+
+### Mittelpunktkoordinaten aus den Vektordaten generieren
+
+Für bestimmte Kartendarstellungen oder andere Funktionen ist der Mittelpunkt als Koordinaten besser geeignet als eine Vektorfläche.
+
+::: {.callout-note collapse="true" icon="false" title="Modul: vector_transition.py"}
+```python
+import geopandas as gpd
+
+
+def extract_centroid_coordinates(gdf: gpd.GeoDataFrame, logger) -> gpd.GeoDataFrame:
+    logger.info("Schritt 4: Extrahieren der Mittelpunkt-Koordinaten aus 'geometry'...")
+    gdf = gdf.copy()
+
+    if "geometry" not in gdf.columns:
+        logger.error("Spalte 'geometry' wurde im GeoDataFrame nicht gefunden!")
+        return gdf
+
+    original_crs = gdf.crs
+    if original_crs is None:
+        logger.warning("Kein CRS (Koordinatensystem) im GeoDataFrame definiert! Gehe standardmäßig von EPSG:4326 (WGS84) aus.")
+        gdf.set_crs(epsg=4326, inplace=True)
+        original_crs = gdf.crs
+
+    try:
+        gdf_metric = gdf.to_crs(epsg=3857)
+        centroids_metric = gdf_metric.geometry.centroid
+
+        centroids_wgs84 = centroids_metric.to_crs(epsg=4326)
+
+        gdf["longitude"] = centroids_wgs84.x
+        gdf["latitude"] = centroids_wgs84.y
+        
+        logger.info(f"Mittelpunkte für {len(gdf)} Geometrien erfolgreich berechnet.")
+        logger.info("Neue Spalten 'longitude' und 'latitude' (in WGS84) wurden hinzugefügt.")
+
+    except (ValueError, TypeError) as e:
+        logger.error(f"Fehler bei der Koordinatenberechnung: {e}")
+
+    return gdf
+```
+:::
+
 
 ### Bereinigungspipeline
 
@@ -546,8 +815,24 @@ gdf_cleaned = (
             new_value="kopneno/podvodno arheološka zona/nalazište",
             logger=logger,
         )
+        .pipe(extract_register_artefacts, logger=logger)
+        .pipe(fix_manual_register_errors, logger=logger)
+        .pipe(parse_datacija_columns, logger=logger)
+        .pipe(extract_centroid_coordinates, logger=logger)
 )
 
+```
+
+
+```{python}
+with pd.option_context("display.max_rows", 20):
+    print(gdf_cleaned[['datacija', 'year_start', 'year_end']])
+```
+
+### Info
+
+```{python}
+gdf_cleaned.info()
 ```
 
 ### Bereinigtes Geo-Dataframe in Datei abspeichern
@@ -564,7 +849,7 @@ logger.info(f"Speichere bereinigte Daten unter: {output_data_file.name}")
 try:
     gdf_cleaned.to_parquet(output_data_file)
     logger.info(
-        f"Speichern erfolgreich. Daten und Logfile in: {DATA_INTERIM}\n"
+        "Speichern erfolgreich.\n"
     )
 
 except Exception as e:
@@ -572,5 +857,4 @@ except Exception as e:
     raise e
 
 ```
-
 

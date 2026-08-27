@@ -37,13 +37,41 @@ format:
 
 {{< include chapters/06_data_preparation.qmd >}}
 
-# Modeling
 
-# Evaluation
+{{< include chapters/07_visualization.qmd >}}
 
-# Deployment
+# Fazit
 
-Für die Präsentation des Projekts wurde Quarto ausgewählt, um es auf GitHub Pages zu veröffentlichen.
+Die Europäische Union verfolgt mit Direktiven wie INSPIRE und der Open-Data-Richtlinie (insbesondere in Bezug auf High-Value-Datasets) eine starke Vision: das Grundrecht auf Information zu stärken und den Nährboden für gesellschaftliche sowie wirtschaftliche Innovationen zu schaffen. Die Praxis zeigt jedoch, dass der Weg bis zur vollständigen Umsetzung noch ein längerer Prozess ist.
 
-`quarto render --no-cache` wenn nicht aktualisiert wird
+Die Untersuchung des kroatischen Registers der Kulturgüter – einem klassischen High-Value-Dataset – über verschiedene Quellen hinweg (das Open-Data-Portal data.gov.hr, das nationale Geoportal NIPP und das Web-Register des Ministeriums) verdeutlicht die aktuellen Herausforderungen. Derzeit erfüllt keine der Quellen die europäischen Kriterien für offene Daten vollständig. Eine besondere Hürde stellen widersprüchliche Nutzungsbedingungen dar, bei denen beispielsweise das Web-Register die freie Verwendung der Daten des eigenen Geoportals rechtlich einschränkt ("Closed" Open Data). 
 
+Im Rohzustand gleicht das Register derzeit eher einer schlichten, isolierten Inventarliste. Ohne intensive Datenbereinigung, Schematisierung und semantische Anreicherung bieten diese Daten kaum den erhofften Mehrwert. 
+
+Doch genau hier liegt das große Potenzial: Anstatt diese strukturellen Defizite lediglich zu kritisieren, soll dieses Projekt Lösungswege aufzeigen. Es soll am Ende demonstrieren, wie durch gezieltes Data Engineering und die Verlinkung von fragmentierten Rohdaten eine wertvolle und nutzbare Informationslandschaft entstehen kann. Der aktuelle Zustand der Daten ist kein Hindernis, sondern eine Einladung, aktiv an der Verbesserung zu arbeiten. Es braucht Initiativen und technische Brückenbauer, die den Weg von fragmentierten Daten hin zu echten Linked Open Data gestalten – und so die Lücke zwischen politischer Vision und technischer Realität schließen.
+
+# Ausblick
+
+Auch nach Abschluss dieses Zertifikatskurses werde ich das Projekt kontinuierlich weiterentwickeln. Die bisherige Datenintegration und -bereinigung bildet ein solides Fundament, das in den nächsten Schritten sowohl technisch als auch inhaltlich skaliert werden soll. Die weitere Roadmap gliedert sich in zwei Phasen:
+
+### Phase 1: Konsolidierung und Internationalisierung
+Zunächst liegt der Fokus auf der Optimierung der bestehenden Code- und Textbasis:
+
+* **Inhaltliche Vertiefung:** Überarbeitung und Erweiterung der bestehenden Textpassagen
+* **Internationalisierung:** Übersetzung des gesamten Projekts ins Englische
+* **Code-Refactoring:** Überarbeitung der Skripte und Kapselung in wiederverwendbare Module (Reusability), damit die Pipeline auch für ähnliche Datensätze problemlos anwendbar ist.
+
+### Phase 2: Aufbau eines Knowledge Graphs für den Kulturtourismus
+Im Anschluss soll das Projekt von einer reinen Datenaufbereitung zu einer modernen, KI-fähigen Datenarchitektur ausgebaut werden:
+
+1. **Visuelle & Standardisierte Integration (Europeana & eKultura):** 
+   Anwendung europäischer Metadaten-Standards und Verknüpfung der Kulturgüter mit Bilddaten. Dies löst das Problem der "Closed Open Data" und macht die Kulturdenkmäler visuell erlebbar.
+   
+2. **Semantische Anreicherung (Wikidata):** 
+   Verknüpfung der bereinigten Daten mit Wikidata (Linked Open Data) zum automatisierten Einzug von historischem Kontext, Architekten und weiterführenden Informationen ohne manuellen Pflegeaufwand.
+   
+3. **Wirtschaftlicher Mehrwert (Tourismus & Hotellerie):** 
+   Integration von lokalen Übernachtungsmöglichkeiten und Museumsstandorten. Dies schließt den Kreis zum *Business Understanding*: Der Kulturtourismus wird direkt mit der regionalen Wirtschaft verknüpft – ein idealer Use-Case für Tourismusverbände.
+   
+4. **Das Herzstück – Graphdatenbank & KI-Bereitschaft:** 
+   Überführung aller verknüpften Daten in eine Graphdatenbank zur Erstellung eines *Knowledge Graphs*. Dies schafft die Grundlage für moderne KI-Anwendungen, die komplexe Nutzerfragen in einer App beantworten können

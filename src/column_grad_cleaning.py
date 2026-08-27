@@ -8,7 +8,11 @@ def clean_column_grad(gdf: gpd.GeoDataFrame, logger) -> gpd.GeoDataFrame:
     
     orig_series = gdf["grad"].astype(str)
     
-    cleaned_series = orig_series.str.title().str.split(" - ").str[0].str.strip()
+    cleaned_series = (orig_series
+                      .str.title()
+                      .str.split(" - ").str[0]
+                      .str.strip()
+                      .astype(str))
     
     changed_mask = orig_series != cleaned_series
     num_changed = changed_mask.sum()

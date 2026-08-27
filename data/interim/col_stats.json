@@ -1,0 +1,100 @@
+{
+    "id": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 0,
+        "placeholders": 0,
+        "invalid_to_nan": 0
+    },
+    "naziv": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 38,
+        "placeholders": 0,
+        "invalid_to_nan": 0
+    },
+    "zupanija": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 0,
+        "placeholders": 0,
+        "invalid_to_nan": 0
+    },
+    "grad": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 0,
+        "placeholders": 0,
+        "invalid_to_nan": 0
+    },
+    "adresa": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 7,
+        "placeholders": 0,
+        "invalid_to_nan": 0
+    },
+    "vrsta": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 0,
+        "placeholders": 0,
+        "invalid_to_nan": 0
+    },
+    "klasifikacija": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 0,
+        "placeholders": 0,
+        "invalid_to_nan": 0
+    },
+    "registarski_broj": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 0,
+        "placeholders": 0,
+        "invalid_to_nan": 0
+    },
+    "registarki_broj_n": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 0,
+        "placeholders": 7461,
+        "invalid_to_nan": 7461
+    },
+    "status_zastite": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 0,
+        "placeholders": 0,
+        "invalid_to_nan": 0
+    },
+    "datacija": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 4,
+        "placeholders": 0,
+        "invalid_to_nan": 509
+    },
+    "autor": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 1,
+        "placeholders": 0,
+        "invalid_to_nan": 1740
+    },
+    "opis": {
+        "linebreaks": 587,
+        "excel_artifacts": 27,
+        "whitespaces": 2224,
+        "placeholders": 1,
+        "invalid_to_nan": 1
+    },
+    "zona": {
+        "linebreaks": 0,
+        "excel_artifacts": 0,
+        "whitespaces": 0,
+        "placeholders": 0,
+        "invalid_to_nan": 0
+    }
+}

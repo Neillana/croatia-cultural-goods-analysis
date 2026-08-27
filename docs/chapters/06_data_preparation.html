@@ -157,6 +157,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#setup-und-initalisierung-des-loggings" id="toc-setup-und-initalisierung-des-loggings" class="nav-link" data-scroll-target="#setup-und-initalisierung-des-loggings">Setup und Initalisierung des Loggings</a></li>
   <li><a href="#grundbereinigung-der-strings" id="toc-grundbereinigung-der-strings" class="nav-link" data-scroll-target="#grundbereinigung-der-strings">Grundbereinigung der Strings</a></li>
   <li><a href="#bereinigte-daten-anzeigen-auswahl" id="toc-bereinigte-daten-anzeigen-auswahl" class="nav-link" data-scroll-target="#bereinigte-daten-anzeigen-auswahl">Bereinigte Daten anzeigen (Auswahl)</a></li>
+  <li><a href="#spalte-naziv" id="toc-spalte-naziv" class="nav-link" data-scroll-target="#spalte-naziv">Spalte ‘naziv’</a></li>
   <li><a href="#spalte-zupanija-prüfen" id="toc-spalte-zupanija-prüfen" class="nav-link" data-scroll-target="#spalte-zupanija-prüfen">Spalte ‘zupanija’ prüfen</a></li>
   <li><a href="#spalte-grad-prüfen" id="toc-spalte-grad-prüfen" class="nav-link" data-scroll-target="#spalte-grad-prüfen">Spalte ‘grad’ prüfen</a></li>
   <li><a href="#spalte-adresa-prüfen" id="toc-spalte-adresa-prüfen" class="nav-link" data-scroll-target="#spalte-adresa-prüfen">Spalte ‘adresa’ prüfen</a></li>
@@ -168,7 +169,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#spalte-datacija-prüfen" id="toc-spalte-datacija-prüfen" class="nav-link" data-scroll-target="#spalte-datacija-prüfen">Spalte ‘datacija’ prüfen</a></li>
   <li><a href="#spalte-autor-prüfen" id="toc-spalte-autor-prüfen" class="nav-link" data-scroll-target="#spalte-autor-prüfen">Spalte ‘autor’ prüfen</a></li>
   <li><a href="#spalte-zona-prüfen" id="toc-spalte-zona-prüfen" class="nav-link" data-scroll-target="#spalte-zona-prüfen">Spalte ‘zona’ prüfen</a></li>
+  <li><a href="#manuelle-korrektur-einzelner-registernummern" id="toc-manuelle-korrektur-einzelner-registernummern" class="nav-link" data-scroll-target="#manuelle-korrektur-einzelner-registernummern">Manuelle Korrektur einzelner Registernummern</a></li>
+  <li><a href="#mittelpunktkoordinaten-aus-den-vektordaten-generieren" id="toc-mittelpunktkoordinaten-aus-den-vektordaten-generieren" class="nav-link" data-scroll-target="#mittelpunktkoordinaten-aus-den-vektordaten-generieren">Mittelpunktkoordinaten aus den Vektordaten generieren</a></li>
   <li><a href="#bereinigungspipeline" id="toc-bereinigungspipeline" class="nav-link" data-scroll-target="#bereinigungspipeline">Bereinigungspipeline</a></li>
+  <li><a href="#info" id="toc-info" class="nav-link" data-scroll-target="#info">Info</a></li>
   <li><a href="#bereinigtes-geo-dataframe-in-datei-abspeichern" id="toc-bereinigtes-geo-dataframe-in-datei-abspeichern" class="nav-link" data-scroll-target="#bereinigtes-geo-dataframe-in-datei-abspeichern">Bereinigtes Geo-Dataframe in Datei abspeichern</a></li>
   </ul>
 </nav>
@@ -222,12 +226,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src.drop_adresa <span class="im">import</span> drop_column_adresa</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src.vrsta_mapping <span class="im">import</span> rename_vrsta_categories</span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src.replace_column_values <span class="im">import</span> replace_value_in_column</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>DATA_RAW <span class="op">=</span> PROJECT_ROOT <span class="op">/</span> <span class="st">"data"</span> <span class="op">/</span> <span class="st">"raw"</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>DATA_RAW.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src.normalize_register_number <span class="im">import</span> extract_register_artefacts</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src.normalize_datacija <span class="im">import</span> parse_datacija_columns</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src.vector_transition <span class="im">import</span> extract_centroid_coordinates</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>DATA_INTERIM <span class="op">=</span> PROJECT_ROOT <span class="op">/</span> <span class="st">"data"</span> <span class="op">/</span> <span class="st">"interim"</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>DATA_INTERIM.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>DATA_RAW <span class="op">=</span> PROJECT_ROOT <span class="op">/</span> <span class="st">"data"</span> <span class="op">/</span> <span class="st">"raw"</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>DATA_RAW.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>DATA_INTERIM <span class="op">=</span> PROJECT_ROOT <span class="op">/</span> <span class="st">"data"</span> <span class="op">/</span> <span class="st">"interim"</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>DATA_INTERIM.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="aktuellste-datei-ermitteln" class="level3">
@@ -285,13 +292,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>logger <span class="op">=</span> setup_dynamic_logging(latest_file.stem)</span>
 <span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="ss">f"STARTE ANALYSE &amp; BEREINIGUNG FÜR: </span><span class="sc">{</span>latest_file<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>2026-08-27 15:15:26,986 [INFO] STARTE ANALYSE &amp; BEREINIGUNG FÜR: 2026-08-26_geoportalnipp_rkd.parquet</code></pre>
+<pre><code>2026-08-28 01:34:03,982 [INFO] STARTE ANALYSE &amp; BEREINIGUNG FÜR: 2026-08-26_geoportalnipp_rkd.parquet</code></pre>
 </div>
 </div>
 </section>
 <section id="grundbereinigung-der-strings" class="level3">
 <h3 class="anchored" data-anchor-id="grundbereinigung-der-strings">Grundbereinigung der Strings</h3>
 <p>Wie bereits festgestellt, müssen führende Leerzeichen (und ggf. am Ende) und Excel-Artefakte (Zeilenumbrüche) entfernt werden. Hinzu kommt, dass fehlende Werte in den Daten mit dem String “-” ersetzt wurden.</p>
+<p>Diese Bereinigung hat sich als ein wahrer Härtefall erwiesen. Es hat sich herausgestellt, dass Excel noch mehr Artefakte hinterlassen hat. Erst nach mehrfachen verschiedenen Versuchen und dem Löschen von ‘’ konnten alle nicht vorhandenen Werte korrekt gesetzt werden.</p>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="Modul: text_cleaning.py">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -304,67 +312,127 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div id="callout-1" class="callout-1-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_text_columns(gdf: gpd.GeoDataFrame, logger) <span class="op">-&gt;</span> gpd.GeoDataFrame:</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Cleans text columns within a GeoDataFrame and logs the modifications.</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Iterates through all columns of type 'object' or 'string', removes carriage</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">    returns, strips leading/trailing whitespaces, and converts specific empty </span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">    or placeholder values into Python None objects. Each modification is </span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">    tracked and summarized using the provided logger instance.</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">        gdf: The input GeoDataFrame containing spatial and attribute data.</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">        logger: A logging.Logger instance configured to record the cleaning </span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">            process details and summary statistics.</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">        A new GeoDataFrame instance containing the cleaned and normalized </span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">        text fields, while maintaining the original geometry and CRS.</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="st">"Schritt 1: Allgemeiner Text-Clean (Strip, Linebreaks, Platzhalter)..."</span>)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    gdf <span class="op">=</span> gdf.copy()</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    text_columns <span class="op">=</span> gdf.select_dtypes(include<span class="op">=</span>[<span class="st">"object"</span>, <span class="st">"string"</span>]).columns</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    total_updates <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> col <span class="kw">in</span> text_columns:</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        orig_series <span class="op">=</span> gdf[col].astype(<span class="bu">str</span>)</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        cleaned_series <span class="op">=</span> (</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>            orig_series.<span class="bu">str</span>.replace(<span class="vs">r"</span><span class="ch">\n\r</span><span class="vs">"</span>, <span class="st">" "</span>, regex<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>            .<span class="bu">str</span>.strip()</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>            .<span class="bu">str</span>.replace(<span class="vs">r"</span><span class="dv">^</span><span class="vs">-</span><span class="dv">$</span><span class="vs">"</span>, <span class="st">""</span>, regex<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>            .replace([<span class="st">""</span>, <span class="st">"nan"</span>, <span class="st">"None"</span>], <span class="va">None</span>)</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        changed_mask <span class="op">=</span> orig_series <span class="op">!=</span> cleaned_series.astype(<span class="bu">str</span>)</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>        num_changed <span class="op">=</span> changed_mask.<span class="bu">sum</span>()</span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> num_changed <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>            gdf[col] <span class="op">=</span> cleaned_series</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>            logger.info(<span class="ss">f"Spalte '</span><span class="sc">{</span>col<span class="sc">}</span><span class="ss">': </span><span class="sc">{</span>num_changed<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>            total_updates <span class="op">+=</span> num_changed</span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="ss">f"Allgemeiner Text-Clean beendet. </span><span class="sc">{</span>total_updates<span class="sc">}</span><span class="ss"> Änderungen."</span>)</span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> gdf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_text_columns(gdf: gpd.GeoDataFrame, logger) <span class="op">-&gt;</span> gpd.GeoDataFrame:</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Cleans text columns within a GeoDataFrame and logs detailed modifications.</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Iterates through all columns of type 'object' or 'string', fixes linebreaks,</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">    excel artifacts, whitespaces, and converts specific empty or placeholder values </span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">    into Python None (np.nan) objects. Each modification is tracked and </span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">    summarized statistically per column and globally using the provided logger.</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="st">"Schritt 1: Detaillierter Text-Clean gestartet..."</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    gdf <span class="op">=</span> gdf.copy()</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    text_columns <span class="op">=</span> gdf.select_dtypes(include<span class="op">=</span>[<span class="st">"object"</span>, <span class="st">"string"</span>]).columns</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    col_stats <span class="op">=</span> defaultdict(<span class="kw">lambda</span>: {</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"linebreaks"</span>: <span class="dv">0</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"excel_artifacts"</span>: <span class="dv">0</span>,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"whitespaces"</span>: <span class="dv">0</span>,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"placeholders"</span>: <span class="dv">0</span>,</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"invalid_to_nan"</span>: <span class="dv">0</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    global_stats <span class="op">=</span> {</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">"linebreaks"</span>: <span class="dv">0</span>,</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        <span class="st">"excel_artifacts"</span>: <span class="dv">0</span>,</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">"whitespaces"</span>: <span class="dv">0</span>,</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        <span class="st">"placeholders"</span>: <span class="dv">0</span>,</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">"invalid_to_nan"</span>: <span class="dv">0</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> col <span class="kw">in</span> text_columns:</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> gdf[col]</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>        is_original_na <span class="op">=</span> s.isna()</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>        s_str <span class="op">=</span> s.astype(<span class="bu">str</span>)</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>        s_str[is_original_na] <span class="op">=</span> np.nan </span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>        mask_linebreaks <span class="op">=</span> s_str.<span class="bu">str</span>.contains(<span class="vs">r'</span><span class="pp">[</span><span class="ch">\r\n</span><span class="pp">]</span><span class="vs">'</span>, regex<span class="op">=</span><span class="va">True</span>, na<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>        cnt_linebreaks <span class="op">=</span> mask_linebreaks.<span class="bu">sum</span>()</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>        col_stats[col][<span class="st">"linebreaks"</span>] <span class="op">+=</span> cnt_linebreaks</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>        global_stats[<span class="st">"linebreaks"</span>] <span class="op">+=</span> cnt_linebreaks</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>        s_str <span class="op">=</span> s_str.<span class="bu">str</span>.replace(<span class="vs">r'</span><span class="pp">[</span><span class="ch">\r\n</span><span class="pp">]</span><span class="op">+</span><span class="vs">'</span>, <span class="st">' '</span>, regex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>        mask_artifacts <span class="op">=</span> s_str.<span class="bu">str</span>.contains(<span class="vs">r'</span><span class="ch">\xa0</span><span class="cf">|</span><span class="vs">_x</span><span class="pp">[0-9A-Fa-f]</span><span class="op">{4}</span><span class="vs">_'</span>, regex<span class="op">=</span><span class="va">True</span>, na<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>        cnt_artifacts <span class="op">=</span> mask_artifacts.<span class="bu">sum</span>()</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>        col_stats[col][<span class="st">"excel_artifacts"</span>] <span class="op">+=</span> cnt_artifacts</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>        global_stats[<span class="st">"excel_artifacts"</span>] <span class="op">+=</span> cnt_artifacts</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>        s_str <span class="op">=</span> s_str.<span class="bu">str</span>.replace(<span class="vs">r'</span><span class="ch">\xa0</span><span class="cf">|</span><span class="vs">_x</span><span class="pp">[0-9A-Fa-f]</span><span class="op">{4}</span><span class="vs">_'</span>, <span class="st">' '</span>, regex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>        mask_whitespaces <span class="op">=</span> s_str.<span class="bu">str</span>.contains(<span class="vs">r'</span><span class="dv">^\s</span><span class="op">+</span><span class="cf">|</span><span class="dv">\s</span><span class="op">+</span><span class="dv">$</span><span class="cf">|</span><span class="dv">\s</span><span class="op">{2,}</span><span class="vs">'</span>, regex<span class="op">=</span><span class="va">True</span>, na<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>        cnt_whitespaces <span class="op">=</span> mask_whitespaces.<span class="bu">sum</span>()</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>        col_stats[col][<span class="st">"whitespaces"</span>] <span class="op">+=</span> cnt_whitespaces</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>        global_stats[<span class="st">"whitespaces"</span>] <span class="op">+=</span> cnt_whitespaces</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>        s_str <span class="op">=</span> s_str.<span class="bu">str</span>.replace(<span class="vs">r'</span><span class="dv">\s</span><span class="op">+</span><span class="vs">'</span>, <span class="st">' '</span>, regex<span class="op">=</span><span class="va">True</span>).<span class="bu">str</span>.strip()</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>        mask_placeholders <span class="op">=</span> s_str.<span class="bu">str</span>.match(<span class="vs">r'</span><span class="dv">^</span><span class="vs">-</span><span class="dv">$</span><span class="vs">'</span>, na<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>        cnt_placeholders <span class="op">=</span> mask_placeholders.<span class="bu">sum</span>()</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>        col_stats[col][<span class="st">"placeholders"</span>] <span class="op">+=</span> cnt_placeholders</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>        global_stats[<span class="st">"placeholders"</span>] <span class="op">+=</span> cnt_placeholders</span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>        s_str <span class="op">=</span> s_str.<span class="bu">str</span>.replace(<span class="vs">r'</span><span class="dv">^</span><span class="vs">-</span><span class="dv">$</span><span class="vs">'</span>, <span class="st">''</span>, regex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>        invalid_texts <span class="op">=</span> [<span class="st">""</span>, <span class="st">"nan"</span>, <span class="st">"NaN"</span>, <span class="st">"None"</span>, <span class="st">"null"</span>, <span class="st">"&lt;NA&gt;"</span>]</span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>        mask_invalid <span class="op">=</span> s_str.isin(invalid_texts) <span class="op">&amp;</span> <span class="op">~</span>is_original_na</span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>        cnt_invalid <span class="op">=</span> mask_invalid.<span class="bu">sum</span>()</span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>        col_stats[col][<span class="st">"invalid_to_nan"</span>] <span class="op">+=</span> cnt_invalid</span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>        global_stats[<span class="st">"invalid_to_nan"</span>] <span class="op">+=</span> cnt_invalid</span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>        s_str <span class="op">=</span> s_str.replace(invalid_texts, np.nan)</span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>        gdf[col] <span class="op">=</span> s_str</span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="st">"--- Fehlerstatistik pro Spalte ---"</span>)</span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> col, stats <span class="kw">in</span> col_stats.items():</span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>        col_total <span class="op">=</span> <span class="bu">sum</span>(stats.values())</span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> col_total <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>            details <span class="op">=</span> <span class="st">", "</span>.join([<span class="ss">f"</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>v<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> k, v <span class="kw">in</span> stats.items() <span class="cf">if</span> v <span class="op">&gt;</span> <span class="dv">0</span>])</span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>            logger.info(<span class="ss">f"&gt; Spalte '</span><span class="sc">{</span>col<span class="sc">}</span><span class="ss">': </span><span class="sc">{</span>col_total<span class="sc">}</span><span class="ss"> Änderungen (</span><span class="sc">{</span>details<span class="sc">}</span><span class="ss">)"</span>)</span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="st">"--- Globale Fehlerzusammenfassung ---"</span>)</span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="ss">f"&gt; Zeilenumbrüche entfernt: </span><span class="sc">{</span>global_stats[<span class="st">'linebreaks'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="ss">f"&gt; Excel-Artefakte entfernt: </span><span class="sc">{</span>global_stats[<span class="st">'excel_artifacts'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="ss">f"&gt; Whitespace-Korrekturen: </span><span class="sc">{</span>global_stats[<span class="st">'whitespaces'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="ss">f"&gt; Platzhalter entfernt: </span><span class="sc">{</span>global_stats[<span class="st">'placeholders'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="ss">f"&gt; Ungültige Texte zu NaN konvertiert: </span><span class="sc">{</span>global_stats[<span class="st">'invalid_to_nan'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a>    total_updates <span class="op">=</span> <span class="bu">sum</span>(global_stats.values())</span>
+<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="ss">f"Gesamtanzahl behobener Anomalien über alle Spalten: </span><span class="sc">{</span>total_updates<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a>    gdf.attrs[<span class="st">"global_stats"</span>] <span class="op">=</span> global_stats</span>
+<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a>    gdf.attrs[<span class="st">"col_stats"</span>] <span class="op">=</span> col_stats</span>
+<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> gdf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
 </section>
 <section id="bereinigte-daten-anzeigen-auswahl" class="level3">
 <h3 class="anchored" data-anchor-id="bereinigte-daten-anzeigen-auswahl">Bereinigte Daten anzeigen (Auswahl)</h3>
-<div id="00650b4d" class="cell" data-execution_count="4">
+<div id="fa1de047" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gpd.read_parquet(latest_file)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gdf.pipe(clean_text_columns, logger<span class="op">=</span>logger)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>gdf.sample(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>2026-08-27 15:15:27,062 [INFO] Schritt 1: Allgemeiner Text-Clean (Strip, Linebreaks, Platzhalter)...
-2026-08-27 15:15:27,078 [INFO] Spalte 'adresa': 1
-2026-08-27 15:15:27,088 [INFO] Spalte 'registarki_broj_n': 7461
-2026-08-27 15:15:27,094 [INFO] Spalte 'datacija': 509
-2026-08-27 15:15:27,097 [INFO] Spalte 'autor': 6214
-2026-08-27 15:15:27,117 [INFO] Spalte 'opis': 1
-2026-08-27 15:15:27,120 [INFO] Allgemeiner Text-Clean beendet. 14186 Änderungen.</code></pre>
+<pre><code>2026-08-28 01:34:04,054 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-08-28 01:34:04,276 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-08-28 01:34:04,276 [INFO] &gt; Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-08-28 01:34:04,277 [INFO] &gt; Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-08-28 01:34:04,277 [INFO] &gt; Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-08-28 01:34:04,278 [INFO] &gt; Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-08-28 01:34:04,278 [INFO] &gt; Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-08-28 01:34:04,278 [INFO] &gt; Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-08-28 01:34:04,279 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-08-28 01:34:04,279 [INFO] &gt; Zeilenumbrüche entfernt: 587
+2026-08-28 01:34:04,280 [INFO] &gt; Excel-Artefakte entfernt: 27
+2026-08-28 01:34:04,280 [INFO] &gt; Whitespace-Korrekturen: 2274
+2026-08-28 01:34:04,280 [INFO] &gt; Platzhalter entfernt: 7462
+2026-08-28 01:34:04,281 [INFO] &gt; Ungültige Texte zu NaN konvertiert: 9711
+2026-08-28 01:34:04,281 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
@@ -393,184 +461,184 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">6557</th>
-<td>PS.ProtectedSite.10314</td>
-<td>Komunalna palača</td>
-<td>Istarska županija</td>
-<td>PULA - POLA</td>
-<td>Pula, Forum - Forum 1</td>
-<td>Pojedinačna kulturna dobra</td>
-<td>javne građevine</td>
-<td>Z-7766</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>None</td>
-<td>None</td>
-<td>Komunalna palača u Puli nalazi se na području ...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((289967.83 4973472.8, 289974.23...</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">73</th>
-<td>PS.ProtectedSite.159</td>
-<td>Kuća Kovačić</td>
-<td>Grad Zagreb</td>
-<td>GRAD ZAGREB</td>
-<td>Zagreb, ULICA PAVLA RADIĆA 37</td>
-<td>Pojedinačna kulturna dobra</td>
-<td>stambene građevine</td>
-<td>Z-634</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>1822. g. n.e.</td>
-<td>Ivan Either</td>
-<td>Gradski bilježnik i senator Josip Kovačić 1822...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((459228.39 5075236.46, 459227.9...</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">3458</th>
-<td>PS.ProtectedSite.5994</td>
-<td>Područje topničke bitnice i skupine objekata F...</td>
-<td>Istarska županija</td>
-<td>PULA - POLA</td>
-<td>Pula</td>
-<td>Pojedinačna kulturna dobra</td>
-<td>vojne i obrambene građevine</td>
-<td>Z-5966</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>1849. g. n.e. - 1850. g. n.e.</td>
-<td>NaN</td>
-<td>Područje topničke bitnice i skupine objekata F...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((286987.97 4973909.92, 286988.2...</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1630</th>
-<td>PS.ProtectedSite.3467</td>
-<td>Kuća Pepelnjak</td>
-<td>Grad Zagreb</td>
-<td>GRAD ZAGREB</td>
-<td>Glavnica Donja, GLAVNIČKA CESTA 37</td>
-<td>Pojedinačna kulturna dobra</td>
-<td>stambene građevine</td>
-<td>Z-3934</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>1880. g. n.e.</td>
-<td>NaN</td>
-<td>Kuću je izgradio Josip Pepelnjak 1880. godine ...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((472218.89 5088886.7, 472214.01...</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">5818</th>
-<td>PS.ProtectedSite.9400</td>
-<td>Dvorac Brezovica s kapelicom, perivojem, prist...</td>
-<td>Grad Zagreb</td>
-<td>GRAD ZAGREB</td>
-<td>Brezovica</td>
-<td>Pojedinačna kulturna dobra</td>
-<td>javne građevine</td>
-<td>Z-2580</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>1522. st. n.e. - 1809. st. n.e.</td>
-<td>None</td>
-<td>Jednokatni trokrilni dvorac, tlocrtnog "U" obl...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((453734.56 5065345.51, 453732.7...</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">2101</th>
-<td>PS.ProtectedSite.4161</td>
-<td>Ruševine starog grada Plaškog</td>
-<td>Karlovačka županija</td>
-<td>PLAŠKI</td>
-<td>Plaški, PLAŠKA GLAVA</td>
-<td>Pojedinačna kulturna dobra</td>
-<td>vojne i obrambene građevine</td>
-<td>Z-293</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>14. st. n.e.</td>
-<td>NaN</td>
-<td>Stari grad Plaški smješten je izvan naselja, u...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((411994.47 4991007.06, 411898.6...</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">6185</th>
-<td>PS.ProtectedSite.9841</td>
-<td>Kukovićeva kuća</td>
-<td>Grad Zagreb</td>
-<td>GRAD ZAGREB</td>
-<td>Zagreb, ULICA ANDRIJE HEBRANGA 11</td>
+<th data-quarto-table-cell-role="th">5990</th>
+<td>PS.ProtectedSite.9623</td>
+<td>Kuća Wlaszak</td>
+<td>Osječko-baranjska županija</td>
+<td>OSIJEK</td>
+<td>Osijek, TRG BANA JOSIPA JELAČIĆA 3</td>
 <td>Pojedinačna kulturna dobra</td>
 <td>stambeno-poslovne građevine</td>
-<td>Z-471</td>
-<td>None</td>
+<td>Z-7014</td>
+<td>NaN</td>
 <td>Zaštićeno kulturno dobro</td>
-<td>1872. g. n.e. - 1874. g. n.e.</td>
-<td>Ivan Plochberger</td>
-<td>Četverokrilna dvokatnica u Ulici Andrije Hebra...</td>
+<td>1906. g. n.e.</td>
+<td>Ante Slaviček</td>
+<td>Kuća Wlaszak, izgrađena je 1906. godine prema ...</td>
 <td>G</td>
-<td>MULTIPOLYGON (((459281.75 5074494.39, 459282.4...</td>
+<td>MULTIPOLYGON (((673038.83 5048645.55, 673039.4...</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">363</th>
-<td>PS.ProtectedSite.667</td>
-<td>Crkva sv. Ivana Krstitelja</td>
-<td>Krapinsko-zagorska županija</td>
-<td>JESENJE</td>
-<td>Gornje Jesenje</td>
+<th data-quarto-table-cell-role="th">7149</th>
+<td>PS.ProtectedSite.11503</td>
+<td>Crkva sv. Foške s arheološkim nalazištem i nep...</td>
+<td>Istarska županija</td>
+<td>VODNJAN - DIGNANO</td>
+<td>Gajana,</td>
 <td>Pojedinačna kulturna dobra</td>
 <td>sakralne građevine</td>
-<td>Z-3268</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>1858. g. n.e.</td>
+<td>Z-7727</td>
 <td>NaN</td>
-<td>Župna crkva sv. Ivana Krstitelja jednobrodna j...</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>11. st. n.e. - 17. st. n.e.</td>
+<td>NaN</td>
+<td>Crkva sv. Foške je ranoromanička trobrodna baz...</td>
 <td>G</td>
-<td>MULTIPOLYGON (((454182.82 5118346.11, 454138.6...</td>
+<td>MULTIPOLYGON (((286190.4 4985790.5, 286198.85 ...</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">5424</th>
-<td>PS.ProtectedSite.8705</td>
-<td>Kulturno-povijesna cjelina grada Iloka</td>
-<td>Vukovarsko-srijemska županija</td>
-<td>ILOK</td>
-<td>Ilok</td>
+<th data-quarto-table-cell-role="th">2159</th>
+<td>PS.ProtectedSite.4257</td>
+<td>Kulturno-povijesna cjelina grada Benkovca</td>
+<td>Zadarska županija</td>
+<td>BENKOVAC</td>
+<td>Benkovac</td>
 <td>Kulturnopovijesne cjeline</td>
 <td>urbana cjelina</td>
-<td>Z-2263</td>
-<td>None</td>
+<td>Z-4430</td>
+<td>NaN</td>
 <td>Zaštićeno kulturno dobro</td>
 <td>15. st. n.e. - 20. st. n.e.</td>
-<td>None</td>
-<td>Ilok se spominje tek sredinom 13. st. kao Iwnl...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((725351.87 5013226.57, 725350.7...</td>
+<td>NaN</td>
+<td>Benkovac je gradić i središnja župa Ravnih Kot...</td>
+<td>A</td>
+<td>MULTIPOLYGON (((428662.36 4877549.57, 428673.2...</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">5893</th>
-<td>PS.ProtectedSite.9502</td>
-<td>Kulturno-povijesna cjelina grada Hrvatska Kost...</td>
-<td>Sisačko-moslavačka županija</td>
-<td>HRVATSKA KOSTAJNICA</td>
-<td>Hrvatska Kostajnica</td>
-<td>Kulturnopovijesne cjeline</td>
-<td>urbana cjelina</td>
-<td>Z-5330</td>
-<td>None</td>
+<th data-quarto-table-cell-role="th">4441</th>
+<td>PS.ProtectedSite.7382</td>
+<td>Crkva sv. Tudora</td>
+<td>Splitsko-dalmatinska županija</td>
+<td>NEREŽIŠĆA</td>
+<td>Nerežišća</td>
+<td>Pojedinačna kulturna dobra</td>
+<td>sakralne građevine</td>
+<td>Z-1552</td>
+<td>NaN</td>
 <td>Zaštićeno kulturno dobro</td>
-<td>13. st. n.e. - 20. st. n.e.</td>
-<td>None</td>
-<td>Hrvatska je Kostajnica smještena na lijevoj ob...</td>
-<td>C</td>
-<td>MULTIPOLYGON (((503851.03 5008857.01, 503851.8...</td>
+<td>9. st. n.e. - 10. st. n.e.</td>
+<td>NaN</td>
+<td>Ruševni ostaci crkve sv. Teodora (Tudora) nala...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((503696.06 4797910.6, 503699.16...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">7139</th>
+<td>PS.ProtectedSite.11492</td>
+<td>Župna crkva sv. Jurja mučenika</td>
+<td>Splitsko-dalmatinska županija</td>
+<td>ŠESTANOVAC</td>
+<td>Žeževica</td>
+<td>Pojedinačna kulturna dobra</td>
+<td>sakralne građevine</td>
+<td>Z-5933</td>
+<td>NaN</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>18. st. n.e.</td>
+<td>NaN</td>
+<td>Crkva sv. Jurja mučenika u Žeževici izgrađena ...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((535709.34 4811108.46, 535707.8...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5599</th>
+<td>PS.ProtectedSite.9103</td>
+<td>Većka kula</td>
+<td>Zadarska županija</td>
+<td>STARIGRAD</td>
+<td>Starigrad</td>
+<td>Pojedinačna kulturna dobra</td>
+<td>vojne i obrambene građevine</td>
+<td>Z-1204</td>
+<td>NaN</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>16. st. n.e.</td>
+<td>NaN</td>
+<td>Kula pripada nizu mletačkih utvrđenja iz vreme...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((416443.98 4904928.74, 416451.5...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6089</th>
+<td>PS.ProtectedSite.9739</td>
+<td>Kaštel Ožegovićianum</td>
+<td>Ličko-senjska županija</td>
+<td>SENJ</td>
+<td>Senj, TRG CILNICA 8</td>
+<td>Pojedinačna kulturna dobra</td>
+<td>vojne i obrambene građevine</td>
+<td>Z-5582</td>
+<td>NaN</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>13. st. n.e. - 19. st. n.e.</td>
+<td>Kuno Waidmann</td>
+<td>Kaštel Ožegovićianum nalazi se na istočnoj str...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((374050.05 4984440.27, 374051.6...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1282</th>
+<td>PS.ProtectedSite.2538</td>
+<td>Crkva sv. Antuna Padovanskog</td>
+<td>Sisačko-moslavačka županija</td>
+<td>GLINA</td>
+<td>Gornja Bučica, GORNJA BUČICA 1</td>
+<td>Pojedinačna kulturna dobra</td>
+<td>sakralne građevine</td>
+<td>Z-1591</td>
+<td>NaN</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>1834. g. n.e. - 1836. g. n.e.</td>
+<td>NaN</td>
+<td>Crkva je smještena na blago povišenom terenu, ...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((460818.15 5034760.36, 460783.8...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6939</th>
+<td>PS.ProtectedSite.11017</td>
+<td>Rodna kuća predratnog revolucionara Bože Vidasa</td>
+<td>Primorsko-goranska županija</td>
+<td>BAKAR</td>
+<td>Hreljin, HRELJIN 221</td>
+<td>Pojedinačna kulturna dobra</td>
+<td>memorijalne građevine</td>
+<td>RRI-0287-1971.</td>
+<td>NaN</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>20. g. n.e.</td>
+<td>NaN</td>
+<td>Rodna kuća predratnog revolucionara nalazi se ...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((350981.25 5017485.16, 350994.1...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1569</th>
+<td>PS.ProtectedSite.3346</td>
+<td>Župna crkva sv. Petra i župni dvor</td>
+<td>Krapinsko-zagorska županija</td>
+<td>HUM NA SUTLI</td>
+<td>Prišlin</td>
+<td>Pojedinačna kulturna dobra</td>
+<td>sakralni kompleksi</td>
+<td>Z-2365</td>
+<td>NaN</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>1841. g. n.e. - 1843. g. n.e.</td>
+<td>NaN</td>
+<td>Jednobrodna kasnobarokno-klasicistička građevi...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((436309.45 5119395.44, 436309.6...</td>
 </tr>
 </tbody>
 </table>
@@ -579,9 +647,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="spalte-naziv" class="level3">
+<h3 class="anchored" data-anchor-id="spalte-naziv">Spalte ‘naziv’</h3>
+<p>Hier erfolgt nur die automatische Bereinigung</p>
+</section>
 <section id="spalte-zupanija-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-zupanija-prüfen">Spalte ‘zupanija’ prüfen</h3>
-<div id="7677e605" class="cell" data-execution_count="5">
+<div id="b52fb43c" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="dv">100</span>):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"zupanija"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>))</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'zupanija'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -617,7 +689,7 @@ Gesamtzahl eindeutiger Werte: 21</code></pre>
 </section>
 <section id="spalte-grad-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-grad-prüfen">Spalte ‘grad’ prüfen</h3>
-<div id="d8ad1176" class="cell" data-execution_count="6">
+<div id="5bd2dcd4" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="dv">100</span>):</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"grad"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'grad'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -677,7 +749,7 @@ Gesamtzahl eindeutiger Werte: 569</code></pre>
 </section>
 <section id="spalte-adresa-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-adresa-prüfen">Spalte ‘adresa’ prüfen</h3>
-<div id="e6747997" class="cell" data-execution_count="7">
+<div id="ce87effe" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="dv">100</span>):</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"adresa"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -740,7 +812,7 @@ Name: count, Length: 5165, dtype: int64</code></pre>
 </section>
 <section id="spalte-vrsta-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-vrsta-prüfen">Spalte ‘vrsta’ prüfen</h3>
-<div id="f39790fe" class="cell" data-execution_count="8">
+<div id="0bb1c573" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="va">None</span>):</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"vrsta"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'vrsta'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -817,6 +889,7 @@ Gesamtzahl eindeutiger Werte: 4</code></pre>
 </section>
 <section id="spalte-klasifikacija-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-klasifikacija-prüfen">Spalte ‘klasifikacija’ prüfen</h3>
+<p><strong>Ofizielle Bezeichnungen (Webregister):</strong></p>
 <pre class="{default}"><code>Nepokretna pojedinačna:
 javne građevine
 stambene građevine
@@ -854,7 +927,7 @@ podvodna arheološka zona/nalazište
 kopneno/podvodno arheološka zona/nalazište
 
 insgesamt: 28</code></pre>
-<div id="0a52058f" class="cell" data-execution_count="9">
+<div id="5ffbe64b" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="va">None</span>):</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"klasifikacija"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'klasifikacija'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -945,15 +1018,17 @@ Gesamtzahl eindeutiger Werte: 29</code></pre>
 <span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gdf.pipe(clean_text_columns, logger<span class="op">=</span>logger)</span>
 <span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a>check_klasifikacija_against_register(gdf, logger<span class="op">=</span>logger)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>2026-08-27 15:15:27,192 [INFO] Schritt 1: Allgemeiner Text-Clean (Strip, Linebreaks, Platzhalter)...
-2026-08-27 15:15:27,207 [INFO] Spalte 'adresa': 1
-2026-08-27 15:15:27,216 [INFO] Spalte 'registarki_broj_n': 7461
-2026-08-27 15:15:27,223 [INFO] Spalte 'datacija': 509
-2026-08-27 15:15:27,225 [INFO] Spalte 'autor': 6214
-2026-08-27 15:15:27,235 [INFO] Spalte 'opis': 1
-2026-08-27 15:15:27,237 [INFO] Allgemeiner Text-Clean beendet. 14186 Änderungen.
-2026-08-27 15:15:27,240 [INFO] Überprüfe Spalte 'klasifikacija' gegen das offizielle Webregister...
-2026-08-27 15:15:27,242 [WARNING] Abweichungen in 'klasifikacija' gefunden:
+<pre><code>2026-08-28 01:34:04,363 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-08-28 01:34:04,595 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-08-28 01:34:04,596 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-08-28 01:34:04,596 [INFO] &gt; Zeilenumbrüche entfernt: 0
+2026-08-28 01:34:04,597 [INFO] &gt; Excel-Artefakte entfernt: 0
+2026-08-28 01:34:04,597 [INFO] &gt; Whitespace-Korrekturen: 0
+2026-08-28 01:34:04,598 [INFO] &gt; Platzhalter entfernt: 0
+2026-08-28 01:34:04,598 [INFO] &gt; Ungültige Texte zu NaN konvertiert: 0
+2026-08-28 01:34:04,599 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 0
+2026-08-28 01:34:04,599 [INFO] Überprüfe Spalte 'klasifikacija' gegen das offizielle Webregister...
+2026-08-28 01:34:04,602 [WARNING] Abweichungen in 'klasifikacija' gefunden:
 klasifikacija
 kopneno-podvodno arheološko nalazište    1</code></pre>
 </div>
@@ -1029,26 +1104,23 @@ kopneno-podvodno arheološko nalazište    1</code></pre>
 <section id="spalte-registarski_broj-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-registarski_broj-prüfen">Spalte ‘registarski_broj’ prüfen</h3>
 <p>Benötigt Normalisierung.</p>
-<div id="5f1712ab" class="cell" data-execution_count="11">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="dv">100</span>):</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"registarski_broj"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'registarski_broj'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>registarski_broj
-KB-174/2-76      2
-KZPD-22          1
-P-5553           3
-P-6183           1
-P-6184           1
-                ..
-ZDU-227-1967.    1
-ZDU-228-1967.    1
-ZDU-48-1963.     1
-ZDU_191          1
-ZST-148-24-65    1
-Name: count, Length: 6494, dtype: int64
-
-Gesamtzahl eindeutiger Werte: 6494</code></pre>
+<p>Die Standardform der Registernummern ist 1-n Buchstaben, gefolgt von einem Bindestrich, gefolgt von 1-n Zahlen. Die alten Registernummern, die aus dem ehemaligen Jugoslawien übernommen wurden, haben als Suffix mit einem Bindestrich die Jahreszahl aus dem alten Register, gefolgt von einem Punkt (kroatische Schreibweise der Jahreszahlen).</p>
+<p>Dank dem Logging, das eine Liste fehlerhafter Einträge anzeigt, konnte ich Ausnahmen Identifizieren, die von der Schreibweise abweichen und nicht automatisch bereinigt wurden:</p>
+<p><code>['RRI 381-1975', 'ZDU_191', 'RRI 380-1975']</code></p>
+<p>In der neuen Spalte “register_artifacts” konnte ich folgende Ausnahmen identifizieren:</p>
+<p><code>['73', '1973. OD 9.5. 1973', '1973. od 9.5.1973', '1973. od 16.1. 1973', ', Bg-171/1-78', '/2-76', '24-65']</code></p>
+<div class="callout callout-style-default callout-warning no-icon callout-titled" title="Schwerwiegendes Bereinigungsproblem">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Schwerwiegendes Bereinigungsproblem
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Diese Artefakte verhindern eine saubere, rein automatisierte Bereinigungspipeline. Selbst nach manueller Bereinigung verbleiben 3 Werte, die nicht einer Jahreszahl entsprechen und ohne weitere Recherche nicht aufgelöst werden können:</p>
+<p><code>[', Bg-171/1-78', '/2-76', '24-65']</code></p>
 </div>
 </div>
 </section>
@@ -1056,10 +1128,10 @@ Gesamtzahl eindeutiger Werte: 6494</code></pre>
 <h3 class="anchored" data-anchor-id="spalte-registarki_broj_n-prüfen">Spalte ‘registarki_broj_n’ prüfen</h3>
 <p>Im Spaltennamen ist ein Rechtschreibfehler. Da die Spalten im weiteren Projektverlauf noch umbenannt werden, lass ich es so stehen.</p>
 <p>Bei den N-Nummern handelt es sicht um Kulturgüter, die zusätzlich das Attribut <em>von nationaler Bedeutung</em> besitzen. Offenbar werden Einzelgüter zu Gütern von nationalem Interesse zusammengefasst, weshalb die Nummern mehrfach vorkommen.</p>
-<div id="fa74a67d" class="cell" data-execution_count="12">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="dv">100</span>):</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"registarki_broj_n"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'registarki_broj_n'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="3069c43c" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="dv">10</span>):</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"registarki_broj_n"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'registarki_broj_n'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>registarki_broj_n
 N-1       20
@@ -1067,36 +1139,13 @@ N-10       1
 N-11       1
 N-12       1
 N-13       1
-N-18       1
-N-19       1
-N-2        1
-N-21       1
-N-22       1
-N-23       1
-N-25       1
-N-26       1
-N-27       1
-N-28       1
-N-3        3
-N-32       2
-N-33       1
-N-34       1
-N-35       1
-N-36       1
-N-37       2
-N-38       1
-N-39       1
-N-4        1
-N-40       1
-N-41       1
-N-42       1
-N-5        1
+        ... 
 N-6        1
 N-7        1
 N-8        1
 N-9        1
 NaN     7461
-Name: count, dtype: int64
+Name: count, Length: 34, dtype: int64
 
 Gesamtzahl eindeutiger Werte: 33</code></pre>
 </div>
@@ -1104,10 +1153,10 @@ Gesamtzahl eindeutiger Werte: 33</code></pre>
 </section>
 <section id="spalte-status_zastite-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-status_zastite-prüfen">Spalte ‘status_zastite’ prüfen</h3>
-<div id="aa25d80f" class="cell" data-execution_count="13">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="va">None</span>):</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"status_zastite"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'status_zastite'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="6ed132f4" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="va">None</span>):</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"status_zastite"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'status_zastite'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>status_zastite
 Privremeno zaštićeno kulturno dobro     212
@@ -1122,24 +1171,149 @@ Gesamtzahl eindeutiger Werte: 2</code></pre>
 <section id="spalte-datacija-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-datacija-prüfen">Spalte ‘datacija’ prüfen</h3>
 <p>Benötigt Normalisierung.</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="Modul: normalize_datacija.py">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Modul: normalize_datacija.py
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _parse_datacija_logic(text):</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Hilfsfunktion für das Parsing einzelner Textwerte in Start- und Endjahr."""</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> pd.isna(text) <span class="kw">or</span> <span class="kw">not</span> <span class="bu">isinstance</span>(text, <span class="bu">str</span>) <span class="kw">or</span> text.strip() <span class="op">==</span> <span class="st">""</span>:</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> pd.Series([pd.NA, pd.NA])</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>    text_lower <span class="op">=</span> text.lower()</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>    text_lower <span class="op">=</span> re.sub(<span class="vs">r'1</span><span class="ch">\.</span><span class="dv">\s</span><span class="op">*</span><span class="vs">pol'</span>, <span class="st">'prva_pol'</span>, text_lower)</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>    text_lower <span class="op">=</span> re.sub(<span class="vs">r'2</span><span class="ch">\.</span><span class="dv">\s</span><span class="op">*</span><span class="vs">pol'</span>, <span class="st">'druga_pol'</span>, text_lower)</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>    is_bc <span class="op">=</span> <span class="bu">bool</span>(re.search(<span class="vs">r'p</span><span class="ch">\.</span><span class="op">?</span><span class="dv">\s</span><span class="op">*</span><span class="vs">n</span><span class="ch">\.</span><span class="op">?</span><span class="dv">\s</span><span class="op">*</span><span class="vs">e</span><span class="cf">|</span><span class="vs">pr</span><span class="ch">\.</span><span class="cf">|</span><span class="vs">p</span><span class="ch">\.</span><span class="op">?</span><span class="dv">\s</span><span class="op">*</span><span class="vs">kr'</span>, text_lower))</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>    multiplier <span class="op">=</span> <span class="op">-</span><span class="dv">1</span> <span class="cf">if</span> is_bc <span class="cf">else</span> <span class="dv">1</span></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>    is_century <span class="op">=</span> <span class="st">"st"</span> <span class="kw">in</span> text_lower</span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>    offset_start, offset_end <span class="op">=</span> <span class="dv">1</span>, <span class="dv">100</span></span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">"poč"</span> <span class="kw">in</span> text_lower:</span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>        offset_start, offset_end <span class="op">=</span> <span class="dv">1</span>, <span class="dv">30</span></span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> <span class="st">"sred"</span> <span class="kw">in</span> text_lower:</span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>        offset_start, offset_end <span class="op">=</span> <span class="dv">31</span>, <span class="dv">70</span></span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> <span class="st">"kraj"</span> <span class="kw">in</span> text_lower:</span>
+<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a>        offset_start, offset_end <span class="op">=</span> <span class="dv">71</span>, <span class="dv">100</span></span>
+<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> <span class="st">"prva_pol"</span> <span class="kw">in</span> text_lower:</span>
+<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a>        offset_start, offset_end <span class="op">=</span> <span class="dv">1</span>, <span class="dv">50</span></span>
+<span id="cb30-31"><a href="#cb30-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> <span class="st">"druga_pol"</span> <span class="kw">in</span> text_lower:</span>
+<span id="cb30-32"><a href="#cb30-32" aria-hidden="true" tabindex="-1"></a>        offset_start, offset_end <span class="op">=</span> <span class="dv">51</span>, <span class="dv">100</span></span>
+<span id="cb30-33"><a href="#cb30-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-34"><a href="#cb30-34" aria-hidden="true" tabindex="-1"></a>    numbers <span class="op">=</span> [<span class="bu">int</span>(num) <span class="cf">for</span> num <span class="kw">in</span> re.findall(<span class="vs">r'</span><span class="dv">\d</span><span class="op">+</span><span class="vs">'</span>, text_lower)]</span>
+<span id="cb30-35"><a href="#cb30-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-36"><a href="#cb30-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> numbers:</span>
+<span id="cb30-37"><a href="#cb30-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> pd.Series([pd.NA, pd.NA])</span>
+<span id="cb30-38"><a href="#cb30-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-39"><a href="#cb30-39" aria-hidden="true" tabindex="-1"></a>    start_num <span class="op">=</span> numbers[<span class="dv">0</span>]</span>
+<span id="cb30-40"><a href="#cb30-40" aria-hidden="true" tabindex="-1"></a>    end_num <span class="op">=</span> numbers[<span class="op">-</span><span class="dv">1</span>] <span class="cf">if</span> <span class="bu">len</span>(numbers) <span class="op">&gt;</span> <span class="dv">1</span> <span class="cf">else</span> start_num</span>
+<span id="cb30-41"><a href="#cb30-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-42"><a href="#cb30-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> is_century:</span>
+<span id="cb30-43"><a href="#cb30-43" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> is_bc:</span>
+<span id="cb30-44"><a href="#cb30-44" aria-hidden="true" tabindex="-1"></a>            start_year <span class="op">=</span> (start_num <span class="op">*</span> <span class="dv">100</span> <span class="op">*</span> <span class="op">-</span><span class="dv">1</span>) <span class="op">+</span> offset_start <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb30-45"><a href="#cb30-45" aria-hidden="true" tabindex="-1"></a>            end_year <span class="op">=</span> (end_num <span class="op">*</span> <span class="dv">100</span> <span class="op">*</span> <span class="op">-</span><span class="dv">1</span>) <span class="op">+</span> offset_end <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb30-46"><a href="#cb30-46" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb30-47"><a href="#cb30-47" aria-hidden="true" tabindex="-1"></a>            start_year <span class="op">=</span> (start_num <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> <span class="dv">100</span> <span class="op">+</span> offset_start</span>
+<span id="cb30-48"><a href="#cb30-48" aria-hidden="true" tabindex="-1"></a>            end_year <span class="op">=</span> (end_num <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> <span class="dv">100</span> <span class="op">+</span> offset_end</span>
+<span id="cb30-49"><a href="#cb30-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb30-50"><a href="#cb30-50" aria-hidden="true" tabindex="-1"></a>        start_year <span class="op">=</span> start_num <span class="op">*</span> multiplier</span>
+<span id="cb30-51"><a href="#cb30-51" aria-hidden="true" tabindex="-1"></a>        end_year <span class="op">=</span> end_num <span class="op">*</span> multiplier</span>
+<span id="cb30-52"><a href="#cb30-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-53"><a href="#cb30-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> start_year <span class="op">&gt;</span> end_year:</span>
+<span id="cb30-54"><a href="#cb30-54" aria-hidden="true" tabindex="-1"></a>        start_year, end_year <span class="op">=</span> end_year, start_year</span>
+<span id="cb30-55"><a href="#cb30-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-56"><a href="#cb30-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.Series([start_year, end_year])</span>
+<span id="cb30-57"><a href="#cb30-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-58"><a href="#cb30-58" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_datacija_columns(gdf: gpd.GeoDataFrame, logger) <span class="op">-&gt;</span> gpd.GeoDataFrame:</span>
+<span id="cb30-59"><a href="#cb30-59" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Parses the 'datacija' column into numerical 'year_start' and 'year_end' columns.</span></span>
+<span id="cb30-60"><a href="#cb30-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-61"><a href="#cb30-61" aria-hidden="true" tabindex="-1"></a><span class="co">    Extracts centuries (st.) and negative years for B.C. (p.n.e.).</span></span>
+<span id="cb30-62"><a href="#cb30-62" aria-hidden="true" tabindex="-1"></a><span class="co">    Uses Pandas Nullable Integer (Int64) to support missing values.</span></span>
+<span id="cb30-63"><a href="#cb30-63" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb30-64"><a href="#cb30-64" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="st">"Schritt 3: Parsing von 'datacija' in numerische Jahreszahlen..."</span>)</span>
+<span id="cb30-65"><a href="#cb30-65" aria-hidden="true" tabindex="-1"></a>    gdf <span class="op">=</span> gdf.copy()</span>
+<span id="cb30-66"><a href="#cb30-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-67"><a href="#cb30-67" aria-hidden="true" tabindex="-1"></a>    gdf[<span class="st">"year_start"</span>] <span class="op">=</span> pd.NA</span>
+<span id="cb30-68"><a href="#cb30-68" aria-hidden="true" tabindex="-1"></a>    gdf[<span class="st">"year_end"</span>] <span class="op">=</span> pd.NA</span>
+<span id="cb30-69"><a href="#cb30-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-70"><a href="#cb30-70" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">"datacija"</span> <span class="kw">not</span> <span class="kw">in</span> gdf.columns:</span>
+<span id="cb30-71"><a href="#cb30-71" aria-hidden="true" tabindex="-1"></a>        logger.error(<span class="st">"Spalte 'datacija' wurde im GeoDataFrame nicht gefunden!"</span>)</span>
+<span id="cb30-72"><a href="#cb30-72" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> gdf</span>
+<span id="cb30-73"><a href="#cb30-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-74"><a href="#cb30-74" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> gdf[<span class="st">"datacija"</span>].isna().<span class="bu">all</span>():</span>
+<span id="cb30-75"><a href="#cb30-75" aria-hidden="true" tabindex="-1"></a>        logger.warning(<span class="st">"Spalte 'datacija' enthält nur Nullwerte. Kein Parsing notwendig."</span>)</span>
+<span id="cb30-76"><a href="#cb30-76" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb30-77"><a href="#cb30-77" aria-hidden="true" tabindex="-1"></a>        gdf[<span class="st">"year_start"</span>] <span class="op">=</span> gdf[<span class="st">"year_start"</span>].astype(<span class="st">"Int64"</span>)</span>
+<span id="cb30-78"><a href="#cb30-78" aria-hidden="true" tabindex="-1"></a>        gdf[<span class="st">"year_end"</span>] <span class="op">=</span> gdf[<span class="st">"year_end"</span>].astype(<span class="st">"Int64"</span>)</span>
+<span id="cb30-79"><a href="#cb30-79" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> gdf</span>
+<span id="cb30-80"><a href="#cb30-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-81"><a href="#cb30-81" aria-hidden="true" tabindex="-1"></a>    parsed_df <span class="op">=</span> gdf[<span class="st">"datacija"</span>].<span class="bu">apply</span>(_parse_datacija_logic)</span>
+<span id="cb30-82"><a href="#cb30-82" aria-hidden="true" tabindex="-1"></a>    parsed_df.columns <span class="op">=</span> [<span class="st">"parsed_start"</span>, <span class="st">"parsed_end"</span>]</span>
+<span id="cb30-83"><a href="#cb30-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-84"><a href="#cb30-84" aria-hidden="true" tabindex="-1"></a>    has_value_mask <span class="op">=</span> gdf[<span class="st">"datacija"</span>].notna() <span class="op">&amp;</span> (gdf[<span class="st">"datacija"</span>].astype(<span class="bu">str</span>).<span class="bu">str</span>.strip() <span class="op">!=</span> <span class="st">""</span>)</span>
+<span id="cb30-85"><a href="#cb30-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-86"><a href="#cb30-86" aria-hidden="true" tabindex="-1"></a>    valid_pattern_mask <span class="op">=</span> has_value_mask <span class="op">&amp;</span> parsed_df[<span class="st">"parsed_start"</span>].notna()</span>
+<span id="cb30-87"><a href="#cb30-87" aria-hidden="true" tabindex="-1"></a>    num_changed <span class="op">=</span> valid_pattern_mask.<span class="bu">sum</span>()</span>
+<span id="cb30-88"><a href="#cb30-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-89"><a href="#cb30-89" aria-hidden="true" tabindex="-1"></a>    failed_pattern_mask <span class="op">=</span> has_value_mask <span class="op">&amp;</span> <span class="op">~</span>valid_pattern_mask</span>
+<span id="cb30-90"><a href="#cb30-90" aria-hidden="true" tabindex="-1"></a>    num_failed <span class="op">=</span> failed_pattern_mask.<span class="bu">sum</span>()</span>
+<span id="cb30-91"><a href="#cb30-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-92"><a href="#cb30-92" aria-hidden="true" tabindex="-1"></a>    gdf.loc[valid_pattern_mask, <span class="st">"year_start"</span>] <span class="op">=</span> parsed_df.loc[valid_pattern_mask, <span class="st">"parsed_start"</span>]</span>
+<span id="cb30-93"><a href="#cb30-93" aria-hidden="true" tabindex="-1"></a>    gdf.loc[valid_pattern_mask, <span class="st">"year_end"</span>] <span class="op">=</span> parsed_df.loc[valid_pattern_mask, <span class="st">"parsed_end"</span>]</span>
+<span id="cb30-94"><a href="#cb30-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-95"><a href="#cb30-95" aria-hidden="true" tabindex="-1"></a>    gdf[<span class="st">"year_start"</span>] <span class="op">=</span> gdf[<span class="st">"year_start"</span>].astype(<span class="st">"Int64"</span>)</span>
+<span id="cb30-96"><a href="#cb30-96" aria-hidden="true" tabindex="-1"></a>    gdf[<span class="st">"year_end"</span>] <span class="op">=</span> gdf[<span class="st">"year_end"</span>].astype(<span class="st">"Int64"</span>)</span>
+<span id="cb30-97"><a href="#cb30-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-98"><a href="#cb30-98" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> num_changed <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb30-99"><a href="#cb30-99" aria-hidden="true" tabindex="-1"></a>        logger.info(<span class="ss">f"Spalte 'datacija': </span><span class="sc">{</span>num_changed<span class="sc">}</span><span class="ss"> Werte erfolgreich in 'year_start' und 'year_end' (als Integer) umgewandelt."</span>)</span>
+<span id="cb30-100"><a href="#cb30-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-101"><a href="#cb30-101" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> num_failed <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb30-102"><a href="#cb30-102" aria-hidden="true" tabindex="-1"></a>        invalid_values <span class="op">=</span> gdf.loc[failed_pattern_mask, <span class="st">"datacija"</span>].unique().tolist()</span>
+<span id="cb30-103"><a href="#cb30-103" aria-hidden="true" tabindex="-1"></a>        logger.warning(</span>
+<span id="cb30-104"><a href="#cb30-104" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Spalte 'datacija': </span><span class="sc">{</span>num_failed<span class="sc">}</span><span class="ss"> Zeilen konnten nicht als "</span></span>
+<span id="cb30-105"><a href="#cb30-105" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"gültige Jahreszahl/Jahrhundert interpretiert werden (keine Zahlen gefunden). "</span></span>
+<span id="cb30-106"><a href="#cb30-106" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Betroffene Werte: </span><span class="sc">{</span>invalid_values<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb30-107"><a href="#cb30-107" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb30-108"><a href="#cb30-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-109"><a href="#cb30-109" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="st">"Parsing von 'datacija' beendet."</span>)</span>
+<span id="cb30-110"><a href="#cb30-110" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> gdf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
 </section>
 <section id="spalte-autor-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-autor-prüfen">Spalte ‘autor’ prüfen</h3>
-<p>Benötigt Normalisierung.</p>
+<p>Benötigt Normalisierung. Da sie momentan nicht relevant ist, belasse ich sie einfach so.</p>
 </section>
 <section id="spalte-zona-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-zona-prüfen">Spalte ‘zona’ prüfen</h3>
 <ul>
 <li>Zona A (145 Objekte): Vollständiger Schutz (strengster)</li>
 <li>Zona B (140 Objekte): Teilschutz / Pufferzone (Kontaktzone)</li>
-<li>Zona C (85 Objekte): Archäologischer Schutz / Lokaler Schutz</li>
+<li>Zona C (85 Objekte): Archäologischer Schutz</li>
 <li>Zona G (7140 Objekte): Registrierte Einzelobjekte / Hauptinventar / Gradevina</li>
 <li>Zona K (7 Objekte): Komplexer Schutz / Spezifische Zonen / Kompleks</li>
 </ul>
-<div id="05092321" class="cell" data-execution_count="14">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="va">None</span>):</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"zona"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'zona'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="a9d11923" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="va">None</span>):</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"zona"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'zona'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>zona
 A     145
@@ -1154,77 +1328,253 @@ Gesamtzahl eindeutiger Werte: 5</code></pre>
 </div>
 <p>Kein Handlungsbedarf.</p>
 </section>
+<section id="manuelle-korrektur-einzelner-registernummern" class="level3">
+<h3 class="anchored" data-anchor-id="manuelle-korrektur-einzelner-registernummern">Manuelle Korrektur einzelner Registernummern</h3>
+<div id="a9d2e2fc" class="cell" data-execution_count="14">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fix_manual_register_errors(gdf: gpd.GeoDataFrame, logger) <span class="op">-&gt;</span> gpd.GeoDataFrame:</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="st">"Manuelle Korrektur spezieller Register-Fehler..."</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    gdf <span class="op">=</span> gdf.copy()</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    mask1 <span class="op">=</span> gdf[<span class="st">"registarski_broj"</span>] <span class="op">==</span> <span class="st">"RRI 381-1975"</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    gdf.loc[mask1, [<span class="st">"registarski_broj"</span>, <span class="st">"register_artefacts"</span>]] <span class="op">=</span> [<span class="st">"PRI-381"</span>, <span class="st">"1975"</span>]</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    mask2 <span class="op">=</span> gdf[<span class="st">"registarski_broj"</span>] <span class="op">==</span> <span class="st">"RRI 380-1975"</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>    gdf.loc[mask2, [<span class="st">"registarski_broj"</span>, <span class="st">"register_artefacts"</span>]] <span class="op">=</span> [<span class="st">"RRI-380"</span>, <span class="st">"1975"</span>]</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    mask3 <span class="op">=</span> gdf[<span class="st">"registarski_broj"</span>] <span class="op">==</span> <span class="st">"ZDU_191"</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>    gdf.loc[mask3, <span class="st">"registarski_broj"</span>] <span class="op">=</span> <span class="st">"ZDU-191"</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>    mask4 <span class="op">=</span> gdf[<span class="st">"register_artefacts"</span>] <span class="op">==</span> <span class="st">"73"</span></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>    gdf.loc[mask4, <span class="st">"register_artefacts"</span>] <span class="op">=</span> <span class="st">"1973"</span></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>    mask5 <span class="op">=</span> gdf[<span class="st">"register_artefacts"</span>] <span class="op">==</span> <span class="st">"1973. OD 9.5. 1973"</span></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>    gdf.loc[mask5, <span class="st">"register_artefacts"</span>] <span class="op">=</span> <span class="st">"1973"</span></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>    mask6 <span class="op">=</span> gdf[<span class="st">"register_artefacts"</span>] <span class="op">==</span> <span class="st">"1973. od 9.5.1973"</span></span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>    gdf.loc[mask6, <span class="st">"register_artefacts"</span>] <span class="op">=</span> <span class="st">"1973"</span></span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>    mask7 <span class="op">=</span> gdf[<span class="st">"register_artefacts"</span>] <span class="op">==</span> <span class="st">"1973. od 16.1. 1973"</span></span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>    gdf.loc[mask7, <span class="st">"register_artefacts"</span>] <span class="op">=</span> <span class="st">"1973"</span></span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>    mask8 <span class="op">=</span> gdf[<span class="st">"register_artefacts"</span>] <span class="op">==</span> <span class="st">", Bg-171/1-78"</span></span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a>    gdf.loc[mask8, <span class="st">"register_artefacts"</span>] <span class="op">=</span> <span class="st">"Bg-171/1-78"</span></span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a>    mask9 <span class="op">=</span> gdf[<span class="st">"register_artefacts"</span>] <span class="op">==</span> <span class="st">"/2-76"</span></span>
+<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a>    gdf.loc[mask9, <span class="st">"register_artefacts"</span>] <span class="op">=</span> <span class="st">"2-76"</span></span>
+<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-32"><a href="#cb33-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> gdf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="mittelpunktkoordinaten-aus-den-vektordaten-generieren" class="level3">
+<h3 class="anchored" data-anchor-id="mittelpunktkoordinaten-aus-den-vektordaten-generieren">Mittelpunktkoordinaten aus den Vektordaten generieren</h3>
+<p>Für bestimmte Kartendarstellungen oder andere Funktionen ist der Mittelpunkt als Koordinaten besser geeignet als eine Vektorfläche.</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="Modul: vector_transition.py">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Modul: vector_transition.py
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract_centroid_coordinates(gdf: gpd.GeoDataFrame, logger) <span class="op">-&gt;</span> gpd.GeoDataFrame:</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="st">"Schritt 4: Extrahieren der Mittelpunkt-Koordinaten aus 'geometry'..."</span>)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    gdf <span class="op">=</span> gdf.copy()</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">"geometry"</span> <span class="kw">not</span> <span class="kw">in</span> gdf.columns:</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>        logger.error(<span class="st">"Spalte 'geometry' wurde im GeoDataFrame nicht gefunden!"</span>)</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> gdf</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>    original_crs <span class="op">=</span> gdf.crs</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> original_crs <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>        logger.warning(<span class="st">"Kein CRS (Koordinatensystem) im GeoDataFrame definiert! Gehe standardmäßig von EPSG:4326 (WGS84) aus."</span>)</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>        gdf.set_crs(epsg<span class="op">=</span><span class="dv">4326</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>        original_crs <span class="op">=</span> gdf.crs</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>        gdf_metric <span class="op">=</span> gdf.to_crs(epsg<span class="op">=</span><span class="dv">3857</span>)</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>        centroids_metric <span class="op">=</span> gdf_metric.geometry.centroid</span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>        centroids_wgs84 <span class="op">=</span> centroids_metric.to_crs(epsg<span class="op">=</span><span class="dv">4326</span>)</span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>        gdf[<span class="st">"longitude"</span>] <span class="op">=</span> centroids_wgs84.x</span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a>        gdf[<span class="st">"latitude"</span>] <span class="op">=</span> centroids_wgs84.y</span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a>        logger.info(<span class="ss">f"Mittelpunkte für </span><span class="sc">{</span><span class="bu">len</span>(gdf)<span class="sc">}</span><span class="ss"> Geometrien erfolgreich berechnet."</span>)</span>
+<span id="cb34-28"><a href="#cb34-28" aria-hidden="true" tabindex="-1"></a>        logger.info(<span class="st">"Neue Spalten 'longitude' und 'latitude' (in WGS84) wurden hinzugefügt."</span>)</span>
+<span id="cb34-29"><a href="#cb34-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-30"><a href="#cb34-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> (<span class="pp">ValueError</span>, <span class="pp">TypeError</span>) <span class="im">as</span> e:</span>
+<span id="cb34-31"><a href="#cb34-31" aria-hidden="true" tabindex="-1"></a>        logger.error(<span class="ss">f"Fehler bei der Koordinatenberechnung: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb34-32"><a href="#cb34-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-33"><a href="#cb34-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> gdf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
 <section id="bereinigungspipeline" class="level3">
 <h3 class="anchored" data-anchor-id="bereinigungspipeline">Bereinigungspipeline</h3>
 <div id="pipeline" class="cell" data-execution_count="15">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gpd.read_parquet(latest_file)</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"METADATEN DER URSPRUNGSDATEI"</span>)</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"Format: GeoParquet (.parquet)"</span>)</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="ss">f"Dimensionen: </span><span class="sc">{</span>gdf<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss"> Zeilen, </span><span class="sc">{</span>gdf<span class="sc">.</span>shape[<span class="dv">1</span>]<span class="sc">}</span><span class="ss"> Spalten"</span>)</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="ss">f"Koordinatensystem (CRS): </span><span class="sc">{</span>gdf<span class="sc">.</span>crs <span class="cf">if</span> gdf<span class="sc">.</span>crs <span class="cf">else</span> <span class="st">'Nicht definiert'</span><span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"STARTEN DER BEREINIGUNGSPIPELINE"</span>)</span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>gdf_cleaned <span class="op">=</span> (</span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>    gdf.pipe(clean_text_columns, logger<span class="op">=</span>logger)</span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>       .pipe(clean_column_grad, logger<span class="op">=</span>logger)</span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>       .pipe(drop_column_adresa, logger<span class="op">=</span>logger)</span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>       .pipe(rename_vrsta_categories, logger<span class="op">=</span>logger)</span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>       .pipe(</span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>            replace_value_in_column,</span>
-<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>            column<span class="op">=</span><span class="st">"klasifikacija"</span>,</span>
-<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>            old_value<span class="op">=</span><span class="st">"kopneno-podvodno arheološko nalazište"</span>,</span>
-<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>            new_value<span class="op">=</span><span class="st">"kopneno/podvodno arheološka zona/nalazište"</span>,</span>
-<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>            logger<span class="op">=</span>logger,</span>
-<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gpd.read_parquet(latest_file)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"METADATEN DER URSPRUNGSDATEI"</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"Format: GeoParquet (.parquet)"</span>)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="ss">f"Dimensionen: </span><span class="sc">{</span>gdf<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss"> Zeilen, </span><span class="sc">{</span>gdf<span class="sc">.</span>shape[<span class="dv">1</span>]<span class="sc">}</span><span class="ss"> Spalten"</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="ss">f"Koordinatensystem (CRS): </span><span class="sc">{</span>gdf<span class="sc">.</span>crs <span class="cf">if</span> gdf<span class="sc">.</span>crs <span class="cf">else</span> <span class="st">'Nicht definiert'</span><span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"STARTEN DER BEREINIGUNGSPIPELINE"</span>)</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>gdf_cleaned <span class="op">=</span> (</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>    gdf.pipe(clean_text_columns, logger<span class="op">=</span>logger)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>       .pipe(clean_column_grad, logger<span class="op">=</span>logger)</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>       .pipe(drop_column_adresa, logger<span class="op">=</span>logger)</span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>       .pipe(rename_vrsta_categories, logger<span class="op">=</span>logger)</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>       .pipe(</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>            replace_value_in_column,</span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>            column<span class="op">=</span><span class="st">"klasifikacija"</span>,</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>            old_value<span class="op">=</span><span class="st">"kopneno-podvodno arheološko nalazište"</span>,</span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>            new_value<span class="op">=</span><span class="st">"kopneno/podvodno arheološka zona/nalazište"</span>,</span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>            logger<span class="op">=</span>logger,</span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>        .pipe(extract_register_artefacts, logger<span class="op">=</span>logger)</span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a>        .pipe(fix_manual_register_errors, logger<span class="op">=</span>logger)</span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a>        .pipe(parse_datacija_columns, logger<span class="op">=</span>logger)</span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a>        .pipe(extract_centroid_coordinates, logger<span class="op">=</span>logger)</span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>2026-08-27 15:15:27,326 [INFO] METADATEN DER URSPRUNGSDATEI
-2026-08-27 15:15:27,327 [INFO] Format: GeoParquet (.parquet)
-2026-08-27 15:15:27,327 [INFO] Dimensionen: 7517 Zeilen, 15 Spalten
-2026-08-27 15:15:27,328 [INFO] Koordinatensystem (CRS): {"$schema": "https://proj.org/schemas/v0.7/projjson.schema.json", "type": "ProjectedCRS", "name": "HTRS96 / Croatia TM", "base_crs": {"name": "HTRS96", "datum": {"type": "GeodeticReferenceFrame", "name": "Croatian Terrestrial Reference System", "ellipsoid": {"name": "GRS 1980", "semi_major_axis": 6378137, "inverse_flattening": 298.257222101}}, "coordinate_system": {"subtype": "ellipsoidal", "axis": [{"name": "Geodetic latitude", "abbreviation": "Lat", "direction": "north", "unit": "degree"}, {"name": "Geodetic longitude", "abbreviation": "Lon", "direction": "east", "unit": "degree"}]}, "id": {"authority": "EPSG", "code": 4761}}, "conversion": {"name": "Croatia Transverse Mercator", "method": {"name": "Transverse Mercator", "id": {"authority": "EPSG", "code": 9807}}, "parameters": [{"name": "Latitude of natural origin", "value": 0, "unit": "degree", "id": {"authority": "EPSG", "code": 8801}}, {"name": "Longitude of natural origin", "value": 16.5, "unit": "degree", "id": {"authority": "EPSG", "code": 8802}}, {"name": "Scale factor at natural origin", "value": 0.9999, "unit": "unity", "id": {"authority": "EPSG", "code": 8805}}, {"name": "False easting", "value": 500000, "unit": "metre", "id": {"authority": "EPSG", "code": 8806}}, {"name": "False northing", "value": 0, "unit": "metre", "id": {"authority": "EPSG", "code": 8807}}]}, "coordinate_system": {"subtype": "Cartesian", "axis": [{"name": "Easting", "abbreviation": "E", "direction": "east", "unit": "metre"}, {"name": "Northing", "abbreviation": "N", "direction": "north", "unit": "metre"}]}, "scope": "Cadastre, engineering survey, topographic mapping (large scale).", "area": "Croatia - onshore.", "bbox": {"south_latitude": 42.34, "west_longitude": 13.43, "north_latitude": 46.54, "east_longitude": 19.43}, "id": {"authority": "EPSG", "code": 3765}}
+<pre><code>2026-08-28 01:34:04,680 [INFO] METADATEN DER URSPRUNGSDATEI
+2026-08-28 01:34:04,680 [INFO] Format: GeoParquet (.parquet)
+2026-08-28 01:34:04,681 [INFO] Dimensionen: 7517 Zeilen, 15 Spalten
+2026-08-28 01:34:04,682 [INFO] Koordinatensystem (CRS): {"$schema": "https://proj.org/schemas/v0.7/projjson.schema.json", "type": "ProjectedCRS", "name": "HTRS96 / Croatia TM", "base_crs": {"name": "HTRS96", "datum": {"type": "GeodeticReferenceFrame", "name": "Croatian Terrestrial Reference System", "ellipsoid": {"name": "GRS 1980", "semi_major_axis": 6378137, "inverse_flattening": 298.257222101}}, "coordinate_system": {"subtype": "ellipsoidal", "axis": [{"name": "Geodetic latitude", "abbreviation": "Lat", "direction": "north", "unit": "degree"}, {"name": "Geodetic longitude", "abbreviation": "Lon", "direction": "east", "unit": "degree"}]}, "id": {"authority": "EPSG", "code": 4761}}, "conversion": {"name": "Croatia Transverse Mercator", "method": {"name": "Transverse Mercator", "id": {"authority": "EPSG", "code": 9807}}, "parameters": [{"name": "Latitude of natural origin", "value": 0, "unit": "degree", "id": {"authority": "EPSG", "code": 8801}}, {"name": "Longitude of natural origin", "value": 16.5, "unit": "degree", "id": {"authority": "EPSG", "code": 8802}}, {"name": "Scale factor at natural origin", "value": 0.9999, "unit": "unity", "id": {"authority": "EPSG", "code": 8805}}, {"name": "False easting", "value": 500000, "unit": "metre", "id": {"authority": "EPSG", "code": 8806}}, {"name": "False northing", "value": 0, "unit": "metre", "id": {"authority": "EPSG", "code": 8807}}]}, "coordinate_system": {"subtype": "Cartesian", "axis": [{"name": "Easting", "abbreviation": "E", "direction": "east", "unit": "metre"}, {"name": "Northing", "abbreviation": "N", "direction": "north", "unit": "metre"}]}, "scope": "Cadastre, engineering survey, topographic mapping (large scale).", "area": "Croatia - onshore.", "bbox": {"south_latitude": 42.34, "west_longitude": 13.43, "north_latitude": 46.54, "east_longitude": 19.43}, "id": {"authority": "EPSG", "code": 3765}}
 
-2026-08-27 15:15:27,328 [INFO] STARTEN DER BEREINIGUNGSPIPELINE
-2026-08-27 15:15:27,329 [INFO] Schritt 1: Allgemeiner Text-Clean (Strip, Linebreaks, Platzhalter)...
-2026-08-27 15:15:27,343 [INFO] Spalte 'adresa': 1
-2026-08-27 15:15:27,353 [INFO] Spalte 'registarki_broj_n': 7461
-2026-08-27 15:15:27,359 [INFO] Spalte 'datacija': 509
-2026-08-27 15:15:27,362 [INFO] Spalte 'autor': 6214
-2026-08-27 15:15:27,382 [INFO] Spalte 'opis': 1
-2026-08-27 15:15:27,385 [INFO] Allgemeiner Text-Clean beendet. 14186 Änderungen.
-2026-08-27 15:15:27,385 [INFO] Schritt 2: Bereinige Spalte 'grad'...
-2026-08-27 15:15:27,394 [INFO] Spalte 'grad': 7464 Werte erfolgreich standardisiert.
-2026-08-27 15:15:27,395 [INFO] Schritt 3: Entferne Spalte 'adresa' vollständig...
-2026-08-27 15:15:27,397 [INFO] Spalte 'adresa' wurde erfolgreich gelöscht.
-2026-08-27 15:15:27,398 [INFO] Schritt: Passe Spalte 'vrsta' an das offizielle Webregister an...
-2026-08-27 15:15:27,400 [INFO] Spalte 'vrsta': 7517 Datensätze auf Register-Namen aktualisiert.
-2026-08-27 15:15:27,402 [INFO] Schritt: Wert in 'klasifikacija' angepasst. 'kopneno-podvodno arheološko nalazište' -&gt; 'kopneno/podvodno arheološka zona/nalazište' (1 Feld(er) korrigiert).</code></pre>
+2026-08-28 01:34:04,682 [INFO] STARTEN DER BEREINIGUNGSPIPELINE
+2026-08-28 01:34:04,683 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-08-28 01:34:04,903 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-08-28 01:34:04,903 [INFO] &gt; Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-08-28 01:34:04,903 [INFO] &gt; Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-08-28 01:34:04,904 [INFO] &gt; Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-08-28 01:34:04,905 [INFO] &gt; Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-08-28 01:34:04,905 [INFO] &gt; Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-08-28 01:34:04,906 [INFO] &gt; Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-08-28 01:34:04,906 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-08-28 01:34:04,906 [INFO] &gt; Zeilenumbrüche entfernt: 587
+2026-08-28 01:34:04,907 [INFO] &gt; Excel-Artefakte entfernt: 27
+2026-08-28 01:34:04,907 [INFO] &gt; Whitespace-Korrekturen: 2274
+2026-08-28 01:34:04,908 [INFO] &gt; Platzhalter entfernt: 7462
+2026-08-28 01:34:04,908 [INFO] &gt; Ungültige Texte zu NaN konvertiert: 9711
+2026-08-28 01:34:04,909 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-08-28 01:34:04,909 [INFO] Schritt 2: Bereinige Spalte 'grad'...
+2026-08-28 01:34:04,918 [INFO] Spalte 'grad': 7464 Werte erfolgreich standardisiert.
+2026-08-28 01:34:04,919 [INFO] Schritt 3: Entferne Spalte 'adresa' vollständig...
+2026-08-28 01:34:04,920 [INFO] Spalte 'adresa' wurde erfolgreich gelöscht.
+2026-08-28 01:34:04,921 [INFO] Schritt: Passe Spalte 'vrsta' an das offizielle Webregister an...
+2026-08-28 01:34:04,924 [INFO] Spalte 'vrsta': 7517 Datensätze auf Register-Namen aktualisiert.
+2026-08-28 01:34:04,925 [INFO] Schritt: Wert in 'klasifikacija' angepasst. 'kopneno-podvodno arheološko nalazište' -&gt; 'kopneno/podvodno arheološka zona/nalazište' (1 Feld(er) korrigiert).
+2026-08-28 01:34:04,926 [INFO] Schritt 2: Extraktion von 'register_artefacts' aus 'registarski_broj'...
+2026-08-28 01:34:04,937 [INFO] Spalte 'registarski_broj': 469 Werte aufgeteilt und Reste nach 'register_artefacts' verschoben.
+2026-08-28 01:34:04,938 [WARNING] Spalte 'registarski_broj': 3 Zeilen entsprachen nicht dem erwarteten Format (Buchstaben-Zahlen) und wurden übersprungen. Betroffene Werte: ['RRI 381-1975', 'ZDU_191', 'RRI 380-1975']
+2026-08-28 01:34:04,939 [WARNING] Spalte 'register_artefacts': 8 extrahierte Artefakte sind KEINE exakt 4-stellige Zahl (Jahresangabe). Bereinigte Fehlerwerte: ['73', '1973. OD 9.5. 1973', '1973. od 9.5.1973', '1973. od 16.1. 1973', ', Bg-171/1-78', '/2-76', '24-65'] | Aus Originaleinträgen: ['ROS-442', 'ROS-0405', 'ROSROS-0404', 'ROS-0352', 'RRI-0427', 'KB-174', 'ZST-148']
+2026-08-28 01:34:04,940 [INFO] Extraktion von 'register_artefacts' beendet.
+2026-08-28 01:34:04,941 [INFO] Manuelle Korrektur spezieller Register-Fehler...
+2026-08-28 01:34:04,949 [INFO] Schritt 3: Parsing von 'datacija' in numerische Jahreszahlen...
+2026-08-28 01:34:05,276 [INFO] Spalte 'datacija': 7008 Werte erfolgreich in 'year_start' und 'year_end' (als Integer) umgewandelt.
+2026-08-28 01:34:05,277 [INFO] Parsing von 'datacija' beendet.
+2026-08-28 01:34:05,278 [INFO] Schritt 4: Extrahieren der Mittelpunkt-Koordinaten aus 'geometry'...
+2026-08-28 01:34:05,398 [INFO] Mittelpunkte für 7517 Geometrien erfolgreich berechnet.
+2026-08-28 01:34:05,399 [INFO] Neue Spalten 'longitude' und 'latitude' (in WGS84) wurden hinzugefügt.</code></pre>
+</div>
+</div>
+<div id="58698588" class="cell" data-execution_count="16">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="dv">20</span>):</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf_cleaned[[<span class="st">'datacija'</span>, <span class="st">'year_start'</span>, <span class="st">'year_end'</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                   datacija  year_start  year_end
+0                             1790. g. n.e.        1790      1790
+1             1959. g. n.e. - 1963. g. n.e.        1959      1963
+2                             1763. g. n.e.        1763      1763
+3                             1926. g. n.e.        1926      1926
+4                             1768. g. n.e.        1768      1768
+...                                     ...         ...       ...
+7512  poč. 8. st. p.n.e. - poč. 1. st. n.e.        -800       -71
+7513  poč. 8. st. p.n.e. - poč. 1. st. n.e.        -800       -71
+7514  poč. 8. st. p.n.e. - poč. 1. st. n.e.        -800       -71
+7515  poč. 8. st. p.n.e. - poč. 1. st. n.e.        -800       -71
+7516                          1828. g. n.e.        1828      1828
+
+[7517 rows x 3 columns]</code></pre>
+</div>
+</div>
+</section>
+<section id="info" class="level3">
+<h3 class="anchored" data-anchor-id="info">Info</h3>
+<div id="d582fbbf" class="cell" data-execution_count="17">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>gdf_cleaned.info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'geopandas.geodataframe.GeoDataFrame'&gt;
+RangeIndex: 7517 entries, 0 to 7516
+Data columns (total 19 columns):
+ #   Column              Non-Null Count  Dtype   
+---  ------              --------------  -----   
+ 0   id                  7517 non-null   str     
+ 1   naziv               7517 non-null   str     
+ 2   zupanija            7517 non-null   str     
+ 3   grad                7517 non-null   str     
+ 4   vrsta               7517 non-null   str     
+ 5   klasifikacija       7517 non-null   str     
+ 6   registarski_broj    7517 non-null   str     
+ 7   registarki_broj_n   56 non-null     str     
+ 8   status_zastite      7517 non-null   str     
+ 9   datacija            7008 non-null   str     
+ 10  autor               1303 non-null   str     
+ 11  opis                7516 non-null   str     
+ 12  zona                7517 non-null   str     
+ 13  geometry            7517 non-null   geometry
+ 14  register_artefacts  471 non-null    str     
+ 15  year_start          7008 non-null   Int64   
+ 16  year_end            7008 non-null   Int64   
+ 17  longitude           7517 non-null   float64 
+ 18  latitude            7517 non-null   float64 
+dtypes: Int64(2), float64(2), geometry(1), str(14)
+memory usage: 7.3 MB</code></pre>
 </div>
 </div>
 </section>
 <section id="bereinigtes-geo-dataframe-in-datei-abspeichern" class="level3">
 <h3 class="anchored" data-anchor-id="bereinigtes-geo-dataframe-in-datei-abspeichern">Bereinigtes Geo-Dataframe in Datei abspeichern</h3>
-<div id="save_to_file" class="cell" data-execution_count="16">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>output_data_file <span class="op">=</span> DATA_INTERIM <span class="op">/</span> <span class="ss">f"cleaned_</span><span class="sc">{</span>latest_file<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"BEREINIGUNG UND ANALYSE ABGESCHLOSSEN"</span>)</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="ss">f"Neue Dimensionen: </span><span class="sc">{</span>gdf_cleaned<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss"> Zeilen, </span><span class="sc">{</span>gdf_cleaned<span class="sc">.</span>shape[<span class="dv">1</span>]<span class="sc">}</span><span class="ss"> Spalten"</span>)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="ss">f"Speichere bereinigte Daten unter: </span><span class="sc">{</span>output_data_file<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    gdf_cleaned.to_parquet(output_data_file)</span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    logger.info(</span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"Speichern erfolgreich. Daten und Logfile in: </span><span class="sc">{</span>DATA_INTERIM<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>    logger.error(<span class="ss">f"Fehler beim Speichern der Datei: </span><span class="sc">{</span><span class="bu">str</span>(e)<span class="sc">}</span><span class="ss">"</span>, exc_info<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> e</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="save_to_file" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>output_data_file <span class="op">=</span> DATA_INTERIM <span class="op">/</span> <span class="ss">f"cleaned_</span><span class="sc">{</span>latest_file<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"BEREINIGUNG UND ANALYSE ABGESCHLOSSEN"</span>)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="ss">f"Neue Dimensionen: </span><span class="sc">{</span>gdf_cleaned<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss"> Zeilen, </span><span class="sc">{</span>gdf_cleaned<span class="sc">.</span>shape[<span class="dv">1</span>]<span class="sc">}</span><span class="ss"> Spalten"</span>)</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="ss">f"Speichere bereinigte Daten unter: </span><span class="sc">{</span>output_data_file<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>    gdf_cleaned.to_parquet(output_data_file)</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>    logger.info(</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Speichern erfolgreich.</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>    logger.error(<span class="ss">f"Fehler beim Speichern der Datei: </span><span class="sc">{</span><span class="bu">str</span>(e)<span class="sc">}</span><span class="ss">"</span>, exc_info<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> e</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>2026-08-27 15:15:27,411 [INFO] BEREINIGUNG UND ANALYSE ABGESCHLOSSEN
-2026-08-27 15:15:27,411 [INFO] Neue Dimensionen: 7517 Zeilen, 14 Spalten
-2026-08-27 15:15:27,412 [INFO] Speichere bereinigte Daten unter: cleaned_2026-08-26_geoportalnipp_rkd.parquet
-2026-08-27 15:15:27,498 [INFO] Speichern erfolgreich. Daten und Logfile in: C:\Users\sonja\Projekte\croatia-cultural-goods-analysis\data\interim
+<pre><code>2026-08-28 01:34:05,432 [INFO] BEREINIGUNG UND ANALYSE ABGESCHLOSSEN
+2026-08-28 01:34:05,432 [INFO] Neue Dimensionen: 7517 Zeilen, 19 Spalten
+2026-08-28 01:34:05,433 [INFO] Speichere bereinigte Daten unter: cleaned_2026-08-26_geoportalnipp_rkd.parquet
+2026-08-28 01:34:05,524 [INFO] Speichern erfolgreich.
 </code></pre>
 </div>
 </div>

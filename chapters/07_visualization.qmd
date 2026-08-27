@@ -1,21 +1,309 @@
-## Visualisierung
+# Visualisierungen
+
+## Ergebnisse der Textbereinigung
 
 ```{python}
-import folium
-import geopandas as gpd
-import pandas as pd
-import plotly.express as px
+#| tags: [parameters]
+#| echo: false
+#| include: false
 
+import logging
 from pathlib import Path
 import sys
+
+import geopandas as gpd
+import json
+import pandas as pd
+import plotly.express as px
 
 PROJECT_ROOT = next(
     folder for folder in [Path.cwd(), *Path.cwd().parents]
     if (folder / "_quarto.yml").exists()
 )
 
+sys.path.insert(0, str(PROJECT_ROOT))
+
 DATA_RAW = PROJECT_ROOT / "data" / "raw"
 DATA_RAW.mkdir(parents=True, exist_ok=True)
+
+DATA_INTERIM = PROJECT_ROOT / "data" / "interim"
+DATA_INTERIM.mkdir(parents=True, exist_ok=True)
+
+from src.text_cleaning import clean_text_columns
+
+search_pattern = "*_geoportalnipp_rkd.parquet"
+all_files = list(DATA_RAW.glob(search_pattern))
+if not all_files:
+    raise FileNotFoundError(f"Keine Dateien gefunden in {DATA_RAW}")
+latest_file = max(all_files, key=lambda p: p.name)
+
+def setup_dynamic_logging(base_filename: str) -> logging.Logger:
+    """Configures and retrieves a file-specific logger instance.
+
+    Creates a logger that writes log entries simultaneously to a dedicated log
+    file inside the 'data/interim' directory and to the standard console output.
+    If a logger with the given name already exists and has active handlers, it
+    is returned as-is to prevent duplicate log messages during interactive
+    execution environments like Quarto or Jupyter notebooks.
+
+    Args:
+        base_filename: The base name of the file being processed, typically the
+        stem of the input file path without extensions.
+
+    Returns:
+        A logging.Logger instance configured with file and stream handlers
+        using a standardized timestamp and log level format.
+    """
+    logger = logging.getLogger(base_filename)
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+    if logger.handlers:
+        return logger
+
+    log_file_path = DATA_INTERIM / f"dash_{base_filename}.log"
+
+    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+
+    file_handler = logging.FileHandler(log_file_path, encoding="utf-8")
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+
+    return logger
+
+logger = setup_dynamic_logging(latest_file.stem)
+logger.info(f"STARTE ANALYSE & BEREINIGUNG FÜR: {latest_file.name}")
+
+gdf = gpd.read_parquet(latest_file)
+
+gdf = gdf.pipe(clean_text_columns, logger=logger)
+
+def default_converter(obj):
+    if hasattr(obj, 'item'):
+        return obj.item()
+    raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
+
+global_stats = gdf.attrs["global_stats"]
+col_stats = gdf.attrs["col_stats"]
+
+with open(DATA_INTERIM / "global_stats.json", "w", encoding="utf-8") as f:
+    json.dump(global_stats, f, default=default_converter, indent=4)
+
+with open(DATA_INTERIM / "col_stats.json", "w", encoding="utf-8") as f:
+    json.dump(col_stats, f, default=default_converter, indent=4)
+
 ```
 
+::: {layout="[[1], [1]]"}
 
+```{python}
+#| echo: false
+from IPython.display import display, HTML
+
+v_umb = int(global_stats.get("linebreaks", 0))
+v_exc = int(global_stats.get("excel_artifacts", 0))
+v_space = int(global_stats.get("whitespaces", 0))
+v_platz = int(global_stats.get("placeholders", 0))
+v_nan = int(global_stats.get("invalid_to_nan", 0))
+
+html = f"""
+<div style="display: flex; gap: 10px; justify-content: space-between; align-items: stretch; margin-bottom: 20px;">
+  
+  <div class="card bg-info text-white p-2 text-center shadow-sm" style="flex: 1; border-radius: 8px; min-width: 0;">
+    <div style="font-size: 0.75rem; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-arrow-return-left"></i> Umbrüche</div>
+    <div style="font-size: 1.6rem; font-weight: bold; margin-top: 5px;">{v_umb}</div>
+  </div>
+
+  <div class="card bg-warning text-dark p-2 text-center shadow-sm" style="flex: 1; border-radius: 8px; min-width: 0;">
+    <div style="font-size: 0.75rem; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-file-earmark-excel"></i> Artefakte</div>
+    <div style="font-size: 1.6rem; font-weight: bold; margin-top: 5px;">{v_exc}</div>
+  </div>
+  
+  <div class="card bg-primary text-white p-2 text-center shadow-sm" style="flex: 1; border-radius: 8px; min-width: 0;">
+    <div style="font-size: 0.75rem; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-eraser"></i> Leerzeichen</div>
+    <div style="font-size: 1.6rem; font-weight: bold; margin-top: 5px;">{v_space}</div>
+  </div>
+  
+  <div class="card bg-danger text-white p-2 text-center shadow-sm" style="flex: 1; border-radius: 8px; min-width: 0;">
+    <div style="font-size: 0.75rem; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-tools"></i> Platzhalter</div>
+    <div style="font-size: 1.6rem; font-weight: bold; margin-top: 5px;">{v_platz}</div>
+  </div>
+  
+  <div class="card bg-secondary text-white p-2 text-center shadow-sm" style="flex: 1; border-radius: 8px; min-width: 0;">
+    <div style="font-size: 0.75rem; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-x-circle"></i> Zu NaN</div>
+    <div style="font-size: 1.6rem; font-weight: bold; margin-top: 5px;">{v_nan}</div>
+  </div>
+
+</div>
+"""
+display(HTML(html))
+
+```
+
+```{python}
+#| title: "Übersicht: Fehler pro Spalte"
+#| echo: false
+df_stats = pd.DataFrame(col_stats).T.fillna(0)
+
+df_stats['Gesamtfehler'] = df_stats.sum(axis=1)
+df_betroffen = df_stats[df_stats['Gesamtfehler'] > 0].copy().drop(columns=['Gesamtfehler'])
+
+df_melted = df_betroffen.reset_index().melt(
+    id_vars='index', 
+    var_name='Fehlerart_raw', 
+    value_name='Anzahl'
+)
+df_melted.columns = ['Spalte', 'Fehlerart_raw', 'Anzahl']
+
+df_melted = df_melted[df_melted['Anzahl'] > 0]
+
+fehler_mapping = {
+    'linebreaks': 'Umbrüche',
+    'excel_artifacts': 'Artefakte',
+    'whitespaces': 'Leerzeichen',
+    'placeholders': 'Platzhalter',
+    'invalid_to_nan': 'Zu NaN'
+}
+df_melted['Fehlerart'] = df_melted['Fehlerart_raw'].map(fehler_mapping)
+
+color_map = {
+    'Umbrüche': '#3498db',     
+    'Artefakte': '#f39c12',    
+    'Leerzeichen': '#34495e',  
+    'Platzhalter': '#e74c3c',  
+    'Zu NaN': '#7f8c8d'        
+}
+
+fig = px.bar(
+    df_melted,
+    x='Spalte',
+    y='Anzahl',
+    color='Fehlerart',
+    color_discrete_map=color_map,
+    template='plotly_white',
+    title="Fehler pro betroffener Spalte (Logarithmische Skala)"
+)
+
+fig.update_layout(
+    xaxis_title="",
+    yaxis_title="Anzahl Fehler (Log-Skala)",
+    yaxis=dict(type='log'),
+    legend_title="",
+    margin=dict(t=40, b=20, l=20, r=20),
+    barmode='group'
+)
+
+fig.show()
+
+```
+
+:::
+
+## Karte der Kulturgüter
+
+Durch die Normalisierung der Datierungen wird eine zeitliche Visualisierung der Objekte ermöglicht. Zur besseren Veranschaulichung wurde zunächst eine Einteilung in grobe Epochen gewählt; eine feinere zeitliche Auflösung lässt sich bei Bedarf problemlos umsetzen.
+
+Eine solche Funktion bietet das Potenzial, in eine Anwendung integriert zu werden, mit der Nutzer Ausflugsziele gezielt nach ihren persönlichen Interessen planen können. Im weiteren Projektverlauf ist zudem eine Verknüpfung mit den Geodaten von Museumsstandorten vorgesehen, was diese Visualisierung um eine wertvolle Ebene ergänzen wird.
+
+```{python}
+#| title: "Interaktive Karte: Kulturgüter im Zeitverlauf"
+#| echo: false
+import warnings
+import pandas as pd
+import numpy as np
+import geopandas as gpd
+import plotly.express as px
+from shapely.errors import ShapelyDeprecationWarning
+
+warnings.filterwarnings("ignore", category=UserWarning)
+
+# Find and load the latest parquet file
+search_pattern = "*_geoportalnipp_rkd.parquet"
+all_files = list(DATA_INTERIM.glob(search_pattern))
+if not all_files:
+    raise FileNotFoundError(f"Keine Dateien gefunden in {DATA_INTERIM}")
+latest_file = max(all_files, key=lambda p: p.name)
+
+gdf = gpd.read_parquet(latest_file)
+
+# Ensure coordinates exist
+if 'latitude' not in gdf.columns or 'longitude' not in gdf.columns:
+    if gdf.crs is None:
+        gdf = gdf.set_crs(epsg=3765)
+    
+    gdf = gdf.to_crs(epsg=4326)
+    
+    gdf['longitude'] = gdf.geometry.centroid.x
+    gdf['latitude'] = gdf.geometry.centroid.y
+
+# Function to categorize epoch based on year_start
+def get_epoch(year_start):
+    if pd.isna(year_start):
+        return "Unbekannt"
+    elif year_start < -800:
+        return "Prähistorisch"
+    elif year_start < 500:
+        return "Antike"
+    elif year_start < 1500:
+        return "Mittelalter"
+    else:
+        return "Moderne"
+
+# Drop geometry and create standard DataFrame for Plotly
+df_plot = pd.DataFrame(gdf.drop(columns=['geometry']))
+
+# Create epoch column and sort values chronologically
+df_plot['Epoche'] = df_plot['year_start'].apply(get_epoch)
+df_plot = df_plot.sort_values(by="year_start")
+
+translations = {
+    "Arheologija": "Archäologie",
+    "Kulturni krajolik": "Kulturlandschaft",
+    "Nepokretna pojedinačna": "Einzeldenkmal",
+    "Kulturnopovijesna cjelina": "Kulturhistorisches Ensemble"
+}
+
+df_plot['vrsta'] = df_plot['vrsta'].replace(translations)
+
+custom_colors = {
+    "Arheologija": "orange",
+    "Kulturni krajolik": "blue",
+    "Nepokretna pojedinačna": "green",
+    "Kulturnopovijesna cjelina": "purple"
+}
+# Create map with animation_frame for the slider
+fig = px.scatter_map(
+    df_plot,
+    lat="latitude",
+    lon="longitude",
+    color="vrsta",
+    color_discrete_map=custom_colors,             
+    hover_name="naziv",
+    hover_data={"vrsta": True},
+    animation_frame="Epoche",
+    category_orders={
+        "Epoche": ["Prähistorisch", "Antike", "Mittelalter", "Moderne", "Unbekannt"]
+    },
+    map_style="carto-positron",  
+    zoom=6,                         
+    center={"lat": 44.5, "lon": 16.0}, 
+    height=780
+)
+
+# Adjust marker aesthetics
+fig.update_traces(marker=dict(size=8, opacity=0.7)) 
+fig.update_layout(
+    margin={"r": 50, "t": 40, "l": 0, "b": 80},
+    legend=dict(
+        title="Kategorie", 
+        yanchor="top", y=0.99, 
+        xanchor="left", x=0.01,
+        bgcolor="rgba(255, 255, 255, 0.8)"
+    )
+)
+
+fig.show()
+```
