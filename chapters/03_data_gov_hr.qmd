@@ -8,19 +8,24 @@ import pandas as pd
 
 import logging
 
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, 
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler()]
 )
+
 logger = logging.getLogger(__name__)
 
+logger.propagate = False
 
-# Projektordner automatisch finden
 PROJECT_ROOT = next(
     folder for folder in [Path.cwd(), *Path.cwd().parents]
     if (folder / "_quarto.yml").exists()
 )
 
-# Eigene Python-Module im Projekt auffindbar machen
 sys.path.insert(0, str(PROJECT_ROOT))
 
 DATA_RAW = PROJECT_ROOT / "data" / "raw"
@@ -419,9 +424,14 @@ fig.show()
 
 ```
 
+```{python}
+%reset -f
+
+```
+
 #### Analytische Erkenntnisse der Erstinspektion
 
-Die automatisierte Metadaten-Extraktion und deren visuelle Aufbereitung legen fundamentale strukturelle und qualitative Mängel im Datensatz offen:
+Die automatisierte Auswertung und deren visuelle Aufbereitung legen fundamentale strukturelle und qualitative Mängel im Datensatz offen:
 
 * **Redundanzen in Registernummer:** 4 Registernummern kommen mehrfach vor
 * **Redundanzen in Textfeldern:** Die Objektbezeichnungen (`Naziv`) und die detaillierten Beschreibungen (`Opis_dobra`) weisen Mehrfachnennungen auf.
@@ -430,4 +440,4 @@ Die automatisierte Metadaten-Extraktion und deren visuelle Aufbereitung legen fu
 
 ### Fazit für den weiteren Projektverlauf
 
-Allein diese vorbereitende Strukturanalyse zeigt empirisch, dass der Datensatz in seinem vorliegenden Zustand die Kriterien eines direkt verwertbaren *High-Value Datasets* verfehlt. Die Behebung dieser Mängel (Data Cleaning) und die Überführung in ein konsistentes, relationales Modell bilden das Kernziel der weiteren Analyse.
+Allein diese vorbereitende Strukturanalyse zeigt empirisch, dass der Datensatz in seinem vorliegenden Zustand die Kriterien eines direkt verwertbaren *High-Value Datasets* verfehlt. Die Behebung dieser Mängel (Data Cleaning) und die Überführung in ein konsistentes, graphisches Modell bilden das Kernziel der weiteren Analyse.

@@ -1,0 +1,21 @@
+## Visualisierung
+
+```{python}
+import folium
+import geopandas as gpd
+import pandas as pd
+import plotly.express as px
+
+from pathlib import Path
+import sys
+
+PROJECT_ROOT = next(
+    folder for folder in [Path.cwd(), *Path.cwd().parents]
+    if (folder / "_quarto.yml").exists()
+)
+
+DATA_RAW = PROJECT_ROOT / "data" / "raw"
+DATA_RAW.mkdir(parents=True, exist_ok=True)
+```
+
+
