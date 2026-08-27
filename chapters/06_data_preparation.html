@@ -285,7 +285,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>logger <span class="op">=</span> setup_dynamic_logging(latest_file.stem)</span>
 <span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="ss">f"STARTE ANALYSE &amp; BEREINIGUNG FÜR: </span><span class="sc">{</span>latest_file<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>2026-08-27 10:30:54,988 [INFO] STARTE ANALYSE &amp; BEREINIGUNG FÜR: 2026-08-26_geoportalnipp_rkd.parquet</code></pre>
+<pre><code>2026-08-27 10:36:54,016 [INFO] STARTE ANALYSE &amp; BEREINIGUNG FÜR: 2026-08-26_geoportalnipp_rkd.parquet</code></pre>
 </div>
 </div>
 </section>
@@ -353,18 +353,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="bereinigte-daten-anzeigen-auswahl" class="level3">
 <h3 class="anchored" data-anchor-id="bereinigte-daten-anzeigen-auswahl">Bereinigte Daten anzeigen (Auswahl)</h3>
-<div id="1e8f6934" class="cell" data-execution_count="4">
+<div id="b893eb53" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gpd.read_parquet(latest_file)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gdf.pipe(clean_text_columns, logger<span class="op">=</span>logger)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>gdf.sample(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>2026-08-27 10:30:55,061 [INFO] Schritt 1: Allgemeiner Text-Clean (Strip, Linebreaks, Platzhalter)...
-2026-08-27 10:30:55,078 [INFO] Spalte 'adresa': 1
-2026-08-27 10:30:55,092 [INFO] Spalte 'registarki_broj_n': 7461
-2026-08-27 10:30:55,098 [INFO] Spalte 'datacija': 509
-2026-08-27 10:30:55,102 [INFO] Spalte 'autor': 6214
-2026-08-27 10:30:55,125 [INFO] Spalte 'opis': 1
-2026-08-27 10:30:55,128 [INFO] Allgemeiner Text-Clean beendet. 14186 Änderungen.</code></pre>
+<pre><code>2026-08-27 10:36:54,095 [INFO] Schritt 1: Allgemeiner Text-Clean (Strip, Linebreaks, Platzhalter)...
+2026-08-27 10:36:54,112 [INFO] Spalte 'adresa': 1
+2026-08-27 10:36:54,122 [INFO] Spalte 'registarki_broj_n': 7461
+2026-08-27 10:36:54,128 [INFO] Spalte 'datacija': 509
+2026-08-27 10:36:54,131 [INFO] Spalte 'autor': 6214
+2026-08-27 10:36:54,156 [INFO] Spalte 'opis': 1
+2026-08-27 10:36:54,159 [INFO] Allgemeiner Text-Clean beendet. 14186 Änderungen.</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
@@ -393,184 +393,184 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">4314</th>
-<td>PS.ProtectedSite.7238</td>
-<td>Crkva sv. Roka</td>
-<td>Splitsko-dalmatinska županija</td>
-<td>STARI GRAD</td>
-<td>Stari Grad, KOD SV. ROKA 3</td>
+<th data-quarto-table-cell-role="th">383</th>
+<td>PS.ProtectedSite.697</td>
+<td>Spomenik Seljačkoj buni i Matiji Gupcu</td>
+<td>Krapinsko-zagorska županija</td>
+<td>GORNJA STUBICA</td>
+<td>Samci, SAMCI 64</td>
 <td>Pojedinačna kulturna dobra</td>
-<td>sakralne građevine</td>
-<td>Z-5713</td>
+<td>memorijalna obilježja i mjesta</td>
+<td>Z-4417</td>
 <td>None</td>
 <td>Zaštićeno kulturno dobro</td>
-<td>16. st. n.e.</td>
-<td>NaN</td>
-<td>Crkva sv. Roka izgrađena je u užoj povijesnoj ...</td>
+<td>1971. g. n.e. - 1973. g. n.e.</td>
+<td>Antun Augustinčić</td>
+<td>Spomenik Seljačkoj buni i Matiji Gupcu nalazi ...</td>
 <td>G</td>
-<td>MULTIPOLYGON (((507822.73 4782571.96, 507823.1...</td>
+<td>MULTIPOLYGON (((462471.99 5093917.75, 462469.5...</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">3226</th>
-<td>PS.ProtectedSite.5650</td>
-<td>Palača Drašković-Nadasdy</td>
-<td>Varaždinska županija</td>
-<td>VARAŽDIN</td>
-<td>Varaždin, TRG KRALJA TOMISLAVA 3</td>
-<td>Pojedinačna kulturna dobra</td>
-<td>stambene građevine</td>
-<td>Z-2614</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>18. st. n.e.</td>
-<td>NaN</td>
-<td>Palača je monumentalna jednokatna uglovnica sm...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((487526.31 5129808.31, 487525.5...</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">4497</th>
-<td>PS.ProtectedSite.7468</td>
-<td>Kuća Šegvić</td>
+<th data-quarto-table-cell-role="th">4616</th>
+<td>PS.ProtectedSite.7603</td>
+<td>Ruševine kule Vusio</td>
 <td>Splitsko-dalmatinska županija</td>
-<td>SPLIT</td>
-<td>Split, POLJ.KRALJICE JELENE 1</td>
+<td>SELCA</td>
+<td>Selca</td>
 <td>Pojedinačna kulturna dobra</td>
-<td>javne građevine</td>
-<td>Z-6699</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>1962. g. n.e. - 1965. g. n.e.</td>
-<td>Neven Šegvić</td>
-<td>Istaknuti hrvatski arhitekt Neven Šegvić proje...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((495183.25 4818715.95, 495181.2...</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">2331</th>
-<td>PS.ProtectedSite.4527</td>
-<td>Arheološko nalazište Karane</td>
-<td>Koprivničko-križevačka županija</td>
-<td>KRIŽEVCI</td>
-<td>Karane</td>
-<td>Arheološka kulturna dobra</td>
-<td>kopnena arheološka zona/nalazište</td>
-<td>Z-2217</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>4000. g. p.n.e.</td>
-<td>NaN</td>
-<td>Arheološko nalazište Karane smješteno je na bl...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((502425.61 5096455.57, 502432.8...</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">1247</th>
-<td>PS.ProtectedSite.2439</td>
-<td>Arheološko nalazište Čaire</td>
-<td>Požeško-slavonska županija</td>
-<td>JAKŠIĆ</td>
-<td>Jakšić</td>
-<td>Arheološka kulturna dobra</td>
-<td>kopnena arheološka zona/nalazište</td>
-<td>Z-1977</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>4000. g. p.n.e. - 1500. g. n.e.</td>
-<td>NaN</td>
-<td>Arheološko nalazište Čaire smješteno je na uzv...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((598810.11 5026543.55, 598829.6...</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">5842</th>
-<td>PS.ProtectedSite.9434</td>
-<td>Skupina tradicijskih građevina u naselju Desni...</td>
-<td>Sisačko-moslavačka županija</td>
-<td>MARTINSKA VES</td>
-<td>Desni Dubrovčak</td>
-<td>Pojedinačna kulturna dobra</td>
-<td>stambene građevine</td>
-<td>Z-7561</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>19. st. n.e. - 20. st. n.e.</td>
-<td>None</td>
-<td>Naselje Desni Dubrovčak nalazi se sjeverno od ...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((487308.33 5056242.8, 487311.58...</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">4650</th>
-<td>PS.ProtectedSite.7637</td>
-<td>Kuća Machiedo</td>
-<td>Splitsko-dalmatinska županija</td>
-<td>HVAR</td>
-<td>Hvar, OBALA RIVA 15</td>
-<td>Pojedinačna kulturna dobra</td>
-<td>stambene građevine</td>
-<td>Z-5109</td>
+<td>vojne i obrambene građevine</td>
+<td>Z-5162</td>
 <td>None</td>
 <td>Zaštićeno kulturno dobro</td>
 <td>17. st. n.e.</td>
 <td>NaN</td>
-<td>Barokna trokatnica sagrađena na hvarskoj rivi ...</td>
+<td>U polju južno od Selaca je dvokatna kula plemi...</td>
 <td>G</td>
-<td>MULTIPOLYGON (((495241.57 4781281.4, 495236.69...</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">4580</th>
-<td>PS.ProtectedSite.7564</td>
-<td>Zgrada</td>
-<td>Splitsko-dalmatinska županija</td>
-<td>VIS</td>
-<td>Vis, RADOJEVIĆA PROLAZ 6</td>
-<td>Pojedinačna kulturna dobra</td>
-<td>stambene građevine</td>
-<td>Z-5594</td>
-<td>None</td>
-<td>Zaštićeno kulturno dobro</td>
-<td>15. st. n.e.</td>
-<td>NaN</td>
-<td>Kamena katnica s potkrovljem izgrađena je u gl...</td>
-<td>G</td>
-<td>MULTIPOLYGON (((474311.12 4768944.92, 474319.5...</td>
+<td>MULTIPOLYGON (((526368.66 4793289.05, 526372.3...</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">4895</th>
-<td>PS.ProtectedSite.7958</td>
-<td>Ostatci crkve sv. Stjepana</td>
-<td>Dubrovačko-neretvanska županija</td>
-<td>KORČULA</td>
-<td>Čara, ČARA</td>
+<th data-quarto-table-cell-role="th">3008</th>
+<td>PS.ProtectedSite.5378</td>
+<td>Vinski podrum</td>
+<td>Osječko-baranjska županija</td>
+<td>KNEŽEVI VINOGRADI</td>
+<td>Zmajevac, PETEFI ŠANDORA 16</td>
 <td>Pojedinačna kulturna dobra</td>
-<td>sakralne građevine</td>
-<td>Z-6676</td>
+<td>gospodarske građevine</td>
+<td>Z-2323</td>
 <td>None</td>
 <td>Zaštićeno kulturno dobro</td>
-<td>14. st. n.e. - 15. st. n.e.</td>
+<td>1908. g. n.e.</td>
 <td>NaN</td>
-<td>Ruševine crkve sv. Stjepana, pučki zvana Susti...</td>
+<td>Vinski podrum u Zmajevcu sagrađen je 1908. god...</td>
 <td>G</td>
-<td>MULTIPOLYGON (((534410.6 4754678.2, 534418.76 ...</td>
+<td>MULTIPOLYGON (((679368.82 5076288.97, 679357.8...</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">4444</th>
-<td>PS.ProtectedSite.7387</td>
-<td>Ruševine crkve sv. Andrije</td>
+<th data-quarto-table-cell-role="th">4562</th>
+<td>PS.ProtectedSite.7542</td>
+<td>Palača Radošević</td>
 <td>Splitsko-dalmatinska županija</td>
-<td>KOMIŽA</td>
-<td>Komiža</td>
+<td>VIS</td>
+<td>Vis, VINOGRADARSKA 19/23</td>
 <td>Pojedinačna kulturna dobra</td>
-<td>sakralne građevine</td>
-<td>RST-0554-1971.</td>
+<td>stambene građevine</td>
+<td>Z-5776</td>
 <td>None</td>
 <td>Zaštićeno kulturno dobro</td>
-<td>13. st. n.e. - 18. st. n.e.</td>
+<td>17. st. n.e.</td>
 <td>NaN</td>
-<td>Ruševine crkve sv. Andrije iz 13.st. nalaze se...</td>
+<td>Barokno - renesansna dvokatna palača hvarske p...</td>
 <td>G</td>
-<td>MULTIPOLYGON (((439977.95 4765806.78, 439983.8...</td>
+<td>MULTIPOLYGON (((474360.16 4768879.01, 474357.1...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3030</th>
+<td>PS.ProtectedSite.5409</td>
+<td>Dvije tradicijske kuće</td>
+<td>Zagrebačka županija</td>
+<td>ŽUMBERAK</td>
+<td>Glušinja, GLUŠINJA 14</td>
+<td>Pojedinačna kulturna dobra</td>
+<td>stambene građevine</td>
+<td>Z-7226</td>
+<td>None</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>19. st. n.e. - 20. st. n.e.</td>
+<td>NaN</td>
+<td>Kuće su locirane na zajedničkoj okućnici u sta...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((420953.68 5071420.09, 420954.2...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3544</th>
+<td>PS.ProtectedSite.6152</td>
+<td>Zgrada Biskupske ubožnice</td>
+<td>Grad Zagreb</td>
+<td>GRAD ZAGREB</td>
+<td>Zagreb, NOVA VES 18</td>
+<td>Pojedinačna kulturna dobra</td>
+<td>javne građevine</td>
+<td>Z-487</td>
+<td>None</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>1781. g. n.e.</td>
+<td>NaN</td>
+<td>Slobodnostojeću dvokatnicu tlocrtnog "L" oblik...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((459449.69 5075771.45, 459450 5...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2137</th>
+<td>PS.ProtectedSite.4205</td>
+<td>Zgrada</td>
+<td>Karlovačka županija</td>
+<td>KARLOVAC</td>
+<td>Karlovac, TRG BANA PETRA ZRINSKOG 5</td>
+<td>Pojedinačna kulturna dobra</td>
+<td>stambeno-poslovne građevine</td>
+<td>Z-248</td>
+<td>None</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>19. st. n.e.</td>
+<td>NaN</td>
+<td>Jednokatnica u nizu, "U" tlocrta glavnim proče...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((425870.39 5039744.52, 425878.9...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4386</th>
+<td>PS.ProtectedSite.7324</td>
+<td>Crkva sv. Ivana</td>
+<td>Splitsko-dalmatinska županija</td>
+<td>BOL</td>
+<td>Bol, ŠETALIŠTE ANĐELKA RABADANA</td>
+<td>Pojedinačna kulturna dobra</td>
+<td>sakralne građevine</td>
+<td>Z-4773</td>
+<td>None</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>7. st. n.e. - 11. st. n.e.</td>
+<td>NaN</td>
+<td>Crkva sv. Ivana podignuta je na zapadnoj stran...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((513486.05 4791242.61, 513490.3...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1374</th>
+<td>PS.ProtectedSite.2740</td>
+<td>Kulturno-povijesna cjelina grada Gline</td>
+<td>Sisačko-moslavačka županija</td>
+<td>GLINA</td>
+<td>Glina</td>
+<td>Kulturnopovijesne cjeline</td>
+<td>urbana cjelina</td>
+<td>Z-2919</td>
+<td>None</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>18. st. n.e.</td>
+<td>NaN</td>
+<td>U pisanim izvorima Glina se prvi put spominje ...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((467544.83 5021745.27, 467529.2...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2379</th>
+<td>PS.ProtectedSite.4602</td>
+<td>Zgrada stare škole</td>
+<td>Međimurska županija</td>
+<td>VRATIŠINEC</td>
+<td>Vratišinec, DR.VINKA ŽGANCA 1/3</td>
+<td>Pojedinačna kulturna dobra</td>
+<td>javne građevine</td>
+<td>Z-1125</td>
+<td>None</td>
+<td>Zaštićeno kulturno dobro</td>
+<td>1874. g. n.e.</td>
+<td>NaN</td>
+<td>Zgrada stare škole nalazi se u središtu današn...</td>
+<td>G</td>
+<td>MULTIPOLYGON (((496537.1 5148602.18, 496541.84...</td>
 </tr>
 </tbody>
 </table>
@@ -581,7 +581,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="spalte-zupanija-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-zupanija-prüfen">Spalte ‘zupanija’ prüfen</h3>
-<div id="e5cb9fc9" class="cell" data-execution_count="5">
+<div id="355cfdd4" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="dv">100</span>):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"zupanija"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>))</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'zupanija'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -617,7 +617,7 @@ Gesamtzahl eindeutiger Werte: 21</code></pre>
 </section>
 <section id="spalte-grad-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-grad-prüfen">Spalte ‘grad’ prüfen</h3>
-<div id="7c548912" class="cell" data-execution_count="6">
+<div id="3207155f" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="dv">100</span>):</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"grad"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'grad'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -677,7 +677,7 @@ Gesamtzahl eindeutiger Werte: 569</code></pre>
 </section>
 <section id="spalte-adresa-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-adresa-prüfen">Spalte ‘adresa’ prüfen</h3>
-<div id="cd9a4d83" class="cell" data-execution_count="7">
+<div id="9f2e533a" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="dv">100</span>):</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"adresa"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -740,7 +740,7 @@ Name: count, Length: 5165, dtype: int64</code></pre>
 </section>
 <section id="spalte-vrsta-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-vrsta-prüfen">Spalte ‘vrsta’ prüfen</h3>
-<div id="7a45fe71" class="cell" data-execution_count="8">
+<div id="f028d7c7" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="va">None</span>):</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"vrsta"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'vrsta'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -854,7 +854,7 @@ podvodna arheološka zona/nalazište
 kopneno/podvodno arheološka zona/nalazište
 
 insgesamt: 28</code></pre>
-<div id="bc6857b0" class="cell" data-execution_count="9">
+<div id="0741191a" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="va">None</span>):</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"klasifikacija"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'klasifikacija'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -945,15 +945,15 @@ Gesamtzahl eindeutiger Werte: 29</code></pre>
 <span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gdf.pipe(clean_text_columns, logger<span class="op">=</span>logger)</span>
 <span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a>check_klasifikacija_against_register(gdf, logger<span class="op">=</span>logger)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>2026-08-27 10:30:55,189 [INFO] Schritt 1: Allgemeiner Text-Clean (Strip, Linebreaks, Platzhalter)...
-2026-08-27 10:30:55,205 [INFO] Spalte 'adresa': 1
-2026-08-27 10:30:55,214 [INFO] Spalte 'registarki_broj_n': 7461
-2026-08-27 10:30:55,220 [INFO] Spalte 'datacija': 509
-2026-08-27 10:30:55,223 [INFO] Spalte 'autor': 6214
-2026-08-27 10:30:55,233 [INFO] Spalte 'opis': 1
-2026-08-27 10:30:55,236 [INFO] Allgemeiner Text-Clean beendet. 14186 Änderungen.
-2026-08-27 10:30:55,238 [INFO] Überprüfe Spalte 'klasifikacija' gegen das offizielle Webregister...
-2026-08-27 10:30:55,240 [WARNING] Abweichungen in 'klasifikacija' gefunden:
+<pre><code>2026-08-27 10:36:54,221 [INFO] Schritt 1: Allgemeiner Text-Clean (Strip, Linebreaks, Platzhalter)...
+2026-08-27 10:36:54,236 [INFO] Spalte 'adresa': 1
+2026-08-27 10:36:54,245 [INFO] Spalte 'registarki_broj_n': 7461
+2026-08-27 10:36:54,251 [INFO] Spalte 'datacija': 509
+2026-08-27 10:36:54,254 [INFO] Spalte 'autor': 6214
+2026-08-27 10:36:54,263 [INFO] Spalte 'opis': 1
+2026-08-27 10:36:54,265 [INFO] Allgemeiner Text-Clean beendet. 14186 Änderungen.
+2026-08-27 10:36:54,268 [INFO] Überprüfe Spalte 'klasifikacija' gegen das offizielle Webregister...
+2026-08-27 10:36:54,270 [WARNING] Abweichungen in 'klasifikacija' gefunden:
 klasifikacija
 kopneno-podvodno arheološko nalazište    1</code></pre>
 </div>
@@ -1029,7 +1029,7 @@ kopneno-podvodno arheološko nalazište    1</code></pre>
 <section id="spalte-registarski_broj-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-registarski_broj-prüfen">Spalte ‘registarski_broj’ prüfen</h3>
 <p>Benötigt Normalisierung.</p>
-<div id="42c328f6" class="cell" data-execution_count="11">
+<div id="b06e0c3b" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="dv">100</span>):</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"registarski_broj"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'registarski_broj'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1056,7 +1056,7 @@ Gesamtzahl eindeutiger Werte: 6494</code></pre>
 <h3 class="anchored" data-anchor-id="spalte-registarki_broj_n-prüfen">Spalte ‘registarki_broj_n’ prüfen</h3>
 <p>Im Spaltennamen ist ein Rechtschreibfehler. Da die Spalten im weiteren Projektverlauf noch umbenannt werden, lass ich es so stehen.</p>
 <p>Bei den N-Nummern handelt es sicht um Kulturgüter, die zusätzlich das Attribut <em>von nationaler Bedeutung</em> besitzen. Offenbar werden Einzelgüter zu Gütern von nationalem Interesse zusammengefasst, weshalb die Nummern mehrfach vorkommen.</p>
-<div id="926a1057" class="cell" data-execution_count="12">
+<div id="9bcc3bbe" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="dv">100</span>):</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"registarki_broj_n"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'registarki_broj_n'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1104,7 +1104,7 @@ Gesamtzahl eindeutiger Werte: 33</code></pre>
 </section>
 <section id="spalte-status_zastite-prüfen" class="level3">
 <h3 class="anchored" data-anchor-id="spalte-status_zastite-prüfen">Spalte ‘status_zastite’ prüfen</h3>
-<div id="61b56207" class="cell" data-execution_count="13">
+<div id="e2c391ea" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="va">None</span>):</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"status_zastite"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'status_zastite'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1136,7 +1136,7 @@ Gesamtzahl eindeutiger Werte: 2</code></pre>
 <li>Zona G (7140 Objekte): Registrierte Einzelobjekte / Hauptinventar / Gradevina</li>
 <li>Zona K (7 Objekte): Komplexer Schutz / Spezifische Zonen / Kompleks</li>
 </ul>
-<div id="fc39a297" class="cell" data-execution_count="14">
+<div id="ca4236d8" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_rows"</span>, <span class="va">None</span>):</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(gdf[<span class="st">"zona"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Gesamtzahl eindeutiger Werte: </span><span class="sc">{</span>gdf[<span class="st">'zona'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1179,26 +1179,26 @@ Gesamtzahl eindeutiger Werte: 5</code></pre>
 <span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>2026-08-27 10:30:55,323 [INFO] METADATEN DER URSPRUNGSDATEI
-2026-08-27 10:30:55,324 [INFO] Format: GeoParquet (.parquet)
-2026-08-27 10:30:55,324 [INFO] Dimensionen: 7517 Zeilen, 15 Spalten
-2026-08-27 10:30:55,325 [INFO] Koordinatensystem (CRS): {"$schema": "https://proj.org/schemas/v0.7/projjson.schema.json", "type": "ProjectedCRS", "name": "HTRS96 / Croatia TM", "base_crs": {"name": "HTRS96", "datum": {"type": "GeodeticReferenceFrame", "name": "Croatian Terrestrial Reference System", "ellipsoid": {"name": "GRS 1980", "semi_major_axis": 6378137, "inverse_flattening": 298.257222101}}, "coordinate_system": {"subtype": "ellipsoidal", "axis": [{"name": "Geodetic latitude", "abbreviation": "Lat", "direction": "north", "unit": "degree"}, {"name": "Geodetic longitude", "abbreviation": "Lon", "direction": "east", "unit": "degree"}]}, "id": {"authority": "EPSG", "code": 4761}}, "conversion": {"name": "Croatia Transverse Mercator", "method": {"name": "Transverse Mercator", "id": {"authority": "EPSG", "code": 9807}}, "parameters": [{"name": "Latitude of natural origin", "value": 0, "unit": "degree", "id": {"authority": "EPSG", "code": 8801}}, {"name": "Longitude of natural origin", "value": 16.5, "unit": "degree", "id": {"authority": "EPSG", "code": 8802}}, {"name": "Scale factor at natural origin", "value": 0.9999, "unit": "unity", "id": {"authority": "EPSG", "code": 8805}}, {"name": "False easting", "value": 500000, "unit": "metre", "id": {"authority": "EPSG", "code": 8806}}, {"name": "False northing", "value": 0, "unit": "metre", "id": {"authority": "EPSG", "code": 8807}}]}, "coordinate_system": {"subtype": "Cartesian", "axis": [{"name": "Easting", "abbreviation": "E", "direction": "east", "unit": "metre"}, {"name": "Northing", "abbreviation": "N", "direction": "north", "unit": "metre"}]}, "scope": "Cadastre, engineering survey, topographic mapping (large scale).", "area": "Croatia - onshore.", "bbox": {"south_latitude": 42.34, "west_longitude": 13.43, "north_latitude": 46.54, "east_longitude": 19.43}, "id": {"authority": "EPSG", "code": 3765}}
+<pre><code>2026-08-27 10:36:54,355 [INFO] METADATEN DER URSPRUNGSDATEI
+2026-08-27 10:36:54,355 [INFO] Format: GeoParquet (.parquet)
+2026-08-27 10:36:54,356 [INFO] Dimensionen: 7517 Zeilen, 15 Spalten
+2026-08-27 10:36:54,356 [INFO] Koordinatensystem (CRS): {"$schema": "https://proj.org/schemas/v0.7/projjson.schema.json", "type": "ProjectedCRS", "name": "HTRS96 / Croatia TM", "base_crs": {"name": "HTRS96", "datum": {"type": "GeodeticReferenceFrame", "name": "Croatian Terrestrial Reference System", "ellipsoid": {"name": "GRS 1980", "semi_major_axis": 6378137, "inverse_flattening": 298.257222101}}, "coordinate_system": {"subtype": "ellipsoidal", "axis": [{"name": "Geodetic latitude", "abbreviation": "Lat", "direction": "north", "unit": "degree"}, {"name": "Geodetic longitude", "abbreviation": "Lon", "direction": "east", "unit": "degree"}]}, "id": {"authority": "EPSG", "code": 4761}}, "conversion": {"name": "Croatia Transverse Mercator", "method": {"name": "Transverse Mercator", "id": {"authority": "EPSG", "code": 9807}}, "parameters": [{"name": "Latitude of natural origin", "value": 0, "unit": "degree", "id": {"authority": "EPSG", "code": 8801}}, {"name": "Longitude of natural origin", "value": 16.5, "unit": "degree", "id": {"authority": "EPSG", "code": 8802}}, {"name": "Scale factor at natural origin", "value": 0.9999, "unit": "unity", "id": {"authority": "EPSG", "code": 8805}}, {"name": "False easting", "value": 500000, "unit": "metre", "id": {"authority": "EPSG", "code": 8806}}, {"name": "False northing", "value": 0, "unit": "metre", "id": {"authority": "EPSG", "code": 8807}}]}, "coordinate_system": {"subtype": "Cartesian", "axis": [{"name": "Easting", "abbreviation": "E", "direction": "east", "unit": "metre"}, {"name": "Northing", "abbreviation": "N", "direction": "north", "unit": "metre"}]}, "scope": "Cadastre, engineering survey, topographic mapping (large scale).", "area": "Croatia - onshore.", "bbox": {"south_latitude": 42.34, "west_longitude": 13.43, "north_latitude": 46.54, "east_longitude": 19.43}, "id": {"authority": "EPSG", "code": 3765}}
 
-2026-08-27 10:30:55,325 [INFO] STARTEN DER BEREINIGUNGSPIPELINE
-2026-08-27 10:30:55,326 [INFO] Schritt 1: Allgemeiner Text-Clean (Strip, Linebreaks, Platzhalter)...
-2026-08-27 10:30:55,341 [INFO] Spalte 'adresa': 1
-2026-08-27 10:30:55,351 [INFO] Spalte 'registarki_broj_n': 7461
-2026-08-27 10:30:55,357 [INFO] Spalte 'datacija': 509
-2026-08-27 10:30:55,361 [INFO] Spalte 'autor': 6214
-2026-08-27 10:30:55,380 [INFO] Spalte 'opis': 1
-2026-08-27 10:30:55,383 [INFO] Allgemeiner Text-Clean beendet. 14186 Änderungen.
-2026-08-27 10:30:55,384 [INFO] Schritt 2: Bereinige Spalte 'grad'...
-2026-08-27 10:30:55,394 [INFO] Spalte 'grad': 7464 Werte erfolgreich standardisiert.
-2026-08-27 10:30:55,395 [INFO] Schritt 3: Entferne Spalte 'adresa' vollständig...
-2026-08-27 10:30:55,397 [INFO] Spalte 'adresa' wurde erfolgreich gelöscht.
-2026-08-27 10:30:55,398 [INFO] Schritt: Passe Spalte 'vrsta' an das offizielle Webregister an...
-2026-08-27 10:30:55,401 [INFO] Spalte 'vrsta': 7517 Datensätze auf Register-Namen aktualisiert.
-2026-08-27 10:30:55,403 [INFO] Schritt: Wert in 'klasifikacija' angepasst. 'kopneno-podvodno arheološko nalazište' -&gt; 'kopneno/podvodno arheološka zona/nalazište' (1 Feld(er) korrigiert).</code></pre>
+2026-08-27 10:36:54,357 [INFO] STARTEN DER BEREINIGUNGSPIPELINE
+2026-08-27 10:36:54,358 [INFO] Schritt 1: Allgemeiner Text-Clean (Strip, Linebreaks, Platzhalter)...
+2026-08-27 10:36:54,372 [INFO] Spalte 'adresa': 1
+2026-08-27 10:36:54,381 [INFO] Spalte 'registarki_broj_n': 7461
+2026-08-27 10:36:54,387 [INFO] Spalte 'datacija': 509
+2026-08-27 10:36:54,390 [INFO] Spalte 'autor': 6214
+2026-08-27 10:36:54,412 [INFO] Spalte 'opis': 1
+2026-08-27 10:36:54,415 [INFO] Allgemeiner Text-Clean beendet. 14186 Änderungen.
+2026-08-27 10:36:54,415 [INFO] Schritt 2: Bereinige Spalte 'grad'...
+2026-08-27 10:36:54,426 [INFO] Spalte 'grad': 7464 Werte erfolgreich standardisiert.
+2026-08-27 10:36:54,427 [INFO] Schritt 3: Entferne Spalte 'adresa' vollständig...
+2026-08-27 10:36:54,429 [INFO] Spalte 'adresa' wurde erfolgreich gelöscht.
+2026-08-27 10:36:54,430 [INFO] Schritt: Passe Spalte 'vrsta' an das offizielle Webregister an...
+2026-08-27 10:36:54,433 [INFO] Spalte 'vrsta': 7517 Datensätze auf Register-Namen aktualisiert.
+2026-08-27 10:36:54,435 [INFO] Schritt: Wert in 'klasifikacija' angepasst. 'kopneno-podvodno arheološko nalazište' -&gt; 'kopneno/podvodno arheološka zona/nalazište' (1 Feld(er) korrigiert).</code></pre>
 </div>
 </div>
 </section>
@@ -1221,10 +1221,10 @@ Gesamtzahl eindeutiger Werte: 5</code></pre>
 <span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>    logger.error(<span class="ss">f"Fehler beim Speichern der Datei: </span><span class="sc">{</span><span class="bu">str</span>(e)<span class="sc">}</span><span class="ss">"</span>, exc_info<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> e</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>2026-08-27 10:30:55,410 [INFO] BEREINIGUNG UND ANALYSE ABGESCHLOSSEN
-2026-08-27 10:30:55,411 [INFO] Neue Dimensionen: 7517 Zeilen, 14 Spalten
-2026-08-27 10:30:55,411 [INFO] Speichere bereinigte Daten unter: cleaned_2026-08-26_geoportalnipp_rkd.parquet
-2026-08-27 10:30:55,486 [INFO] Speichern erfolgreich. Daten und Logfile in: /home/runner/work/croatia-cultural-goods-analysis/croatia-cultural-goods-analysis/data/interim
+<pre><code>2026-08-27 10:36:54,442 [INFO] BEREINIGUNG UND ANALYSE ABGESCHLOSSEN
+2026-08-27 10:36:54,443 [INFO] Neue Dimensionen: 7517 Zeilen, 14 Spalten
+2026-08-27 10:36:54,443 [INFO] Speichere bereinigte Daten unter: cleaned_2026-08-26_geoportalnipp_rkd.parquet
+2026-08-27 10:36:54,523 [INFO] Speichern erfolgreich. Daten und Logfile in: /home/runner/work/croatia-cultural-goods-analysis/croatia-cultural-goods-analysis/data/interim
 </code></pre>
 </div>
 </div>
