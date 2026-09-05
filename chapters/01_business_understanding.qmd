@@ -27,7 +27,7 @@ In der INSPIRE-Richtlinie werden Kulturgüter den Schutzgebieten und somit den H
 
 ::: {.callout-caution collapse="true" icon="false" title="{{< fa section >}} Anhang I: Geodaten gemäss Artikel 6 Buchstabe A, Artikel 8 Absatz 1 und Artikel 9 Buchstabe A"}
 
-1. Schutzgebiete
+9. Schutzgebiete
 
 Gebiete, die im Rahmen des internationalen und des gemeinschaftlichen Rechts sowie des Rechts der Mitgliedstaaten ausgewiesen sind oder verwaltet werden, um spezifische Erhaltungsziele zu erreichen.
 

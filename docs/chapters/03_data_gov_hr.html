@@ -161,6 +161,7 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
   <li><a href="#sprachbarriere" id="toc-sprachbarriere" class="nav-link active" data-scroll-target="#sprachbarriere">Sprachbarriere</a></li>
   <li><a href="#lizenz" id="toc-lizenz" class="nav-link" data-scroll-target="#lizenz">Lizenz</a></li>
   <li><a href="#metadaten" id="toc-metadaten" class="nav-link" data-scroll-target="#metadaten">Metadaten</a></li>
+  <li><a href="#untersuchung-des-updateverlaufs" id="toc-untersuchung-des-updateverlaufs" class="nav-link" data-scroll-target="#untersuchung-des-updateverlaufs">Untersuchung des Updateverlaufs</a></li>
   <li><a href="#erste-datensichtung-und-strukturanalyse" id="toc-erste-datensichtung-und-strukturanalyse" class="nav-link" data-scroll-target="#erste-datensichtung-und-strukturanalyse">Erste Datensichtung und Strukturanalyse</a></li>
   <li><a href="#download-der-json-datei" id="toc-download-der-json-datei" class="nav-link" data-scroll-target="#download-der-json-datei">Download der JSON-Datei</a></li>
   <li><a href="#umwandlung-in-parquet-und-bewertung-der-rohdaten" id="toc-umwandlung-in-parquet-und-bewertung-der-rohdaten" class="nav-link" data-scroll-target="#umwandlung-in-parquet-und-bewertung-der-rohdaten">Umwandlung in Parquet und Bewertung der Rohdaten</a></li>
@@ -196,41 +197,31 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </header>
 
 
-<div id="3690f0e0" class="cell" data-execution_count="1">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> logging</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> handler <span class="kw">in</span> logging.root.handlers[:]:</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    logging.root.removeHandler(handler)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>logging.basicConfig(</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    level<span class="op">=</span>logging.INFO, </span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">format</span><span class="op">=</span><span class="st">"</span><span class="sc">%(asctime)s</span><span class="st"> - </span><span class="sc">%(levelname)s</span><span class="st"> - </span><span class="sc">%(message)s</span><span class="st">"</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    handlers<span class="op">=</span>[logging.StreamHandler()]</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>logger <span class="op">=</span> logging.getLogger(<span class="va">__name__</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>logger.propagate <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>PROJECT_ROOT <span class="op">=</span> <span class="bu">next</span>(</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    folder <span class="cf">for</span> folder <span class="kw">in</span> [Path.cwd(), <span class="op">*</span>Path.cwd().parents]</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (folder <span class="op">/</span> <span class="st">"_quarto.yml"</span>).exists()</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>, <span class="bu">str</span>(PROJECT_ROOT))</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>DATA_RAW <span class="op">=</span> PROJECT_ROOT <span class="op">/</span> <span class="st">"data"</span> <span class="op">/</span> <span class="st">"raw"</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>DATA_RAW.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-</div>
 <p>Auf European data wird als Quelle für das kroatische <strong><em>Register für Kulturgüter</em></strong> das <strong><em>Open Data Portal Kroatien</em></strong> angegeben. Öffnet man den Link, findet man dort die Adresse des Portals https://data.gov.hr/.</p>
+<p>Recherchiert man dagegen bei Google und folgt direkt dem ersten Ergebnis “Portal otvorenih podataka”, weigern sich Firefox und Bitdefender die Seite aufzurufen, da dort die Adresse <code>https://www.data.gov.hr</code> hinterlegt ist und dafür kein Zertifikat vorhanden ist. Man muss das “www” aus der Adresse manuell entfernen.</p>
+<div class="callout callout-style-default callout-caution no-icon callout-titled" title="Firefox: Warum sieht die Website gefährlich aus?">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Firefox: Warum sieht die Website gefährlich aus?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Die Website wurde so eingerichtet, dass sie nur sichere Verbindungen zulässt. Es gibt jedoch ein Problem mit dem Zertifikat der Website. Es ist möglich, dass jemand Böswilliges versucht, sich als die Website auszugeben. Websites verwenden Zertifikate, die von einer Zertifizierungsstelle ausgestellt wurden, um zu bestätigen, dass sie wirklich sind, für wen sie sich ausgeben. Firefox vertraut dieser Website nicht, weil das Zertifikat nicht für www.data.gov.hr gilt. Das Zertifikat ist nur gültig für: gov.hr, *.gov.hr. Was können Sie dagegen tun?</p>
+<p>www.data.gov.hr verwendet eine Sicherheitstechnologie namens “HTTP Strict Transport Security (HSTS)”, durch welche Firefox nur über gesicherte Verbindungen mit der Website verbinden darf. Daher kann keine Ausnahme für die Website hinzugefügt werden.</p>
+<p>Das Zertifikat der Website ansehen</p>
+<p>Weitere Informationen zu Fehlern bei sicheren Verbindungen</p>
+<p>Fehlercode: SSL_ERROR_BAD_CERT_DOMAIN</p>
+<ol start="30" type="1">
+<li>Aug.&nbsp;2026 18:33:50 MESZ</li>
+</ol>
+</div>
+</div>
+</div>
 <p>Im Portal selbst findet man den Datensatz als <a href="https://data.gov.hr/ckan/en/dataset/kulturna-dobra">Registar kulturnih dobara</a>.</p>
 <p>Das staatliche Open Data Portal und der Datensatz im besonderen weisen eine Reihe von Nutzungsbarrieren für internationale Nutzer auf.</p>
 <section id="sprachbarriere" class="level3">
@@ -249,7 +240,7 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <h4 class="anchored" data-anchor-id="ckan-api">CKAN-API</h4>
 <p>Sämtliche Codebeispiele aus dem CKAN-Tutorial gaben lediglich eine Fehlermeldung wegen falscher Schreibweise zurück. Die Befehle mussten wegen mangelnder Erfahrung durch eine KI korrigiert werden. Zur besseren Lesbarkeit im Terminal wurde jqlang.jq installiert.</p>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="Original cURL-Befehle und deren Korrektur">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -258,7 +249,7 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p><strong>Liste der verfügbaren Pakete (Datensätze):</strong></p>
 <p>Original: <code>curl --location --request GET clock 'https://data.gov.hr/ckan/api/3/action/package_list'</code></p>
@@ -275,7 +266,7 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </div>
 </div>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="Downloadlinks der Dateidistributionen">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -284,7 +275,7 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Download der Daten als JSON (oder angepasst als XML, CSV):</p>
 <p>JSON: <code>https://data.gov.hr/ckan/dataset/c0410787-33b1-4299-b92c-9bbf38dd8bbf/resource/c9a9bce6-1b70-45ec-b2cf-d3f93bca7a02/download/data.json</code></p>
@@ -296,43 +287,59 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </section>
 <section id="abfrage-und-auswertung-der-paket-metadaten" class="level4">
 <h4 class="anchored" data-anchor-id="abfrage-und-auswertung-der-paket-metadaten">Abfrage und Auswertung der Paket-Metadaten</h4>
-<div id="get-package-metadata" class="cell" data-execution_count="2">
+<div id="ckan-package-metadata" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fetch_ckan_metadata(api_url:<span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]]:</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    con <span class="op">=</span> duckdb.<span class="ex">connect</span>(database<span class="op">=</span><span class="st">":memory:"</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="ss">f"""</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ss">        WITH raw_data AS (</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ss">            SELECT * FROM read_json_auto('</span><span class="sc">{</span>api_url<span class="sc">}</span><span class="ss">', maximum_object_size=10485760)</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ss">        ),</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ss">        keys_extracted AS (</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ss">            SELECT unnest(json_keys(result)) AS field_key</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ss">            FROM raw_data</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="ss">        ),</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">        key_value_pairs AS (</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ss">            SELECT</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ss">                k.field_key AS metadata_field,</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ss">                CAST(r.result-&gt;&gt;k.field_key AS VARCHAR) AS raw_val</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="ss">            FROM raw_data r, keys_extracted k</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="ss">        )</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="ss">        SELECT</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="ss">            metadata_field,</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="ss">            COALESCE(NULLIF(raw_val, ''), 'keine Angabe') AS value</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ss">        FROM key_value_pairs</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> con.sql(query)</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> duckdb.Error <span class="im">as</span> e:</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        logger.critical(</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Kritischer Fehler beim Abruf von </span><span class="sc">{</span>api_url<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fetch_ckan_metadata(api_url: <span class="bu">str</span>) <span class="op">-&gt;</span> pd.DataFrame:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Fetch and flatten CKAN metadata from a JSON API endpoint.</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">    Reads the JSON response from the given CKAN API URL using DuckDB,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">    extracts all keys and values from the `result` object, and returns</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">    them as a long-format DataFrame with one row per metadata field.</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Empty or missing values are replaced with "keine Angabe".</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">        api_url: URL of the CKAN API endpoint returning a JSON object</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">            with a top-level `result` field.</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">        DataFrame with columns `metadata_field` and `value`.</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">    Raises:</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">        duckdb.Error: If the query execution or JSON parsing fails.</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> duckdb.<span class="ex">connect</span>(database<span class="op">=</span><span class="st">":memory:"</span>) <span class="im">as</span> con:</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        query <span class="op">=</span> <span class="ss">f"""</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="ss">            WITH raw_data AS (</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="ss">                SELECT * FROM read_json_auto('</span><span class="sc">{</span>api_url<span class="sc">}</span><span class="ss">', maximum_object_size=10485760)</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="ss">            ),</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="ss">            keys_extracted AS (</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="ss">                SELECT unnest(json_keys(result)) AS field_key</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="ss">                FROM raw_data</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="ss">            ),</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="ss">            key_value_pairs AS (</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="ss">                SELECT</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ss">                    k.field_key AS metadata_field,</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="ss">                    CAST(r.result-&gt;&gt;k.field_key AS VARCHAR) AS raw_val</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="ss">                FROM raw_data r, keys_extracted k</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="ss">            )</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ss">            SELECT</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ss">                metadata_field,</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ss">                COALESCE(NULLIF(raw_val, ''), 'missing') AS value</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ss">            FROM key_value_pairs</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ss">        """</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> con.sql(query).df()</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> duckdb.Error <span class="im">as</span> e:</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>            logger.critical(</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f"Critical error retrieving data from </span><span class="sc">{</span>api_url<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>            <span class="cf">raise</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="Metadaten des Pakets">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -341,16 +348,17 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<div id="533ab964" class="cell" data-execution_count="3">
+<div id="68475ab1" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>api_url <span class="op">=</span> <span class="st">"https://data.gov.hr/ckan/api/3/action/package_show?id=kulturna-dobra"</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>package_metadata <span class="op">=</span> fetch_ckan_metadata(api_url)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>package_metadata.df()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>api_url <span class="op">=</span> <span class="st">"https://data.gov.hr/ckan/api/3/action/package_show?id=kulturna-dobra"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>package_metadata <span class="op">=</span> fetch_ckan_metadata(api_url)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.max_colwidth"</span>, <span class="va">None</span>):</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    display(package_metadata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<div class="cell-output cell-output-display">
 <div>
 
 
@@ -386,17 +394,17 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <tr class="odd">
 <th data-quarto-table-cell-role="th">4</th>
 <td>conforms_to</td>
-<td>["https://narodne-novine.nn.hr/eli/sluzbeni/20...</td>
+<td>["https://narodne-novine.nn.hr/eli/sluzbeni/2024/145/2369","https://narodne-novine.nn.hr/clanci/sluzbeni/2025_12_151_2252.html","https://narodne-novine.nn.hr/clanci/sluzbeni/2023_02_19_328.html"]</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">5</th>
 <td>coordinator</td>
-<td>keine Angabe</td>
+<td>missing</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">6</th>
 <td>coordinator_email</td>
-<td>keine Angabe</td>
+<td>missing</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">7</th>
@@ -451,12 +459,12 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <tr class="even">
 <th data-quarto-table-cell-role="th">17</th>
 <td>maintainer</td>
-<td>keine Angabe</td>
+<td>missing</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">18</th>
 <td>maintainer_email</td>
-<td>keine Angabe</td>
+<td>missing</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">19</th>
@@ -466,7 +474,7 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <tr class="odd">
 <th data-quarto-table-cell-role="th">20</th>
 <td>metadata_modified</td>
-<td>2026-08-27T17:17:49.461679</td>
+<td>2026-09-04T17:26:09.340042</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">21</th>
@@ -476,7 +484,7 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <tr class="odd">
 <th data-quarto-table-cell-role="th">22</th>
 <td>notes</td>
-<td>Registar kulturnih dobara Republike Hrvatske j...</td>
+<td>Registar kulturnih dobara Republike Hrvatske javna je knjiga koju vodi Ministarstvo kulture i medija, a prikazuje rezultate za nepokretna i nematerijalna kulturna dobra te podatke za javno arhivsko gradivo i javnu knjižničnu građu u skladu s Pravilnikom o obliku, sadržaju i načinu vođenja Registra kulturnih dobara Republike Hrvatske.</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">23</th>
@@ -491,7 +499,7 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <tr class="even">
 <th data-quarto-table-cell-role="th">25</th>
 <td>organization</td>
-<td>{"id":"87fd5581-9d31-4b77-9848-2ba6dcf2c74a","...</td>
+<td>{"id":"87fd5581-9d31-4b77-9848-2ba6dcf2c74a","name":"ministarstvo-kulture","title":"Ministarstvo kulture i medija","type":"organization","description":"","image_url":"","created":"2021-05-05T08:53:24.919801","is_organization":true,"approval_status":"approved","state":"active"}</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">26</th>
@@ -526,22 +534,22 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <tr class="odd">
 <th data-quarto-table-cell-role="th">32</th>
 <td>url</td>
-<td>keine Angabe</td>
+<td>missing</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">33</th>
 <td>version</td>
-<td>keine Angabe</td>
+<td>missing</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">34</th>
 <td>resources</td>
-<td>[{"cache_last_updated":null,"cache_url":null,"...</td>
+<td>[{"cache_last_updated":null,"cache_url":null,"created":"2023-12-19T19:04:01.360521","datastore_active":false,"datastore_contains_all_records_of_source_file":false,"format":"JSON","hash":"","id":"c9a9bce6-1b70-45ec-b2cf-d3f93bca7a02","last_modified":"2026-09-04T17:26:05.784405","metadata_modified":"2026-09-04T17:26:05.797757","mimetype":"application/json","mimetype_inner":null,"name":"Registar kulturnih dobara - CTS","package_id":"c0410787-33b1-4299-b92c-9bbf38dd8bbf","position":0,"resource_type":null,"size":10227091,"state":"active","url":"https://data.gov.hr/ckan/dataset/c0410787-33b1-4299-b92c-9bbf38dd8bbf/resource/c9a9bce6-1b70-45ec-b2cf-d3f93bca7a02/download/data.json","url_type":"upload","description":null},{"cache_last_updated":null,"cache_url":null,"created":"2023-12-20T08:39:14.847675","datastore_active":false,"datastore_contains_all_records_of_source_file":false,"format":"XML","hash":"","id":"6ea1d604-e778-458f-b891-c7127279e71e","last_modified":"2026-09-04T17:26:08.209473","metadata_modified":"2026-09-04T17:26:08.221725","mimetype":"text/xml","mimetype_inner":null,"name":"Registar kulturnih dobara - CTS","package_id":"c0410787-33b1-4299-b92c-9bbf38dd8bbf","position":1,"resource_type":null,"size":16087349,"state":"active","url":"https://data.gov.hr/ckan/dataset/c0410787-33b1-4299-b92c-9bbf38dd8bbf/resource/6ea1d604-e778-458f-b891-c7127279e71e/download/data.xml","url_type":"upload","description":""},{"cache_last_updated":null,"cache_url":null,"created":"2023-12-20T08:39:15.123237","datastore_active":false,"datastore_contains_all_records_of_source_file":false,"format":"CSV","hash":"","id":"b285165b-d244-484a-97e8-40d3fa0c9678","last_modified":"2026-09-04T17:26:09.333098","metadata_modified":"2026-09-04T17:26:09.344958","mimetype":"text/csv","mimetype_inner":null,"name":"Registar kulturnih dobara - CTS","package_id":"c0410787-33b1-4299-b92c-9bbf38dd8bbf","position":2,"resource_type":null,"size":7660990,"state":"active","url":"https://data.gov.hr/ckan/dataset/c0410787-33b1-4299-b92c-9bbf38dd8bbf/resource/b285165b-d244-484a-97e8-40d3fa0c9678/download/data.csv","url_type":"upload","description":""}]</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">35</th>
 <td>tags</td>
-<td>[{"display_name":"kulturna baština","id":"4e8f...</td>
+<td>[{"display_name":"kulturna baština","id":"4e8f0d5c-c155-4c9b-8d97-b4893adfd8b3","name":"kulturna baština","state":"active","vocabulary_id":null},{"display_name":"kulturno dobro","id":"cfbae765-cef5-4f9d-8c42-9ee7757d3bad","name":"kulturno dobro","state":"active","vocabulary_id":null},{"display_name":"nematerijalno kulturno dobro","id":"f04d1b4f-305f-4325-af03-b3e2bd91eb12","name":"nematerijalno kulturno dobro","state":"active","vocabulary_id":null},{"display_name":"nepokretno kulturno dobro","id":"1b59678e-e11e-4c4c-a0c4-53c2624e5829","name":"nepokretno kulturno dobro","state":"active","vocabulary_id":null}]</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">36</th>
@@ -567,21 +575,48 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </div>
 </div>
 </div>
-<p>Die Sichtung der Paket-Metadaten klärt jetzt die auf <strong>European data</strong> vergebene Punktzahl deutlich:</p>
+<p><strong>Lizenzdaten</strong></p>
+<p>Der Wert <code>access_rights</code> ist auf <code>public</code> gesetzt. Gleichzeitig suggeriert der Wert <code>isopen:'false'</code>, dass der Datensatz <strong>nicht</strong> öffentlich zugänglich ist. Dies lässt sich darauf zurückführen, dass das System (CKAN) die kroatische Lizenz nicht als offen erkennt.</p>
+<p>Direkt danach wird angegeben: <code>license_id:'open-licence'</code>. Des Weiteren wird als Lizenz mit <code>license_title: 'Otvorena dozvola (OD)'</code> (“offene Lizenz”) eine nationale kroatische Lizenz angezeigt. Ruft man die Lizenz auf, stößt man abermals auf eine Sprachbarriere, da es keine englische Übersetzung gibt.</p>
+<p><strong>Europäische Rechtsgrundlage</strong></p>
+<p>Für <code>applicable_legislation</code> ist <code>http://data.europa.eu/eli/reg_impl/2023/138/oj</code> angegeben. Es handelt sich um die “Durchführungsverordnung (EU) 2023/138 der Kommission vom 21. Dezember 2022 zur Festlegung bestimmter hochwertiger Datensätze und der Modalitäten ihrer Veröffentlichung und Weiterverwendung (Text von Bedeutung für den EWR)”. Laut Rechtsgrundlage und laut Angabe im Feld <code>hvd_category: http://data.europa.eu/bna/c_6c2bb82d</code> gehören die Daten des Registers zur Datenkategorie 1) Georaum, da es sich um Schutzgebiete handelt und sind als “high-value dataset” klassifiziert. Folgt man dem Link erhält man <code>&lt;skos:prefLabel xml:lang="en"&gt;Geographical names&lt;/skos:prefLabel&gt;</code>. Der Wert <code>is_hdv: 1</code> bestätigt dies zusätzlich. Die vorliegenden Daten enthalten aber keinerlei Geodaten, wie wir noch sehen werden.</p>
+<p><strong>Autor</strong></p>
+<p>Der Wert <code>autor: Služba za javnu komunikaciju Ministarstva</code> teilt mit, dass es sich um das “Amt für öffentliche Kommunikation des Ministeriums” handelt, gibt aber nicht den Namen des Ministeriums an. Es muss aus dem Wert <code>author_email: marija.siskoomrcen@min-kulture.hr</code> erschlossen werden, dass es sich um das Ministerium für Kultur und Medien handelt. Auch ist hier die Email eines konkreten Mitarbeiters hinterlegt, der natürlich wechseln kann.</p>
+<p><strong>Nationale Rechtsgrundlage</strong></p>
+<p>Im Feld <code>conforms_to</code> werden die nationalen Rechtsgrundlagen aufgeführt.</p>
+<p><strong>Koordinator und Maintainer</strong></p>
+<p>Die Werte für <code>coordinator</code> und <code>coordinator_email</code> fehlen, das gleiche gilt für <code>maintainer</code> und <code>maintainer_email</code>.</p>
+<p><strong>Aktualisierungsrate</strong></p>
+<p>Obwohl <code>data_refresh_frequency: daily</code> angegeben wird, bleibt die tatsächliche Aktualisierung offen. Der Wert von <code>metadata_modified</code> ändert sich täglich (doch die Metadaten verändern sich seit meiner Recherche nicht) und der Wert <code>resources: [{"cache_last_updated":null,"cache_url":null,"...</code> sagt aus, dass die Dateien nicht auf dem CKAN-Server gespiegelt werden, man greift also direkt auf den Original-Server der Behörde zu. Da kein Cache vorhanden ist, gibt es auch keine URL dazu.</p>
+<p><strong>Statistische Daten</strong></p>
+<p>Der Wert <code>includes_statistical_data: True</code> suggeriert das Vorhandensein von statistischen Daten. Wie wir sehen werden, sind aber keine statistischen Daten vorhanden. Es handelt sich im Grunde genommen um eine Inventarliste. Verursacht wird dieser Wert vermutlich durch die falsche Zuordnung zum Thema “Bevölkerung und Gesellschaft”, bei dem es sich tasächlich um statistische Daten handelt.</p>
+<p><strong>Themen-Zuordnung</strong></p>
+<p>Während der Datensatz auf EU-Ebene im Rahmen der High-value datasets der Kategorie <strong><em>Geographical names</em></strong> zugeordnet wird, ordnet das kroatische Portal diesen mit <code>theme:'population_and_society'</code> einem anderem, statistischen Thema zu.</p>
+<p><strong>URL</strong></p>
+<p>Dataset-URL (Landing Page / url): Der eigentliche Permalink zur Website des Portals, auf der dieser Datensatz mit seiner Beschreibung visualisiert wird (z. B. <a href="https://data.gov.hr/dataset/">https://data.gov.hr/dataset/</a>…). Beim Anlegen des Eintrags in CKAN wurde keine offizielle Quell-URL oder Landingpage hinterlegt. Man kann zwar die Datei herunterladen, aber den redaktionellen Ursprung im Portal nicht direkt über eine stabile Web-Adresse verlinken (Permalink).</p>
+<p><strong>Version</strong></p>
+<p>Fehlende Versionskontrolle: Open-Data-Richtlinien (und insbesondere FAIR-Prinzipien) fordern klare Versionsangaben für Datensätze, die sich regelmäßig ändern. Wenn die Version fehlt, weiß ein automatisierter ETL-Prozess oder ein Endnutzer nicht, ob es sich um den Stand von 2023, 2026 oder eine ungetestete Zwischenversion handelt. Man kann sich hier nur mühsam auf den last_modified-Zeitstempel der Ressource verlassen.</p>
+<p><strong>Resources</strong></p>
+<p>Fehlende Beschreibungen: Während das CSV- und XML-Feld für <code>description</code> einen leeren String <code>""</code> enthalten, ist das JSON-Feld explizit null. Es gibt auf Ressourcenebene keinerlei textliche Dokumentation darüber, welche Spalten konkret enthalten sind oder wie das Schema aufgebaut ist.</p>
+<p><strong>Tags</strong> Die Tags stammen direkt aus dem kroatischen Denkmalschutzrecht und unterteilen das Register in drei Hauptkategorien sowie einen Oberbegriff:</p>
 <ul>
-<li>kroatische statt englische Angaben</li>
-<li>fehlende Metadaten</li>
-<li>irreführende oder sich widersprechende Angaben</li>
+<li>kulturna baština (Kulturerbe): Der übergeordnete Dachbegriff für das gesamte Themenfeld.</li>
+<li>kulturno dobro (Kulturgut): Die generelle Bezeichnung für ein geschütztes Objekt.</li>
+<li>nepokretno kulturno dobro (Unbewegliches Kulturgut): Architektur, Denkmäler, historische Gebäude, archäologische Stätten oder historische Gärten/Parks.</li>
+<li>nematerijalno kulturno dobro (Immaterielles Kulturgut): Traditionen, Bräuche, Handwerkskünste, mündliche Überlieferungen oder darstellende Künste (gemäß UNESCO-Konvention).</li>
 </ul>
-<p><strong>Beispiel: Lizenzdaten</strong></p>
-<p>Der Wert <code>isopen:'false'</code> suggeriert, dass der Datensatz <strong>nicht</strong> öffentlich zugänglich ist. Direkt danach wird aber angegeben: <code>license_id:'open-licence'</code>. Des Weiteren wird als Lizenz nicht - wie im europäischen Open-Data-Act als wünschenswert - eine Creative-Commons-Lizenz aufgeführt, sondern mit <code>license_title:'Otvorena dozvola (OD)'</code> eine nationale kroatische Lizenz (auf Kroatisch statt Englisch) angezeigt.</p>
-<p><strong>Beispiel: Themen-Zuordnung</strong></p>
-<p>Während der Datensatz auf EU-Ebene im Rahmen der High-value datasets der Kategorie <strong><em>Geographical names</em></strong> zugeordnet wird (<code>hvd_category</code>), ordnet das kroatische Portal diesen mit <code>theme:'population_and_society'</code> einer ganz anderen Kategorie von Daten zu.</p>
+<p>Die Bedeutung von vocabulary_id: null</p>
+<p>In CKAN bedeutet ein Wert von null für das Feld vocabulary_id, dass es sich um freie (unkontrollierte) Tags handelt, die direkt von den Erstellern beim Hochladen vergeben wurden, anstatt aus einem zentralen, standardisierten Vokabular (einer kontrollierten Taxonomie oder einem Thesaurus) zu stammen.</p>
+<ul>
+<li>Kein semantisches Netz / Ontologie: Das bedeutet, dass das Portal diese Begriffe nicht automatisch mit übergeordneten Normdaten (wie Wikidata, Eurovoc oder europäischen Thesauri) verknüpft. Sie existieren nur als reine Text-Schlagworte auf dem Datensatz.</li>
+<li>Keine Hierarchie auf API-Ebene: Obwohl fachlich eine Logik existiert (z. B. dass nepokretno kulturno dobro eine Unterart von kulturno dobro ist), weiß das CKAN-System das strukturell nicht. Für das System sind das einfach vier voneinander unabhängige Strings.</li>
+</ul>
+<p>Für eine saubere Datenanalyse oder den Import in ein semantisches Web-Modell (RDF/OWL) bedeutet dies, dass man diese flachen Strings selbst in eine saubere Klassenhierarchie überführen muss, da das Portal sie rein als unstrukturierte Freitext-Schlagworte liefert.</p>
 </section>
 <section id="abfrage-und-auswertung-der-ressourcen-metadaten" class="level4">
 <h4 class="anchored" data-anchor-id="abfrage-und-auswertung-der-ressourcen-metadaten">Abfrage und Auswertung der Ressourcen-Metadaten</h4>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="Metadaten der Ressource (JSON)">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -590,14 +625,14 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<div id="fb9e1a7c" class="cell" data-execution_count="4">
+<div id="0a48c093" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>api_url <span class="op">=</span> <span class="st">"https://data.gov.hr/ckan/api/3/action/resource_show?id=c9a9bce6-1b70-45ec-b2cf-d3f93bca7a02"</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ressource_metadata <span class="op">=</span> fetch_ckan_metadata(api_url)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ressource_metadata.df()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>api_url <span class="op">=</span> <span class="st">"https://data.gov.hr/ckan/api/3/action/resource_show?id=c9a9bce6-1b70-45ec-b2cf-d3f93bca7a02"</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ressource_metadata <span class="op">=</span> fetch_ckan_metadata(api_url)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ressource_metadata</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
@@ -615,12 +650,12 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
 <td>cache_last_updated</td>
-<td>keine Angabe</td>
+<td>missing</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>cache_url</td>
-<td>keine Angabe</td>
+<td>missing</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
@@ -645,7 +680,7 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <tr class="odd">
 <th data-quarto-table-cell-role="th">6</th>
 <td>hash</td>
-<td>keine Angabe</td>
+<td>missing</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">7</th>
@@ -655,12 +690,12 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <tr class="odd">
 <th data-quarto-table-cell-role="th">8</th>
 <td>last_modified</td>
-<td>2026-08-27T17:17:45.544352</td>
+<td>2026-09-04T17:26:05.784405</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">9</th>
 <td>metadata_modified</td>
-<td>2026-08-27T17:17:45.558598</td>
+<td>2026-09-04T17:26:05.797757</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">10</th>
@@ -670,7 +705,7 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <tr class="even">
 <th data-quarto-table-cell-role="th">11</th>
 <td>mimetype_inner</td>
-<td>keine Angabe</td>
+<td>missing</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">12</th>
@@ -690,7 +725,7 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <tr class="even">
 <th data-quarto-table-cell-role="th">15</th>
 <td>resource_type</td>
-<td>keine Angabe</td>
+<td>missing</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">16</th>
@@ -721,13 +756,12 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </div>
 </div>
 </div>
-<p>Die Metadaten der Ressource zeigen, dass es sich nicht um einen echten API-Endpunkt handelt, sondern um hochgeladene Dateien. Direkte Abfragen (z. B. SQL oder API-Aufrufe) sind nicht möglich, da:</p>
+<p>Die Metadaten der Ressource zeigen, dass es sich nicht um einen echten API-Endpunkt handelt, sondern um hochgeladene Dateien. Direkte Abfragen unter verwendung von z.B. SQL sind nicht möglich, da:</p>
 <ul>
 <li>die Ressource über url_type: “upload” verfügt,</li>
 <li>der DataStore deaktiviert ist (datastore_active: false),</li>
-<li>keine strukturierte Datenbank-Anbindung existiert.</li>
 </ul>
-<p>Die Aktualisierung der Dateien erfolgt manuell, wie die Metadaten (last_modified und metadata_modified vom 25.08.2026) und das Fehlen von Cache-Mechanismen (cache_last_updated: “keine Angabe”) belegen.</p>
+<p>Die Aktualisierung der Dateien erfolgt zwar täglich, wie die Werte von <code>last_modified</code> und <code>metadata_modified</code> zeigen das Fehlen von Cache-Mechanismen <code>cache_last_updated: "missing"</code> und eines Hashes <code>hash: missing</code>. Das lässt keinen Rückschluss darauf zu, ob sich tatsächlich Daten geändert haben.</p>
 <p>Zudem existiert kein festes Schema für die Dateien:</p>
 <ul>
 <li>Struktur (Spaltennamen, -anzahl, Datentypen) kann sich bei jedem Upload ändern.</li>
@@ -735,11 +769,43 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </ul>
 <p>Folgen:</p>
 <ul>
-<li>Keine automatisierte Verarbeitung möglich, da die Datenstruktur instabil ist.</li>
+<li>Keine automatisierte Verarbeitung möglich, da die Datenstruktur potentiell instabil ist.</li>
 <li>Die Struktur muss vor jeder Analyse geprüft und ggf. manuell angepasst werden.</li>
-<li>Durch den fehlenden Hash (hash: “keine Angabe”) kann keine inhaltliche Veränderung der Datei nachvollzogen werden.</li>
+<li>Durch den fehlenden Hash (hash: “missing”) kann keine inhaltliche Veränderung der Datei nachvollzogen werden.</li>
 </ul>
 </section>
+</section>
+<section id="untersuchung-des-updateverlaufs" class="level3">
+<h3 class="anchored" data-anchor-id="untersuchung-des-updateverlaufs">Untersuchung des Updateverlaufs</h3>
+<p>Das Dataset verfügt über einen Tab <strong><em>Activity Stream</em></strong>. Dieser zeigt, dass jeden Abend um ca. 19:20 Uhr drei Cronjobs angestoßen werden, offenbar ein Cronjob für jede der drei Dateien (JSON, XML, CSV). Schaut man sich die Details an, so findet man bei allen Cronjobs der Stichprobe (1 Woche) unter dem Link <strong><em>Changes</em></strong> folgende Angabe:</p>
+<div class="callout callout-style-default callout-warning no-icon callout-titled" title="Changes">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Changes
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>On August 28, 2026 at 7:18:43 PM +0200, Gravatar omega-admin:</p>
+<ul>
+<li>No fields were updated. See the metadata diff for more details.</li>
+</ul>
+<p>On August 28, 2026 at 7:18:42 PM +0200, Gravatar omega-admin:</p>
+<ul>
+<li>No fields were updated. See the metadata diff for more details.</li>
+</ul>
+<p>On August 28, 2026 at 7:18:39 PM +0200, Gravatar omega-admin:</p>
+<ul>
+<li>No fields were updated. See the metadata diff for more details.</li>
+</ul>
+</div>
+</div>
+</div>
+<p>Zwar gibt es ein Dropdown <strong><em>View changes from … to</em></strong> aber der Datumsbereich lässt sich nicht verändern. Man kann also jede Änderung mur als Einzelanzeige anzeigen lassen und nicht als Liste. Das erschwert zusätzlich die Suche nach einer tatsächlichen Aktualisierung.</p>
 </section>
 <section id="erste-datensichtung-und-strukturanalyse" class="level3">
 <h3 class="anchored" data-anchor-id="erste-datensichtung-und-strukturanalyse">Erste Datensichtung und Strukturanalyse</h3>
@@ -751,9 +817,11 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 <li>Spaltennamen sind ausschließlich auf Kroatisch vorhanden</li>
 <li>Datenwerte sind nicht bereinigt: führende Leerzeichen und Excel-Artefakte am Ende von Werten: <code>\n\r</code></li>
 <li>Keine maschinenverwertbare Normalisierung der Daten</li>
+<li>Emails von Mitarbeitern örtlicher Museen mir vollem Namen</li>
+<li>Telefonnummern und Handynummern von Mitarbeitern örtlicher Museen</li>
 </ul>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="Exemplarischer JSON-Datensatz">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -762,33 +830,33 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"id"</span><span class="fu">:</span> <span class="dv">679678968</span><span class="fu">,</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Naziv"</span><span class="fu">:</span> <span class="st">"Crkva sv. Petra"</span><span class="fu">,</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Autori"</span><span class="fu">:</span> <span class="st">""</span><span class="fu">,</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Email_KO"</span><span class="fu">:</span> <span class="st">" branka.seiter@min-kulture.hr"</span><span class="fu">,</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Naziv_KO"</span><span class="fu">:</span> <span class="st">"Konzervatorski odjel u Karlovcu"</span><span class="fu">,</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Zupanija"</span><span class="fu">:</span> <span class="st">"Karlovačka"</span><span class="fu">,</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Adresa_KO"</span><span class="fu">:</span> <span class="st">" V. Vranicanija 6, 47000 Karlovac</span><span class="ch">\n\r</span><span class="st">"</span><span class="fu">,</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Opis_dobra"</span><span class="fu">:</span> <span class="st">"Crkva smještena na groblju, na izuzetnom položaju u vizuri naselja, jedna je od najstarijih sakralnih građevina ogulinskog kraja. Kao crkva sv. Martina spominje se 1558. g. Godine 1926. sagrađen je zvonik i kapela je proširena te nakon oštećenja u Drugom svjetskom ratu obnovljena. Jednobrodna je građevina s lađom pravokutnog tlocrta, svetištem nepravilnog trapezoidnog plitkog tlocrta i zvonikom iznad glavnog pročelja. Lađa je u zoni potkornog prostora proširena čime formira po jedan bočni rizalit. Svetište je svođeno nepravilnim bačvastim svodom, lađa nije svođena. Inventar je recentan."</span><span class="fu">,</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Telefon_KO"</span><span class="fu">:</span> <span class="st">" 047/ 600-796</span><span class="ch">\n\r</span><span class="st">"</span><span class="fu">,</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Opcina_grad"</span><span class="fu">:</span> <span class="st">"OGULIN"</span><span class="fu">,</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Oznaka_dobra"</span><span class="fu">:</span> <span class="st">"Z-4095"</span><span class="fu">,</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Klasifikacija"</span><span class="fu">:</span> <span class="st">"sakralna graditeljska baština"</span><span class="fu">,</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Pravni_status"</span><span class="fu">:</span> <span class="st">"zaštićeno kulturno dobro"</span><span class="fu">,</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"UNESCO_zastita"</span><span class="fu">:</span> <span class="st">"ne"</span><span class="fu">,</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Adresa_smjestaja"</span><span class="fu">:</span> <span class="st">""</span><span class="fu">,</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Mjesto_smjestaja"</span><span class="fu">:</span> <span class="st">"Sveti Petar"</span><span class="fu">,</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Vrijeme_nastanka"</span><span class="fu">:</span> <span class="st">"16. st. do 20. st."</span><span class="fu">,</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Vrsta_kulturnog_dobra"</span><span class="fu">:</span> <span class="st">"nepokretno kulturno dobro - pojedinacno"</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span><span class="er">,</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"id"</span><span class="fu">:</span> <span class="dv">679678968</span><span class="fu">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Naziv"</span><span class="fu">:</span> <span class="st">"Crkva sv. Petra"</span><span class="fu">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Autori"</span><span class="fu">:</span> <span class="st">""</span><span class="fu">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Email_KO"</span><span class="fu">:</span> <span class="st">" branka.seiter@min-kulture.hr"</span><span class="fu">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Naziv_KO"</span><span class="fu">:</span> <span class="st">"Konzervatorski odjel u Karlovcu"</span><span class="fu">,</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Zupanija"</span><span class="fu">:</span> <span class="st">"Karlovačka"</span><span class="fu">,</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Adresa_KO"</span><span class="fu">:</span> <span class="st">" V. Vranicanija 6, 47000 Karlovac</span><span class="ch">\n\r</span><span class="st">"</span><span class="fu">,</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Opis_dobra"</span><span class="fu">:</span> <span class="st">"Crkva smještena na groblju, na izuzetnom položaju u vizuri naselja, jedna je od najstarijih sakralnih građevina ogulinskog kraja. Kao crkva sv. Martina spominje se 1558. g. Godine 1926. sagrađen je zvonik i kapela je proširena te nakon oštećenja u Drugom svjetskom ratu obnovljena. Jednobrodna je građevina s lađom pravokutnog tlocrta, svetištem nepravilnog trapezoidnog plitkog tlocrta i zvonikom iznad glavnog pročelja. Lađa je u zoni potkornog prostora proširena čime formira po jedan bočni rizalit. Svetište je svođeno nepravilnim bačvastim svodom, lađa nije svođena. Inventar je recentan."</span><span class="fu">,</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Telefon_KO"</span><span class="fu">:</span> <span class="st">" 047/ 600-796</span><span class="ch">\n\r</span><span class="st">"</span><span class="fu">,</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Opcina_grad"</span><span class="fu">:</span> <span class="st">"OGULIN"</span><span class="fu">,</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Oznaka_dobra"</span><span class="fu">:</span> <span class="st">"Z-4095"</span><span class="fu">,</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Klasifikacija"</span><span class="fu">:</span> <span class="st">"sakralna graditeljska baština"</span><span class="fu">,</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Pravni_status"</span><span class="fu">:</span> <span class="st">"zaštićeno kulturno dobro"</span><span class="fu">,</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"UNESCO_zastita"</span><span class="fu">:</span> <span class="st">"ne"</span><span class="fu">,</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Adresa_smjestaja"</span><span class="fu">:</span> <span class="st">""</span><span class="fu">,</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Mjesto_smjestaja"</span><span class="fu">:</span> <span class="st">"Sveti Petar"</span><span class="fu">,</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Vrijeme_nastanka"</span><span class="fu">:</span> <span class="st">"16. st. do 20. st."</span><span class="fu">,</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"Vrsta_kulturnog_dobra"</span><span class="fu">:</span> <span class="st">"nepokretno kulturno dobro - pojedinacno"</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span><span class="er">,</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="Exemplarischer XML-Datensatz">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -797,81 +865,82 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Object</span>&gt;</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">id</span>&gt;</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;679678968&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">id</span>&gt;</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Naziv</span>&gt;</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;Crkva sv. Petra&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Naziv</span>&gt;</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Autori</span>&gt;</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Autori</span>&gt;</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Email_KO</span>&gt;</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt; branka.seiter@min-kulture.hr&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Email_KO</span>&gt;</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Naziv_KO</span>&gt;</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;Konzervatorski odjel u Karlovcu&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Naziv_KO</span>&gt;</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Zupanija</span>&gt;</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;Karlovačka&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Zupanija</span>&gt;</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Adresa_KO</span>&gt;</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt; V. Vranicanija 6, 47000 Karlovac</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Adresa_KO</span>&gt;</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Opis_dobra</span>&gt;</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;Crkva smještena na groblju, na izuzetnom položaju u vizuri naselja, jedna je od najstarijih sakralnih građevina ogulinskog kraja. Kao crkva sv. Martina spominje se 1558. g. Godine 1926. sagrađen je zvonik i kapela je proširena te nakon oštećenja u Drugom svjetskom ratu obnovljena. Jednobrodna je građevina s lađom pravokutnog tlocrta, svetištem nepravilnog trapezoidnog plitkog tlocrta i zvonikom iznad glavnog pročelja. Lađa je u zoni potkornog prostora proširena čime formira po jedan bočni rizalit. Svetište je svođeno nepravilnim bačvastim svodom, lađa nije svođena. Inventar je recentan.&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Opis_dobra</span>&gt;</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Telefon_KO</span>&gt;</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt; 047/ 600-796</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Telefon_KO</span>&gt;</span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Opcina_grad</span>&gt;</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;OGULIN&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Opcina_grad</span>&gt;</span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Oznaka_dobra</span>&gt;</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;Z-4095&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Oznaka_dobra</span>&gt;</span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Klasifikacija</span>&gt;</span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;sakralna graditeljska baština&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Klasifikacija</span>&gt;</span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Pravni_status</span>&gt;</span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;zaštićeno kulturno dobro&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Pravni_status</span>&gt;</span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">UNESCO_zastita</span>&gt;</span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;ne&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">UNESCO_zastita</span>&gt;</span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Adresa_smjestaja</span>&gt;</span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Adresa_smjestaja</span>&gt;</span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Mjesto_smjestaja</span>&gt;</span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;Sveti Petar&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Mjesto_smjestaja</span>&gt;</span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Vrijeme_nastanka</span>&gt;</span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;16. st. do 20. st.&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Vrijeme_nastanka</span>&gt;</span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Vrsta_kulturnog_dobra</span>&gt;</span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;nepokretno kulturno dobro - pojedinacno&lt;/<span class="kw">Value</span>&gt;</span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Vrsta_kulturnog_dobra</span>&gt;</span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">Object</span>&gt;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Object</span>&gt;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">id</span>&gt;</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;679678968&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">id</span>&gt;</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Naziv</span>&gt;</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;Crkva sv. Petra&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Naziv</span>&gt;</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Autori</span>&gt;</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Autori</span>&gt;</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Email_KO</span>&gt;</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt; branka.seiter@min-kulture.hr&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Email_KO</span>&gt;</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Naziv_KO</span>&gt;</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;Konzervatorski odjel u Karlovcu&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Naziv_KO</span>&gt;</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Zupanija</span>&gt;</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;Karlovačka&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Zupanija</span>&gt;</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Adresa_KO</span>&gt;</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt; V. Vranicanija 6, 47000 Karlovac</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Adresa_KO</span>&gt;</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Opis_dobra</span>&gt;</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;Crkva smještena na groblju, na izuzetnom položaju u vizuri naselja, jedna je od najstarijih sakralnih građevina ogulinskog kraja. Kao crkva sv. Martina spominje se 1558. g. Godine 1926. sagrađen je zvonik i kapela je proširena te nakon oštećenja u Drugom svjetskom ratu obnovljena. Jednobrodna je građevina s lađom pravokutnog tlocrta, svetištem nepravilnog trapezoidnog plitkog tlocrta i zvonikom iznad glavnog pročelja. Lađa je u zoni potkornog prostora proširena čime formira po jedan bočni rizalit. Svetište je svođeno nepravilnim bačvastim svodom, lađa nije svođena. Inventar je recentan.&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Opis_dobra</span>&gt;</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Telefon_KO</span>&gt;</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt; 047/ 600-796</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Telefon_KO</span>&gt;</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Opcina_grad</span>&gt;</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;OGULIN&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Opcina_grad</span>&gt;</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Oznaka_dobra</span>&gt;</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;Z-4095&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Oznaka_dobra</span>&gt;</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Klasifikacija</span>&gt;</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;sakralna graditeljska baština&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Klasifikacija</span>&gt;</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Pravni_status</span>&gt;</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;zaštićeno kulturno dobro&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Pravni_status</span>&gt;</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">UNESCO_zastita</span>&gt;</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;ne&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">UNESCO_zastita</span>&gt;</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Adresa_smjestaja</span>&gt;</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Adresa_smjestaja</span>&gt;</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Mjesto_smjestaja</span>&gt;</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;Sveti Petar&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Mjesto_smjestaja</span>&gt;</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Vrijeme_nastanka</span>&gt;</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;16. st. do 20. st.&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Vrijeme_nastanka</span>&gt;</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Vrsta_kulturnog_dobra</span>&gt;</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Value</span>&gt;nepokretno kulturno dobro - pojedinacno&lt;/<span class="kw">Value</span>&gt;</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Vrsta_kulturnog_dobra</span>&gt;</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">Object</span>&gt;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
 </section>
 <section id="zwischenfazit" class="level4">
 <h4 class="anchored" data-anchor-id="zwischenfazit">Zwischenfazit</h4>
-<p>In den Metadaten finden sich <strong>keine</strong> Angaben zur Datenquelle (resources). Die Inspektion der ausgelieferten Daten legt allerdings den Schluss nahe, dass es sich nicht um den Export aus einem normalisierten Datenbanksystem handelt, sondern um eine automatisierte Konvertierung einer <strong>Excel-Tabelle</strong> des Ministeriums für Kultur und Medien. Speziell die vorliegenden Formatierungsartefakte zeigen, dass <strong>keinerlei</strong> Bereinigung der Daten stattgefunden hat. Für eine sinnvolle Weiterverwendung ist daher zwingend ein vorgelagerter Schritt zur <strong>Bereinigung und Normalisierung</strong> unerlässlich.</p>
+<p>In den Metadaten finden sich keine Angaben zur Datenquelle (resources). Die Inspektion der ausgelieferten Daten legt allerdings den Schluss nahe, dass es sich nicht um den Export aus einem normalisierten Datenbanksystem handelt, sondern um eine automatisierte Konvertierung einer <strong>Excel-Tabelle</strong> des Ministeriums für Kultur und Medien. Speziell die vorliegenden Formatierungsartefakte zeigen, dass keinerlei Bereinigung der Daten stattgefunden hat. Für eine sinnvolle Weiterverwendung ist daher ein vorgelagerter Schritt zur <strong>Bereinigung und Normalisierung</strong> unerlässlich.</p>
+<p>Für eine automatisierte Abfrage der Daten über die CKAN-API ist der Datensatz nicht geeignet, da die Daten lediglich als Datei abgelegt und nicht in CKAN eingespeist werden. Da eine tatsächliche Änderung der Daten über die API nicht ersichtlich ist, müsste die gesamte Datei täglich heruntergeladen und auf Seiten des Empfängers geprüft werden. Es können nicht nur unvorhersagbar neue Daten enthalten sein, sondern auch unvorhersagbar eine Änderung der Spaltennamen und/oder Spaltenanzahl stattfinden. Dadurch entsteht ein in den meisten Fällen unnötiger Datenverkehr und die Notwendigkeit einer permanenten Überprüfung des Datenschemas.</p>
 </section>
 </section>
 <section id="download-der-json-datei" class="level3">
 <h3 class="anchored" data-anchor-id="download-der-json-datei">Download der JSON-Datei</h3>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="Downloadcode">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -880,92 +949,130 @@ if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.M
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime, timezone</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>utc_date <span class="op">=</span> datetime.now(timezone.utc).strftime(<span class="st">"%Y-%m-</span><span class="sc">%d</span><span class="st">"</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>full_path <span class="op">=</span> DATA_RAW <span class="op">/</span> <span class="ss">f"</span><span class="sc">{</span>utc_date<span class="sc">}</span><span class="ss">_datagovhr_rkd.json"</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://data.gov.hr/ckan/dataset/c0410787-33b1-4299-b92c-9bbf38dd8bbf/resource/c9a9bce6-1b70-45ec-b2cf-d3f93bca7a02/download/data.json"</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>headers <span class="op">=</span> {<span class="st">"User-Agent"</span>: <span class="st">"Mozilla/5.0"</span>}</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> requests.get(url, headers<span class="op">=</span>headers)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>response.raise_for_status()</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(full_path, <span class="st">"wb"</span>) <span class="im">as</span> <span class="bu">file</span>:</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">file</span>.write(response.content)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>utc_date <span class="op">=</span> datetime.now(timezone.utc).strftime(<span class="st">"%Y-%m-</span><span class="sc">%d</span><span class="st">"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>full_path <span class="op">=</span> DATA_RAW <span class="op">/</span> <span class="ss">f"</span><span class="sc">{</span>utc_date<span class="sc">}</span><span class="ss">_datagovhr_rkd.json"</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://data.gov.hr/ckan/dataset/c0410787-33b1-4299-b92c-9bbf38dd8bbf/resource/c9a9bce6-1b70-45ec-b2cf-d3f93bca7a02/download/data.json"</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>headers <span class="op">=</span> {<span class="st">"User-Agent"</span>: <span class="st">"Mozilla/5.0"</span>}</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> requests.get(url, headers<span class="op">=</span>headers)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>response.raise_for_status()</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(full_path, <span class="st">"wb"</span>) <span class="im">as</span> <span class="bu">file</span>:</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">file</span>.write(response.content)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
 </section>
 <section id="umwandlung-in-parquet-und-bewertung-der-rohdaten" class="level3">
 <h3 class="anchored" data-anchor-id="umwandlung-in-parquet-und-bewertung-der-rohdaten">Umwandlung in Parquet und Bewertung der Rohdaten</h3>
-<div id="cell-raw-data-analysis" class="cell" data-execution_count="5">
+<div id="ckan-convert-json-to-parquet" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> convert_latest_json_to_parquet(data_raw: Path) <span class="op">-&gt;</span> Path:</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    json_files <span class="op">=</span> <span class="bu">sorted</span>(data_raw.glob(<span class="st">"*_datagovhr_rkd.json"</span>))</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> json_files:</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">FileNotFoundError</span>(<span class="st">"Keine passenden JSON-Dateien im Verzeichnis gefunden."</span>)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    latest_json <span class="op">=</span> json_files[<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    parquet_output <span class="op">=</span> latest_json.with_suffix(<span class="st">".parquet"</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Aktuellste Datei: </span><span class="sc">{</span>latest_json<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> duckdb.<span class="ex">connect</span>() <span class="im">as</span> con:</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        con.execute(</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"COPY (SELECT * FROM read_json_auto('</span><span class="sc">{</span>latest_json<span class="sc">}</span><span class="ss">')) TO '</span><span class="sc">{</span>parquet_output<span class="sc">}</span><span class="ss">' (FORMAT 'PARQUET')"</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Konvertierung erfolgreich abgeschlossen."</span>)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Parquet-Datei: </span><span class="sc">{</span>parquet_output<span class="sc">.</span>name<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> parquet_output</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract_metadata(df: pd.DataFrame) <span class="op">-&gt;</span> pd.DataFrame:</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    total_rows <span class="op">=</span> <span class="bu">len</span>(df)</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    metadata <span class="op">=</span> []</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, col <span class="kw">in</span> <span class="bu">enumerate</span>(df.columns):</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        dtype <span class="op">=</span> df[col].dtype</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        num_nan <span class="op">=</span> df[col].isna().<span class="bu">sum</span>()</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        num_unique <span class="op">=</span> df[col].nunique()</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>        valid_rows <span class="op">=</span> total_rows <span class="op">-</span> num_nan</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>        pct_nan <span class="op">=</span> (num_nan <span class="op">/</span> total_rows) <span class="op">*</span> <span class="dv">100</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>        pct_unique <span class="op">=</span> (num_unique <span class="op">/</span> valid_rows <span class="op">*</span> <span class="dv">100</span>) <span class="cf">if</span> valid_rows <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="fl">0.0</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>        max_str_len <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>        starts_with_whitespace <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>        contains_newline <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> pd.api.types.is_string_dtype(dtype) <span class="kw">or</span> dtype <span class="op">==</span> <span class="st">'object'</span>:</span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>            col_as_str <span class="op">=</span> df[col].astype(<span class="bu">str</span>)</span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> num_nan <span class="op">&lt;</span> total_rows:</span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>                max_str_len <span class="op">=</span> df[col].<span class="bu">str</span>.<span class="bu">len</span>().<span class="bu">max</span>()</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>            starts_with_whitespace <span class="op">=</span> col_as_str.<span class="bu">str</span>.match(<span class="vs">r'</span><span class="dv">^\s</span><span class="vs">'</span>).<span class="bu">sum</span>()</span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>            contains_newline <span class="op">=</span> col_as_str.<span class="bu">str</span>.contains(<span class="vs">r'</span><span class="pp">[</span><span class="ch">\r\n</span><span class="pp">]</span><span class="vs">'</span>).<span class="bu">sum</span>()</span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>        metadata.append({</span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>            <span class="st">"index"</span>: idx,</span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>            <span class="st">"column_name"</span>: col,</span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>            <span class="st">"type"</span>: <span class="bu">str</span>(dtype),</span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>            <span class="st">"nan"</span>: num_nan,</span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>            <span class="st">"nan_pct"</span>: <span class="ss">f"</span><span class="sc">{</span>pct_nan<span class="sc">:.1f}</span><span class="ss">%"</span>,</span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>            <span class="st">"uniques"</span>: num_unique,</span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>            <span class="st">"uniques_pct"</span>: <span class="ss">f"</span><span class="sc">{</span>pct_unique<span class="sc">:.1f}</span><span class="ss">%"</span>,</span>
-<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>            <span class="st">"max_len"</span>: <span class="bu">int</span>(max_str_len) <span class="cf">if</span> pd.notna(max_str_len) <span class="cf">else</span> <span class="st">"-"</span>,</span>
-<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>            <span class="st">"starts_whitespace"</span>: starts_with_whitespace,</span>
-<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>            <span class="st">"contains_newline"</span>: contains_newline,</span>
-<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>        })</span>
-<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(metadata).set_index(<span class="st">"index"</span>)</span>
-<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>parquet_output <span class="op">=</span> convert_latest_json_to_parquet(DATA_RAW)</span>
-<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_parquet(parquet_output)</span>
-<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>total_rows <span class="op">=</span> <span class="bu">len</span>(df)</span>
-<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>total_cols <span class="op">=</span> <span class="bu">len</span>(df.columns)</span>
-<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Spalten: </span><span class="sc">{</span>total_cols<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Zeilen: </span><span class="sc">{</span>total_rows<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
-<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>metadata_df <span class="op">=</span> extract_metadata(df)</span>
-<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>metadata_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> convert_latest_json_to_parquet(data_raw: Path) <span class="op">-&gt;</span> Path:</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Convert the most recent JSON file in the given directory to a Parquet file.</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Searches the given directory for files matching the pattern</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">    "*_datagovhr_rkd.json", selects the (alphabetically/chronologically)</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">    latest file, and converts it into a Parquet file with the same</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">    filename (but with a .parquet extension) using DuckDB.</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">        data_raw: Path to the directory containing the raw JSON data.</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">        Path to the generated Parquet file.</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">    Raises:</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">        FileNotFoundError: If no matching JSON files are found in the directory.</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    json_files <span class="op">=</span> <span class="bu">sorted</span>(data_raw.glob(<span class="st">"*_datagovhr_rkd.json"</span>))</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> json_files:</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">FileNotFoundError</span>(<span class="st">"Keine passenden JSON-Dateien im Verzeichnis gefunden."</span>)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    latest_json <span class="op">=</span> json_files[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    parquet_output <span class="op">=</span> latest_json.with_suffix(<span class="st">".parquet"</span>)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Aktuellste Datei: </span><span class="sc">{</span>latest_json<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> duckdb.<span class="ex">connect</span>() <span class="im">as</span> con:</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>        con.execute(</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"COPY (SELECT * FROM read_json_auto('</span><span class="sc">{</span>latest_json<span class="sc">}</span><span class="ss">')) TO '</span><span class="sc">{</span>parquet_output<span class="sc">}</span><span class="ss">' (FORMAT 'PARQUET')"</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Konvertierung erfolgreich abgeschlossen."</span>)</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Parquet-Datei: </span><span class="sc">{</span>parquet_output<span class="sc">.</span>name<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> parquet_output</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="ckan-extract-metadata" class="cell" data-execution_count="6">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract_metadata(df: pd.DataFrame) <span class="op">-&gt;</span> pd.DataFrame:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Build a summary table with metadata for each column of a DataFrame.</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">    For each column, this computes the data type, the number and percentage</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">    of missing values, the number and percentage of unique values, and,</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">    for string columns, the maximum string length, leading whitespace</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">    occurrences, and embedded newline occurrences.</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">        df: The DataFrame to analyze.</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">        A DataFrame with one row per column of the input DataFrame and the</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">        computed metadata as columns, indexed by the original column</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">        position ("index").</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    total_rows <span class="op">=</span> <span class="bu">len</span>(df)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    metadata <span class="op">=</span> []</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, col <span class="kw">in</span> <span class="bu">enumerate</span>(df.columns):</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        dtype <span class="op">=</span> df[col].dtype</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        num_nan <span class="op">=</span> df[col].isna().<span class="bu">sum</span>()</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>        num_unique <span class="op">=</span> df[col].nunique()</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>        valid_rows <span class="op">=</span> total_rows <span class="op">-</span> num_nan</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>        pct_nan <span class="op">=</span> (num_nan <span class="op">/</span> total_rows) <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>        pct_unique <span class="op">=</span> (num_unique <span class="op">/</span> valid_rows <span class="op">*</span> <span class="dv">100</span>) <span class="cf">if</span> valid_rows <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="fl">0.0</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>        max_str_len <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>        starts_with_whitespace <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>        contains_newline <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> pd.api.types.is_string_dtype(dtype) <span class="kw">or</span> dtype <span class="op">==</span> <span class="st">'object'</span>:</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>            col_as_str <span class="op">=</span> df[col].astype(<span class="bu">str</span>)</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> num_nan <span class="op">&lt;</span> total_rows:</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>                max_str_len <span class="op">=</span> df[col].<span class="bu">str</span>.<span class="bu">len</span>().<span class="bu">max</span>()</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>            starts_with_whitespace <span class="op">=</span> col_as_str.<span class="bu">str</span>.match(<span class="vs">r'</span><span class="dv">^\s</span><span class="vs">'</span>).<span class="bu">sum</span>()</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>            contains_newline <span class="op">=</span> col_as_str.<span class="bu">str</span>.contains(<span class="vs">r'</span><span class="pp">[</span><span class="ch">\r\n</span><span class="pp">]</span><span class="vs">'</span>).<span class="bu">sum</span>()</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>        metadata.append({</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>            <span class="st">"index"</span>: idx,</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>            <span class="st">"column_name"</span>: col,</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>            <span class="st">"type"</span>: <span class="bu">str</span>(dtype),</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>            <span class="st">"nan"</span>: num_nan,</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>            <span class="st">"nan_pct"</span>: <span class="ss">f"</span><span class="sc">{</span>pct_nan<span class="sc">:.1f}</span><span class="ss">%"</span>,</span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>            <span class="st">"uniques"</span>: num_unique,</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>            <span class="st">"uniques_pct"</span>: <span class="ss">f"</span><span class="sc">{</span>pct_unique<span class="sc">:.1f}</span><span class="ss">%"</span>,</span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>            <span class="st">"max_len"</span>: <span class="bu">int</span>(max_str_len) <span class="cf">if</span> pd.notna(max_str_len) <span class="cf">else</span> <span class="st">"-"</span>,</span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>            <span class="st">"starts_whitespace"</span>: starts_with_whitespace,</span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>            <span class="st">"contains_newline"</span>: contains_newline,</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(metadata).set_index(<span class="st">"index"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="cell-ckan-show-metadata" class="cell" data-execution_count="7">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>parquet_output <span class="op">=</span> convert_latest_json_to_parquet(DATA_RAW)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_parquet(parquet_output)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>total_rows <span class="op">=</span> <span class="bu">len</span>(df)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>total_cols <span class="op">=</span> <span class="bu">len</span>(df.columns)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Spalten: </span><span class="sc">{</span>total_cols<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Zeilen: </span><span class="sc">{</span>total_rows<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>metadata_df <span class="op">=</span> extract_metadata(df)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>metadata_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Aktuellste Datei: 2026-08-26_datagovhr_rkd.json
@@ -976,7 +1083,7 @@ Spalten: 18
 Zeilen: 7950
 </code></pre>
 </div>
-<div id="raw-data-analysis" class="cell-output cell-output-display" data-execution_count="5">
+<div id="ckan-show-metadata" class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -1230,48 +1337,46 @@ Zeilen: 7950
 </div>
 </div>
 </div>
-<div id="cell-plot-unique-values" class="cell" data-execution_count="6">
+<div id="cell-ckan-plot-metadata" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>plot_df <span class="op">=</span> metadata_df.reset_index()</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> px.bar(</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    plot_df,</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">"uniques"</span>,</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="st">"column_name"</span>,</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    orientation<span class="op">=</span><span class="st">"h"</span>,</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    text<span class="op">=</span><span class="st">"uniques"</span>,</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Anzahl der Unique-Werte pro Spalte"</span>,</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>{</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"uniques"</span>: <span class="st">"Anzahl eindeutiger Werte"</span>,</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"column_name"</span>: <span class="st">"Spaltenname"</span>,</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"uniques_pct"</span>: <span class="st">"Anteil"</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        },</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    hover_data<span class="op">=</span>{<span class="st">"uniques_pct"</span>: <span class="va">True</span>, <span class="st">"uniques"</span>: <span class="va">True</span>, <span class="st">"column_name"</span>: <span class="va">True</span>},</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="st">"uniques"</span>,       </span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    color_continuous_scale<span class="op">=</span><span class="st">"Plasma"</span>,</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">"seaborn"</span>,</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="bu">max</span>(<span class="dv">400</span>, <span class="bu">len</span>(plot_df) <span class="op">*</span> <span class="dv">30</span>),  </span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">"Eindeutige Werte"</span>,</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">"categoryorder"</span>: <span class="st">"trace"</span>, <span class="st">"autorange"</span>: <span class="st">"reversed"</span>}, </span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    coloraxis_showscale<span class="op">=</span><span class="va">False</span></span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>fig.update_traces(textposition<span class="op">=</span><span class="st">"outside"</span>, cliponaxis<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>plot_df <span class="op">=</span> metadata_df.reset_index()</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> px.bar(</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    plot_df,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">"uniques"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="st">"column_name"</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    orientation<span class="op">=</span><span class="st">"h"</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    text<span class="op">=</span><span class="st">"uniques"</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Anzahl der Unique-Werte pro Spalte"</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>{</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"uniques"</span>: <span class="st">"Anzahl eindeutiger Werte"</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"column_name"</span>: <span class="st">"Spaltenname"</span>,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"uniques_pct"</span>: <span class="st">"Anteil"</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    hover_data<span class="op">=</span>{<span class="st">"uniques_pct"</span>: <span class="va">True</span>, <span class="st">"uniques"</span>: <span class="va">True</span>, <span class="st">"column_name"</span>: <span class="va">True</span>},</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="st">"uniques"</span>,       </span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    color_continuous_scale<span class="op">=</span><span class="st">"Plasma"</span>,</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">"seaborn"</span>,</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="bu">max</span>(<span class="dv">400</span>, <span class="bu">len</span>(plot_df) <span class="op">*</span> <span class="dv">30</span>),  </span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">"Eindeutige Werte"</span>,</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">"categoryorder"</span>: <span class="st">"trace"</span>, <span class="st">"autorange"</span>: <span class="st">"reversed"</span>}, </span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    coloraxis_showscale<span class="op">=</span><span class="va">False</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>fig.update_traces(textposition<span class="op">=</span><span class="st">"outside"</span>, cliponaxis<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div id="plot-unique-values" class="cell-output cell-output-display">
+<div id="ckan-plot-metadata" class="cell-output cell-output-display">
 <div style="height:540px; width:100%;">            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.7.0.min.js" integrity="sha256-jvTGqxNp8AGWEcvNLVuKr+8j5dGe9Yw51LQkmDH+IYA=" crossorigin="anonymous"></script>                <div id="bd91508f-dc55-41bd-b73d-44c4052907dc" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("bd91508f-dc55-41bd-b73d-44c4052907dc")) {                    Plotly.newPlot(                        "bd91508f-dc55-41bd-b73d-44c4052907dc",                        [{"customdata":[["100.0%"],["82.2%"],["13.2%"],["0.3%"],["0.3%"],["0.3%"],["0.3%"],["99.7%"],["0.3%"],["6.6%"],["99.9%"],["0.3%"],["0.0%"],["0.0%"],["41.0%"],["22.6%"],["18.6%"],["0.1%"]],"hovertemplate":"Anzahl eindeutiger Werte=%{marker.color}\u003cbr\u003eSpaltenname=%{y}\u003cbr\u003eAnteil=%{customdata[0]}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","marker":{"color":{"dtype":"i2","bdata":"Dh+FGRgEFQAVABYAFQD1HhUAEAIKHxcAAwACAPMHBwfEBQcA"},"coloraxis":"coloraxis","pattern":{"shape":""}},"name":"","orientation":"h","showlegend":false,"text":{"dtype":"f8","bdata":"AAAAAAAOv0AAAAAAAIW5QAAAAAAAYJBAAAAAAAAANUAAAAAAAAA1QAAAAAAAADZAAAAAAAAANUAAAAAAAPW+QAAAAAAAADVAAAAAAACAgEAAAAAAAAq\u002fQAAAAAAAADdAAAAAAAAACEAAAAAAAAAAQAAAAAAAzJ9AAAAAAAAcnEAAAAAAABCXQAAAAAAAABxA"},"textposition":"outside","x":{"dtype":"i2","bdata":"Dh+FGRgEFQAVABYAFQD1HhUAEAIKHxcAAwACAPMHBwfEBQcA"},"xaxis":"x","y":["id","Naziv","Autori","Email_KO","Naziv_KO","Zupanija","Adresa_KO","Opis_dobra","Telefon_KO","Opcina_grad","Oznaka_dobra","Klasifikacija","Pravni_status","UNESCO_zastita","Adresa_smjestaja","Mjesto_smjestaja","Vrijeme_nastanka","Vrsta_kulturnog_dobra"],"yaxis":"y","type":"bar","cliponaxis":false}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"rgb(234,234,242)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"rgb(36,36,36)"},"error_y":{"color":"rgb(36,36,36)"},"marker":{"line":{"color":"rgb(234,234,242)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"baxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"colorscale":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"colorscale":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"colorscale":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"colorscale":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"colorscale":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"rgb(231,231,240)"},"line":{"color":"white"}},"header":{"fill":{"color":"rgb(183,183,191)"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"rgb(67,103,167)"},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"colorscale":{"sequential":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]],"sequentialminus":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]]},"colorway":["rgb(76,114,176)","rgb(221,132,82)","rgb(85,168,104)","rgb(196,78,82)","rgb(129,114,179)","rgb(147,120,96)","rgb(218,139,195)","rgb(140,140,140)","rgb(204,185,116)","rgb(100,181,205)"],"font":{"color":"rgb(36,36,36)"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"rgb(234,234,242)","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"rgb(234,234,242)","polar":{"angularaxis":{"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":""},"bgcolor":"rgb(234,234,242)","radialaxis":{"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":""}},"scene":{"xaxis":{"backgroundcolor":"rgb(234,234,242)","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"showgrid":true,"ticks":"","zerolinecolor":"white"},"yaxis":{"backgroundcolor":"rgb(234,234,242)","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"showgrid":true,"ticks":"","zerolinecolor":"white"},"zaxis":{"backgroundcolor":"rgb(234,234,242)","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"showgrid":true,"ticks":"","zerolinecolor":"white"}},"shapedefaults":{"fillcolor":"rgb(67,103,167)","line":{"width":0},"opacity":0.5},"ternary":{"aaxis":{"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":""},"bgcolor":"rgb(234,234,242)","caxis":{"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":""}},"xaxis":{"automargin":true,"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":"","title":{"standoff":15},"zerolinecolor":"white"},"yaxis":{"automargin":true,"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":"","title":{"standoff":15},"zerolinecolor":"white"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"Eindeutige Werte"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Spaltenname"},"categoryorder":"trace","autorange":"reversed"},"coloraxis":{"colorbar":{"title":{"text":"Anzahl eindeutiger Werte"}},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"autocolorscale":false,"showscale":false},"legend":{"tracegroupgap":0},"title":{"text":"Anzahl der Unique-Werte pro Spalte"},"barmode":"relative","height":540},                        {"responsive": true}                    ).then(function(){
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.7.0.min.js" integrity="sha256-jvTGqxNp8AGWEcvNLVuKr+8j5dGe9Yw51LQkmDH+IYA=" crossorigin="anonymous"></script>                <div id="81ae32ad-54ff-402c-bb41-ae3613cf2c10" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("81ae32ad-54ff-402c-bb41-ae3613cf2c10")) {                    Plotly.newPlot(                        "81ae32ad-54ff-402c-bb41-ae3613cf2c10",                        [{"customdata":[["100.0%"],["82.2%"],["13.2%"],["0.3%"],["0.3%"],["0.3%"],["0.3%"],["99.7%"],["0.3%"],["6.6%"],["99.9%"],["0.3%"],["0.0%"],["0.0%"],["41.0%"],["22.6%"],["18.6%"],["0.1%"]],"hovertemplate":"Anzahl eindeutiger Werte=%{marker.color}\u003cbr\u003eSpaltenname=%{y}\u003cbr\u003eAnteil=%{customdata[0]}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","marker":{"color":{"dtype":"i2","bdata":"Dh+FGRgEFQAVABYAFQD1HhUAEAIKHxcAAwACAPMHBwfEBQcA"},"coloraxis":"coloraxis","pattern":{"shape":""}},"name":"","orientation":"h","showlegend":false,"text":{"dtype":"f8","bdata":"AAAAAAAOv0AAAAAAAIW5QAAAAAAAYJBAAAAAAAAANUAAAAAAAAA1QAAAAAAAADZAAAAAAAAANUAAAAAAAPW+QAAAAAAAADVAAAAAAACAgEAAAAAAAAq\u002fQAAAAAAAADdAAAAAAAAACEAAAAAAAAAAQAAAAAAAzJ9AAAAAAAAcnEAAAAAAABCXQAAAAAAAABxA"},"textposition":"outside","x":{"dtype":"i2","bdata":"Dh+FGRgEFQAVABYAFQD1HhUAEAIKHxcAAwACAPMHBwfEBQcA"},"xaxis":"x","y":["id","Naziv","Autori","Email_KO","Naziv_KO","Zupanija","Adresa_KO","Opis_dobra","Telefon_KO","Opcina_grad","Oznaka_dobra","Klasifikacija","Pravni_status","UNESCO_zastita","Adresa_smjestaja","Mjesto_smjestaja","Vrijeme_nastanka","Vrsta_kulturnog_dobra"],"yaxis":"y","type":"bar","cliponaxis":false}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"rgb(234,234,242)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"rgb(36,36,36)"},"error_y":{"color":"rgb(36,36,36)"},"marker":{"line":{"color":"rgb(234,234,242)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"baxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"colorscale":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"colorscale":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"colorscale":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"colorscale":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2},"colorscale":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"rgb(231,231,240)"},"line":{"color":"white"}},"header":{"fill":{"color":"rgb(183,183,191)"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"rgb(67,103,167)"},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"tickcolor":"rgb(36,36,36)","ticklen":8,"ticks":"outside","tickwidth":2}},"colorscale":{"sequential":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]],"sequentialminus":[[0.0,"rgb(2,4,25)"],[0.06274509803921569,"rgb(24,15,41)"],[0.12549019607843137,"rgb(47,23,57)"],[0.18823529411764706,"rgb(71,28,72)"],[0.25098039215686274,"rgb(97,30,82)"],[0.3137254901960784,"rgb(123,30,89)"],[0.3764705882352941,"rgb(150,27,91)"],[0.4392156862745098,"rgb(177,22,88)"],[0.5019607843137255,"rgb(203,26,79)"],[0.5647058823529412,"rgb(223,47,67)"],[0.6274509803921569,"rgb(236,76,61)"],[0.6901960784313725,"rgb(242,107,73)"],[0.7529411764705882,"rgb(244,135,95)"],[0.8156862745098039,"rgb(245,162,122)"],[0.8784313725490196,"rgb(246,188,153)"],[0.9411764705882353,"rgb(247,212,187)"],[1.0,"rgb(250,234,220)"]]},"colorway":["rgb(76,114,176)","rgb(221,132,82)","rgb(85,168,104)","rgb(196,78,82)","rgb(129,114,179)","rgb(147,120,96)","rgb(218,139,195)","rgb(140,140,140)","rgb(204,185,116)","rgb(100,181,205)"],"font":{"color":"rgb(36,36,36)"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"rgb(234,234,242)","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"rgb(234,234,242)","polar":{"angularaxis":{"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":""},"bgcolor":"rgb(234,234,242)","radialaxis":{"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":""}},"scene":{"xaxis":{"backgroundcolor":"rgb(234,234,242)","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"showgrid":true,"ticks":"","zerolinecolor":"white"},"yaxis":{"backgroundcolor":"rgb(234,234,242)","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"showgrid":true,"ticks":"","zerolinecolor":"white"},"zaxis":{"backgroundcolor":"rgb(234,234,242)","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"showgrid":true,"ticks":"","zerolinecolor":"white"}},"shapedefaults":{"fillcolor":"rgb(67,103,167)","line":{"width":0},"opacity":0.5},"ternary":{"aaxis":{"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":""},"bgcolor":"rgb(234,234,242)","caxis":{"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":""}},"xaxis":{"automargin":true,"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":"","title":{"standoff":15},"zerolinecolor":"white"},"yaxis":{"automargin":true,"gridcolor":"white","linecolor":"white","showgrid":true,"ticks":"","title":{"standoff":15},"zerolinecolor":"white"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"Eindeutige Werte"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Spaltenname"},"categoryorder":"trace","autorange":"reversed"},"coloraxis":{"colorbar":{"title":{"text":"Anzahl eindeutiger Werte"}},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"autocolorscale":false,"showscale":false},"legend":{"tracegroupgap":0},"title":{"text":"Anzahl der Unique-Werte pro Spalte"},"barmode":"relative","height":540},                        {"responsive": true}                    ).then(function(){
                             
-var gd = document.getElementById('bd91508f-dc55-41bd-b73d-44c4052907dc');
+var gd = document.getElementById('81ae32ad-54ff-402c-bb41-ae3613cf2c10');
 var x = new MutationObserver(function (mutations, observer) {{
         var display = window.getComputedStyle(gd).display;
         if (!display || display === 'none') {{
@@ -1296,12 +1401,6 @@ if (outputEl) {{
                         })                };            </script>        </div>
 </div>
 </div>
-<div id="9ce198d4" class="cell" data-execution_count="7">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>reset <span class="op">-</span>f</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-</div>
 <section id="analytische-erkenntnisse-der-erstinspektion" class="level4">
 <h4 class="anchored" data-anchor-id="analytische-erkenntnisse-der-erstinspektion">Analytische Erkenntnisse der Erstinspektion</h4>
 <p>Die automatisierte Auswertung und deren visuelle Aufbereitung legen fundamentale strukturelle und qualitative Mängel im Datensatz offen:</p>
@@ -1310,12 +1409,14 @@ if (outputEl) {{
 <li><strong>Redundanzen in Textfeldern:</strong> Die Objektbezeichnungen (<code>Naziv</code>) und die detaillierten Beschreibungen (<code>Opis_dobra</code>) weisen Mehrfachnennungen auf.</li>
 <li><strong>Strukturelle Verunreinigungen:</strong> Die hohe Anzahl an Feldern mit führenden Whitespaces und Zeilenumbruch-Artefakten (<code>\r\n</code>) untermauert die Hypothese eines unbereinigten Excel-Exports. Eine automatisierte String-Bereinigung ist zwingend erforderlich.</li>
 <li><strong>Potenzial zur Kategoriengenerierung:</strong> Spalten mit einer geringen Anzahl eindeutiger Werte (z. B. <code>Zupanija</code>, <code>Klasifikacija</code> oder <code>Pravni_status</code>) eignen sich im weiteren Verlauf hervorragend für eine Transformation in den Datentyp <code>Category</code>, um den Speicherbedarf zu minimieren und spätere Aggregationen zu erleichtern.</li>
+<li>zu viele Werte für <code>Zupanija</code>, es gibt nur 21 Gespanschaften in Kroatien</li>
+<li>Geodaten fehlen vollständig</li>
 </ul>
 </section>
 </section>
 <section id="fazit-für-den-weiteren-projektverlauf" class="level3">
 <h3 class="anchored" data-anchor-id="fazit-für-den-weiteren-projektverlauf">Fazit für den weiteren Projektverlauf</h3>
-<p>Allein diese vorbereitende Strukturanalyse zeigt empirisch, dass der Datensatz in seinem vorliegenden Zustand die Kriterien eines direkt verwertbaren <em>High-Value Datasets</em> verfehlt. Die Behebung dieser Mängel (Data Cleaning) und die Überführung in ein konsistentes, graphisches Modell bilden das Kernziel der weiteren Analyse.</p>
+<p>Allein diese vorbereitende Strukturanalyse zeigt, dass der Datensatz in seinem vorliegenden Zustand die Kriterien eines direkt verwertbaren <em>High-Value Datasets</em> verfehlt. Die Behebung dieser Mängel (Data Cleaning) und die Überführung in ein konsistentes Modell bilden das Kernziel der weiteren Analyse.</p>
 
 
 </section>

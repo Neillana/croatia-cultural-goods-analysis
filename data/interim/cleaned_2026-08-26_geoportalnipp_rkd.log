@@ -2265,3 +2265,331 @@ kopneno-podvodno arheološko nalazište    1
 2026-08-28 01:34:36,506 [INFO] > Platzhalter entfernt: 7462
 2026-08-28 01:34:36,507 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
 2026-08-28 01:34:36,507 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-09-05 06:50:44,298 [INFO] STARTE ANALYSE & BEREINIGUNG FÜR: 2026-08-26_geoportalnipp_rkd.parquet
+2026-09-05 06:50:44,375 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 06:50:44,609 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 06:50:44,610 [INFO] > Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-09-05 06:50:44,610 [INFO] > Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-09-05 06:50:44,611 [INFO] > Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-09-05 06:50:44,611 [INFO] > Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-09-05 06:50:44,612 [INFO] > Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-09-05 06:50:44,612 [INFO] > Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-09-05 06:50:44,613 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 06:50:44,613 [INFO] > Zeilenumbrüche entfernt: 587
+2026-09-05 06:50:44,613 [INFO] > Excel-Artefakte entfernt: 27
+2026-09-05 06:50:44,614 [INFO] > Whitespace-Korrekturen: 2274
+2026-09-05 06:50:44,614 [INFO] > Platzhalter entfernt: 7462
+2026-09-05 06:50:44,615 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
+2026-09-05 06:50:44,615 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-09-05 06:50:44,697 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 06:50:44,931 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 06:50:44,932 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 06:50:44,932 [INFO] > Zeilenumbrüche entfernt: 0
+2026-09-05 06:50:44,933 [INFO] > Excel-Artefakte entfernt: 0
+2026-09-05 06:50:44,934 [INFO] > Whitespace-Korrekturen: 0
+2026-09-05 06:50:44,934 [INFO] > Platzhalter entfernt: 0
+2026-09-05 06:50:44,934 [INFO] > Ungültige Texte zu NaN konvertiert: 0
+2026-09-05 06:50:44,935 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 0
+2026-09-05 06:50:44,935 [INFO] Überprüfe Spalte 'klasifikacija' gegen das offizielle Webregister...
+2026-09-05 06:50:44,938 [WARNING] Abweichungen in 'klasifikacija' gefunden:
+klasifikacija
+kopneno-podvodno arheološko nalazište    1
+2026-09-05 06:50:45,017 [INFO] METADATEN DER URSPRUNGSDATEI
+2026-09-05 06:50:45,018 [INFO] Format: GeoParquet (.parquet)
+2026-09-05 06:50:45,019 [INFO] Dimensionen: 7517 Zeilen, 15 Spalten
+2026-09-05 06:50:45,019 [INFO] Koordinatensystem (CRS): {"$schema": "https://proj.org/schemas/v0.7/projjson.schema.json", "type": "ProjectedCRS", "name": "HTRS96 / Croatia TM", "base_crs": {"name": "HTRS96", "datum": {"type": "GeodeticReferenceFrame", "name": "Croatian Terrestrial Reference System", "ellipsoid": {"name": "GRS 1980", "semi_major_axis": 6378137, "inverse_flattening": 298.257222101}}, "coordinate_system": {"subtype": "ellipsoidal", "axis": [{"name": "Geodetic latitude", "abbreviation": "Lat", "direction": "north", "unit": "degree"}, {"name": "Geodetic longitude", "abbreviation": "Lon", "direction": "east", "unit": "degree"}]}, "id": {"authority": "EPSG", "code": 4761}}, "conversion": {"name": "Croatia Transverse Mercator", "method": {"name": "Transverse Mercator", "id": {"authority": "EPSG", "code": 9807}}, "parameters": [{"name": "Latitude of natural origin", "value": 0, "unit": "degree", "id": {"authority": "EPSG", "code": 8801}}, {"name": "Longitude of natural origin", "value": 16.5, "unit": "degree", "id": {"authority": "EPSG", "code": 8802}}, {"name": "Scale factor at natural origin", "value": 0.9999, "unit": "unity", "id": {"authority": "EPSG", "code": 8805}}, {"name": "False easting", "value": 500000, "unit": "metre", "id": {"authority": "EPSG", "code": 8806}}, {"name": "False northing", "value": 0, "unit": "metre", "id": {"authority": "EPSG", "code": 8807}}]}, "coordinate_system": {"subtype": "Cartesian", "axis": [{"name": "Easting", "abbreviation": "E", "direction": "east", "unit": "metre"}, {"name": "Northing", "abbreviation": "N", "direction": "north", "unit": "metre"}]}, "scope": "Cadastre, engineering survey, topographic mapping (large scale).", "area": "Croatia - onshore.", "bbox": {"south_latitude": 42.34, "west_longitude": 13.43, "north_latitude": 46.54, "east_longitude": 19.43}, "id": {"authority": "EPSG", "code": 3765}}
+
+2026-09-05 06:50:45,020 [INFO] STARTEN DER BEREINIGUNGSPIPELINE
+2026-09-05 06:50:45,021 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 06:50:45,238 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 06:50:45,238 [INFO] > Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-09-05 06:50:45,239 [INFO] > Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-09-05 06:50:45,239 [INFO] > Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-09-05 06:50:45,240 [INFO] > Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-09-05 06:50:45,240 [INFO] > Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-09-05 06:50:45,241 [INFO] > Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-09-05 06:50:45,241 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 06:50:45,242 [INFO] > Zeilenumbrüche entfernt: 587
+2026-09-05 06:50:45,242 [INFO] > Excel-Artefakte entfernt: 27
+2026-09-05 06:50:45,242 [INFO] > Whitespace-Korrekturen: 2274
+2026-09-05 06:50:45,243 [INFO] > Platzhalter entfernt: 7462
+2026-09-05 06:50:45,243 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
+2026-09-05 06:50:45,244 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-09-05 06:50:45,244 [INFO] Schritt 2: Bereinige Spalte 'grad'...
+2026-09-05 06:50:45,253 [INFO] Spalte 'grad': 7464 Werte erfolgreich standardisiert.
+2026-09-05 06:50:45,257 [INFO] Schritt 3: Entferne Spalte 'adresa' vollständig...
+2026-09-05 06:50:45,259 [INFO] Spalte 'adresa' wurde erfolgreich gelöscht.
+2026-09-05 06:50:45,259 [INFO] Schritt: Passe Spalte 'vrsta' an das offizielle Webregister an...
+2026-09-05 06:50:45,262 [INFO] Spalte 'vrsta': 7517 Datensätze auf Register-Namen aktualisiert.
+2026-09-05 06:50:45,264 [INFO] Schritt: Wert in 'klasifikacija' angepasst. 'kopneno-podvodno arheološko nalazište' -> 'kopneno/podvodno arheološka zona/nalazište' (1 Feld(er) korrigiert).
+2026-09-05 06:50:45,265 [INFO] Schritt 2: Extraktion von 'register_artefacts' aus 'registarski_broj'...
+2026-09-05 06:50:45,277 [INFO] Spalte 'registarski_broj': 469 Werte aufgeteilt und Reste nach 'register_artefacts' verschoben.
+2026-09-05 06:50:45,278 [WARNING] Spalte 'registarski_broj': 3 Zeilen entsprachen nicht dem erwarteten Format (Buchstaben-Zahlen) und wurden übersprungen. Betroffene Werte: ['RRI 381-1975', 'ZDU_191', 'RRI 380-1975']
+2026-09-05 06:50:45,280 [WARNING] Spalte 'register_artefacts': 8 extrahierte Artefakte sind KEINE exakt 4-stellige Zahl (Jahresangabe). Bereinigte Fehlerwerte: ['73', '1973. OD 9.5. 1973', '1973. od 9.5.1973', '1973. od 16.1. 1973', ', Bg-171/1-78', '/2-76', '24-65'] | Aus Originaleinträgen: ['ROS-442', 'ROS-0405', 'ROSROS-0404', 'ROS-0352', 'RRI-0427', 'KB-174', 'ZST-148']
+2026-09-05 06:50:45,280 [INFO] Extraktion von 'register_artefacts' beendet.
+2026-09-05 06:50:45,281 [INFO] Manuelle Korrektur spezieller Register-Fehler...
+2026-09-05 06:50:45,290 [INFO] Schritt 3: Parsing von 'datacija' in numerische Jahreszahlen...
+2026-09-05 06:50:45,627 [INFO] Spalte 'datacija': 7008 Werte erfolgreich in 'year_start' und 'year_end' (als Integer) umgewandelt.
+2026-09-05 06:50:45,628 [INFO] Parsing von 'datacija' beendet.
+2026-09-05 06:50:45,629 [INFO] Schritt 4: Extrahieren der Mittelpunkt-Koordinaten aus 'geometry'...
+2026-09-05 06:50:45,761 [INFO] Mittelpunkte für 7517 Geometrien erfolgreich berechnet.
+2026-09-05 06:50:45,762 [INFO] Neue Spalten 'longitude' und 'latitude' (in WGS84) wurden hinzugefügt.
+2026-09-05 06:50:45,798 [INFO] BEREINIGUNG UND ANALYSE ABGESCHLOSSEN
+2026-09-05 06:50:45,799 [INFO] Neue Dimensionen: 7517 Zeilen, 19 Spalten
+2026-09-05 06:50:45,799 [INFO] Speichere bereinigte Daten unter: cleaned_2026-08-26_geoportalnipp_rkd.parquet
+2026-09-05 06:50:45,887 [INFO] Speichern erfolgreich.
+
+2026-09-05 06:51:15,303 [INFO] STARTE ANALYSE & BEREINIGUNG FÜR: 2026-08-26_geoportalnipp_rkd.parquet
+2026-09-05 06:51:15,343 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 06:51:15,565 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 06:51:15,565 [INFO] > Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-09-05 06:51:15,566 [INFO] > Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-09-05 06:51:15,566 [INFO] > Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-09-05 06:51:15,567 [INFO] > Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-09-05 06:51:15,567 [INFO] > Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-09-05 06:51:15,568 [INFO] > Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-09-05 06:51:15,568 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 06:51:15,569 [INFO] > Zeilenumbrüche entfernt: 587
+2026-09-05 06:51:15,569 [INFO] > Excel-Artefakte entfernt: 27
+2026-09-05 06:51:15,569 [INFO] > Whitespace-Korrekturen: 2274
+2026-09-05 06:51:15,570 [INFO] > Platzhalter entfernt: 7462
+2026-09-05 06:51:15,570 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
+2026-09-05 06:51:15,571 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-09-05 06:51:15,640 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 06:51:15,893 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 06:51:15,894 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 06:51:15,895 [INFO] > Zeilenumbrüche entfernt: 0
+2026-09-05 06:51:15,895 [INFO] > Excel-Artefakte entfernt: 0
+2026-09-05 06:51:15,896 [INFO] > Whitespace-Korrekturen: 0
+2026-09-05 06:51:15,896 [INFO] > Platzhalter entfernt: 0
+2026-09-05 06:51:15,896 [INFO] > Ungültige Texte zu NaN konvertiert: 0
+2026-09-05 06:51:15,897 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 0
+2026-09-05 06:51:15,897 [INFO] Überprüfe Spalte 'klasifikacija' gegen das offizielle Webregister...
+2026-09-05 06:51:15,900 [WARNING] Abweichungen in 'klasifikacija' gefunden:
+klasifikacija
+kopneno-podvodno arheološko nalazište    1
+2026-09-05 06:51:15,978 [INFO] METADATEN DER URSPRUNGSDATEI
+2026-09-05 06:51:15,978 [INFO] Format: GeoParquet (.parquet)
+2026-09-05 06:51:15,979 [INFO] Dimensionen: 7517 Zeilen, 15 Spalten
+2026-09-05 06:51:15,980 [INFO] Koordinatensystem (CRS): {"$schema": "https://proj.org/schemas/v0.7/projjson.schema.json", "type": "ProjectedCRS", "name": "HTRS96 / Croatia TM", "base_crs": {"name": "HTRS96", "datum": {"type": "GeodeticReferenceFrame", "name": "Croatian Terrestrial Reference System", "ellipsoid": {"name": "GRS 1980", "semi_major_axis": 6378137, "inverse_flattening": 298.257222101}}, "coordinate_system": {"subtype": "ellipsoidal", "axis": [{"name": "Geodetic latitude", "abbreviation": "Lat", "direction": "north", "unit": "degree"}, {"name": "Geodetic longitude", "abbreviation": "Lon", "direction": "east", "unit": "degree"}]}, "id": {"authority": "EPSG", "code": 4761}}, "conversion": {"name": "Croatia Transverse Mercator", "method": {"name": "Transverse Mercator", "id": {"authority": "EPSG", "code": 9807}}, "parameters": [{"name": "Latitude of natural origin", "value": 0, "unit": "degree", "id": {"authority": "EPSG", "code": 8801}}, {"name": "Longitude of natural origin", "value": 16.5, "unit": "degree", "id": {"authority": "EPSG", "code": 8802}}, {"name": "Scale factor at natural origin", "value": 0.9999, "unit": "unity", "id": {"authority": "EPSG", "code": 8805}}, {"name": "False easting", "value": 500000, "unit": "metre", "id": {"authority": "EPSG", "code": 8806}}, {"name": "False northing", "value": 0, "unit": "metre", "id": {"authority": "EPSG", "code": 8807}}]}, "coordinate_system": {"subtype": "Cartesian", "axis": [{"name": "Easting", "abbreviation": "E", "direction": "east", "unit": "metre"}, {"name": "Northing", "abbreviation": "N", "direction": "north", "unit": "metre"}]}, "scope": "Cadastre, engineering survey, topographic mapping (large scale).", "area": "Croatia - onshore.", "bbox": {"south_latitude": 42.34, "west_longitude": 13.43, "north_latitude": 46.54, "east_longitude": 19.43}, "id": {"authority": "EPSG", "code": 3765}}
+
+2026-09-05 06:51:15,980 [INFO] STARTEN DER BEREINIGUNGSPIPELINE
+2026-09-05 06:51:15,981 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 06:51:16,198 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 06:51:16,199 [INFO] > Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-09-05 06:51:16,199 [INFO] > Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-09-05 06:51:16,200 [INFO] > Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-09-05 06:51:16,200 [INFO] > Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-09-05 06:51:16,201 [INFO] > Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-09-05 06:51:16,201 [INFO] > Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-09-05 06:51:16,201 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 06:51:16,202 [INFO] > Zeilenumbrüche entfernt: 587
+2026-09-05 06:51:16,202 [INFO] > Excel-Artefakte entfernt: 27
+2026-09-05 06:51:16,203 [INFO] > Whitespace-Korrekturen: 2274
+2026-09-05 06:51:16,203 [INFO] > Platzhalter entfernt: 7462
+2026-09-05 06:51:16,203 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
+2026-09-05 06:51:16,204 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-09-05 06:51:16,205 [INFO] Schritt 2: Bereinige Spalte 'grad'...
+2026-09-05 06:51:16,212 [INFO] Spalte 'grad': 7464 Werte erfolgreich standardisiert.
+2026-09-05 06:51:16,213 [INFO] Schritt 3: Entferne Spalte 'adresa' vollständig...
+2026-09-05 06:51:16,214 [INFO] Spalte 'adresa' wurde erfolgreich gelöscht.
+2026-09-05 06:51:16,215 [INFO] Schritt: Passe Spalte 'vrsta' an das offizielle Webregister an...
+2026-09-05 06:51:16,218 [INFO] Spalte 'vrsta': 7517 Datensätze auf Register-Namen aktualisiert.
+2026-09-05 06:51:16,219 [INFO] Schritt: Wert in 'klasifikacija' angepasst. 'kopneno-podvodno arheološko nalazište' -> 'kopneno/podvodno arheološka zona/nalazište' (1 Feld(er) korrigiert).
+2026-09-05 06:51:16,220 [INFO] Schritt 2: Extraktion von 'register_artefacts' aus 'registarski_broj'...
+2026-09-05 06:51:16,231 [INFO] Spalte 'registarski_broj': 469 Werte aufgeteilt und Reste nach 'register_artefacts' verschoben.
+2026-09-05 06:51:16,232 [WARNING] Spalte 'registarski_broj': 3 Zeilen entsprachen nicht dem erwarteten Format (Buchstaben-Zahlen) und wurden übersprungen. Betroffene Werte: ['RRI 381-1975', 'ZDU_191', 'RRI 380-1975']
+2026-09-05 06:51:16,234 [WARNING] Spalte 'register_artefacts': 8 extrahierte Artefakte sind KEINE exakt 4-stellige Zahl (Jahresangabe). Bereinigte Fehlerwerte: ['73', '1973. OD 9.5. 1973', '1973. od 9.5.1973', '1973. od 16.1. 1973', ', Bg-171/1-78', '/2-76', '24-65'] | Aus Originaleinträgen: ['ROS-442', 'ROS-0405', 'ROSROS-0404', 'ROS-0352', 'RRI-0427', 'KB-174', 'ZST-148']
+2026-09-05 06:51:16,234 [INFO] Extraktion von 'register_artefacts' beendet.
+2026-09-05 06:51:16,235 [INFO] Manuelle Korrektur spezieller Register-Fehler...
+2026-09-05 06:51:16,243 [INFO] Schritt 3: Parsing von 'datacija' in numerische Jahreszahlen...
+2026-09-05 06:51:16,565 [INFO] Spalte 'datacija': 7008 Werte erfolgreich in 'year_start' und 'year_end' (als Integer) umgewandelt.
+2026-09-05 06:51:16,566 [INFO] Parsing von 'datacija' beendet.
+2026-09-05 06:51:16,567 [INFO] Schritt 4: Extrahieren der Mittelpunkt-Koordinaten aus 'geometry'...
+2026-09-05 06:51:16,686 [INFO] Mittelpunkte für 7517 Geometrien erfolgreich berechnet.
+2026-09-05 06:51:16,687 [INFO] Neue Spalten 'longitude' und 'latitude' (in WGS84) wurden hinzugefügt.
+2026-09-05 06:51:16,719 [INFO] BEREINIGUNG UND ANALYSE ABGESCHLOSSEN
+2026-09-05 06:51:16,720 [INFO] Neue Dimensionen: 7517 Zeilen, 19 Spalten
+2026-09-05 06:51:16,721 [INFO] Speichere bereinigte Daten unter: cleaned_2026-08-26_geoportalnipp_rkd.parquet
+2026-09-05 06:51:16,802 [INFO] Speichern erfolgreich.
+
+2026-09-05 06:51:16,814 [INFO] STARTE ANALYSE & BEREINIGUNG FÜR: 2026-08-26_geoportalnipp_rkd.parquet
+2026-09-05 06:51:16,844 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 06:51:17,065 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 06:51:17,065 [INFO] > Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-09-05 06:51:17,066 [INFO] > Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-09-05 06:51:17,066 [INFO] > Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-09-05 06:51:17,067 [INFO] > Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-09-05 06:51:17,067 [INFO] > Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-09-05 06:51:17,068 [INFO] > Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-09-05 06:51:17,068 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 06:51:17,069 [INFO] > Zeilenumbrüche entfernt: 587
+2026-09-05 06:51:17,069 [INFO] > Excel-Artefakte entfernt: 27
+2026-09-05 06:51:17,069 [INFO] > Whitespace-Korrekturen: 2274
+2026-09-05 06:51:17,070 [INFO] > Platzhalter entfernt: 7462
+2026-09-05 06:51:17,070 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
+2026-09-05 06:51:17,071 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-09-05 12:58:38,102 [INFO] STARTE ANALYSE & BEREINIGUNG FÜR: 2026-08-26_geoportalnipp_rkd.parquet
+2026-09-05 12:58:38,187 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 12:58:38,433 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 12:58:38,433 [INFO] > Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-09-05 12:58:38,434 [INFO] > Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-09-05 12:58:38,434 [INFO] > Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-09-05 12:58:38,435 [INFO] > Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-09-05 12:58:38,435 [INFO] > Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-09-05 12:58:38,436 [INFO] > Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-09-05 12:58:38,436 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 12:58:38,436 [INFO] > Zeilenumbrüche entfernt: 587
+2026-09-05 12:58:38,437 [INFO] > Excel-Artefakte entfernt: 27
+2026-09-05 12:58:38,437 [INFO] > Whitespace-Korrekturen: 2274
+2026-09-05 12:58:38,437 [INFO] > Platzhalter entfernt: 7462
+2026-09-05 12:58:38,438 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
+2026-09-05 12:58:38,439 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-09-05 12:58:38,524 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 12:58:38,758 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 12:58:38,759 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 12:58:38,760 [INFO] > Zeilenumbrüche entfernt: 0
+2026-09-05 12:58:38,760 [INFO] > Excel-Artefakte entfernt: 0
+2026-09-05 12:58:38,761 [INFO] > Whitespace-Korrekturen: 0
+2026-09-05 12:58:38,761 [INFO] > Platzhalter entfernt: 0
+2026-09-05 12:58:38,762 [INFO] > Ungültige Texte zu NaN konvertiert: 0
+2026-09-05 12:58:38,762 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 0
+2026-09-05 12:58:38,763 [INFO] Überprüfe Spalte 'klasifikacija' gegen das offizielle Webregister...
+2026-09-05 12:58:38,765 [WARNING] Abweichungen in 'klasifikacija' gefunden:
+klasifikacija
+kopneno-podvodno arheološko nalazište    1
+2026-09-05 12:58:38,848 [INFO] METADATEN DER URSPRUNGSDATEI
+2026-09-05 12:58:38,849 [INFO] Format: GeoParquet (.parquet)
+2026-09-05 12:58:38,849 [INFO] Dimensionen: 7517 Zeilen, 15 Spalten
+2026-09-05 12:58:38,850 [INFO] Koordinatensystem (CRS): {"$schema": "https://proj.org/schemas/v0.7/projjson.schema.json", "type": "ProjectedCRS", "name": "HTRS96 / Croatia TM", "base_crs": {"name": "HTRS96", "datum": {"type": "GeodeticReferenceFrame", "name": "Croatian Terrestrial Reference System", "ellipsoid": {"name": "GRS 1980", "semi_major_axis": 6378137, "inverse_flattening": 298.257222101}}, "coordinate_system": {"subtype": "ellipsoidal", "axis": [{"name": "Geodetic latitude", "abbreviation": "Lat", "direction": "north", "unit": "degree"}, {"name": "Geodetic longitude", "abbreviation": "Lon", "direction": "east", "unit": "degree"}]}, "id": {"authority": "EPSG", "code": 4761}}, "conversion": {"name": "Croatia Transverse Mercator", "method": {"name": "Transverse Mercator", "id": {"authority": "EPSG", "code": 9807}}, "parameters": [{"name": "Latitude of natural origin", "value": 0, "unit": "degree", "id": {"authority": "EPSG", "code": 8801}}, {"name": "Longitude of natural origin", "value": 16.5, "unit": "degree", "id": {"authority": "EPSG", "code": 8802}}, {"name": "Scale factor at natural origin", "value": 0.9999, "unit": "unity", "id": {"authority": "EPSG", "code": 8805}}, {"name": "False easting", "value": 500000, "unit": "metre", "id": {"authority": "EPSG", "code": 8806}}, {"name": "False northing", "value": 0, "unit": "metre", "id": {"authority": "EPSG", "code": 8807}}]}, "coordinate_system": {"subtype": "Cartesian", "axis": [{"name": "Easting", "abbreviation": "E", "direction": "east", "unit": "metre"}, {"name": "Northing", "abbreviation": "N", "direction": "north", "unit": "metre"}]}, "scope": "Cadastre, engineering survey, topographic mapping (large scale).", "area": "Croatia - onshore.", "bbox": {"south_latitude": 42.34, "west_longitude": 13.43, "north_latitude": 46.54, "east_longitude": 19.43}, "id": {"authority": "EPSG", "code": 3765}}
+
+2026-09-05 12:58:38,850 [INFO] STARTEN DER BEREINIGUNGSPIPELINE
+2026-09-05 12:58:38,851 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 12:58:39,073 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 12:58:39,074 [INFO] > Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-09-05 12:58:39,074 [INFO] > Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-09-05 12:58:39,075 [INFO] > Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-09-05 12:58:39,075 [INFO] > Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-09-05 12:58:39,076 [INFO] > Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-09-05 12:58:39,076 [INFO] > Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-09-05 12:58:39,076 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 12:58:39,077 [INFO] > Zeilenumbrüche entfernt: 587
+2026-09-05 12:58:39,077 [INFO] > Excel-Artefakte entfernt: 27
+2026-09-05 12:58:39,077 [INFO] > Whitespace-Korrekturen: 2274
+2026-09-05 12:58:39,078 [INFO] > Platzhalter entfernt: 7462
+2026-09-05 12:58:39,078 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
+2026-09-05 12:58:39,078 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-09-05 12:58:39,079 [INFO] Schritt 2: Bereinige Spalte 'grad'...
+2026-09-05 12:58:39,088 [INFO] Spalte 'grad': 7464 Werte erfolgreich standardisiert.
+2026-09-05 12:58:39,089 [INFO] Schritt 3: Entferne Spalte 'adresa' vollständig...
+2026-09-05 12:58:39,091 [INFO] Spalte 'adresa' wurde erfolgreich gelöscht.
+2026-09-05 12:58:39,091 [INFO] Schritt: Passe Spalte 'vrsta' an das offizielle Webregister an...
+2026-09-05 12:58:39,094 [INFO] Spalte 'vrsta': 7517 Datensätze auf Register-Namen aktualisiert.
+2026-09-05 12:58:39,096 [INFO] Schritt: Wert in 'klasifikacija' angepasst. 'kopneno-podvodno arheološko nalazište' -> 'kopneno/podvodno arheološka zona/nalazište' (1 Feld(er) korrigiert).
+2026-09-05 12:58:39,097 [INFO] Schritt 2: Extraktion von 'register_artefacts' aus 'registarski_broj'...
+2026-09-05 12:58:39,114 [INFO] Spalte 'registarski_broj': 469 Werte aufgeteilt und Reste nach 'register_artefacts' verschoben.
+2026-09-05 12:58:39,115 [WARNING] Spalte 'registarski_broj': 3 Zeilen entsprachen nicht dem erwarteten Format (Buchstaben-Zahlen) und wurden übersprungen. Betroffene Werte: ['RRI 381-1975', 'ZDU_191', 'RRI 380-1975']
+2026-09-05 12:58:39,116 [WARNING] Spalte 'register_artefacts': 8 extrahierte Artefakte sind KEINE exakt 4-stellige Zahl (Jahresangabe). Bereinigte Fehlerwerte: ['73', '1973. OD 9.5. 1973', '1973. od 9.5.1973', '1973. od 16.1. 1973', ', Bg-171/1-78', '/2-76', '24-65'] | Aus Originaleinträgen: ['ROS-442', 'ROS-0405', 'ROSROS-0404', 'ROS-0352', 'RRI-0427', 'KB-174', 'ZST-148']
+2026-09-05 12:58:39,117 [INFO] Extraktion von 'register_artefacts' beendet.
+2026-09-05 12:58:39,118 [INFO] Manuelle Korrektur spezieller Register-Fehler...
+2026-09-05 12:58:39,126 [INFO] Schritt 3: Parsing von 'datacija' in numerische Jahreszahlen...
+2026-09-05 12:58:39,534 [INFO] Spalte 'datacija': 7008 Werte erfolgreich in 'year_start' und 'year_end' (als Integer) umgewandelt.
+2026-09-05 12:58:39,534 [INFO] Parsing von 'datacija' beendet.
+2026-09-05 12:58:39,535 [INFO] Schritt 4: Extrahieren der Mittelpunkt-Koordinaten aus 'geometry'...
+2026-09-05 12:58:39,698 [INFO] Mittelpunkte für 7517 Geometrien erfolgreich berechnet.
+2026-09-05 12:58:39,699 [INFO] Neue Spalten 'longitude' und 'latitude' (in WGS84) wurden hinzugefügt.
+2026-09-05 12:58:39,740 [INFO] BEREINIGUNG UND ANALYSE ABGESCHLOSSEN
+2026-09-05 12:58:39,741 [INFO] Neue Dimensionen: 7517 Zeilen, 19 Spalten
+2026-09-05 12:58:39,741 [INFO] Speichere bereinigte Daten unter: cleaned_2026-08-26_geoportalnipp_rkd.parquet
+2026-09-05 12:58:39,835 [INFO] Speichern erfolgreich.
+
+2026-09-05 12:59:09,651 [INFO] STARTE ANALYSE & BEREINIGUNG FÜR: 2026-08-26_geoportalnipp_rkd.parquet
+2026-09-05 12:59:09,691 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 12:59:09,912 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 12:59:09,913 [INFO] > Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-09-05 12:59:09,914 [INFO] > Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-09-05 12:59:09,914 [INFO] > Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-09-05 12:59:09,914 [INFO] > Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-09-05 12:59:09,915 [INFO] > Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-09-05 12:59:09,915 [INFO] > Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-09-05 12:59:09,915 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 12:59:09,916 [INFO] > Zeilenumbrüche entfernt: 587
+2026-09-05 12:59:09,916 [INFO] > Excel-Artefakte entfernt: 27
+2026-09-05 12:59:09,916 [INFO] > Whitespace-Korrekturen: 2274
+2026-09-05 12:59:09,917 [INFO] > Platzhalter entfernt: 7462
+2026-09-05 12:59:09,917 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
+2026-09-05 12:59:09,917 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-09-05 12:59:09,994 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 12:59:10,229 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 12:59:10,230 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 12:59:10,230 [INFO] > Zeilenumbrüche entfernt: 0
+2026-09-05 12:59:10,230 [INFO] > Excel-Artefakte entfernt: 0
+2026-09-05 12:59:10,231 [INFO] > Whitespace-Korrekturen: 0
+2026-09-05 12:59:10,231 [INFO] > Platzhalter entfernt: 0
+2026-09-05 12:59:10,231 [INFO] > Ungültige Texte zu NaN konvertiert: 0
+2026-09-05 12:59:10,232 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 0
+2026-09-05 12:59:10,233 [INFO] Überprüfe Spalte 'klasifikacija' gegen das offizielle Webregister...
+2026-09-05 12:59:10,236 [WARNING] Abweichungen in 'klasifikacija' gefunden:
+klasifikacija
+kopneno-podvodno arheološko nalazište    1
+2026-09-05 12:59:10,322 [INFO] METADATEN DER URSPRUNGSDATEI
+2026-09-05 12:59:10,323 [INFO] Format: GeoParquet (.parquet)
+2026-09-05 12:59:10,323 [INFO] Dimensionen: 7517 Zeilen, 15 Spalten
+2026-09-05 12:59:10,324 [INFO] Koordinatensystem (CRS): {"$schema": "https://proj.org/schemas/v0.7/projjson.schema.json", "type": "ProjectedCRS", "name": "HTRS96 / Croatia TM", "base_crs": {"name": "HTRS96", "datum": {"type": "GeodeticReferenceFrame", "name": "Croatian Terrestrial Reference System", "ellipsoid": {"name": "GRS 1980", "semi_major_axis": 6378137, "inverse_flattening": 298.257222101}}, "coordinate_system": {"subtype": "ellipsoidal", "axis": [{"name": "Geodetic latitude", "abbreviation": "Lat", "direction": "north", "unit": "degree"}, {"name": "Geodetic longitude", "abbreviation": "Lon", "direction": "east", "unit": "degree"}]}, "id": {"authority": "EPSG", "code": 4761}}, "conversion": {"name": "Croatia Transverse Mercator", "method": {"name": "Transverse Mercator", "id": {"authority": "EPSG", "code": 9807}}, "parameters": [{"name": "Latitude of natural origin", "value": 0, "unit": "degree", "id": {"authority": "EPSG", "code": 8801}}, {"name": "Longitude of natural origin", "value": 16.5, "unit": "degree", "id": {"authority": "EPSG", "code": 8802}}, {"name": "Scale factor at natural origin", "value": 0.9999, "unit": "unity", "id": {"authority": "EPSG", "code": 8805}}, {"name": "False easting", "value": 500000, "unit": "metre", "id": {"authority": "EPSG", "code": 8806}}, {"name": "False northing", "value": 0, "unit": "metre", "id": {"authority": "EPSG", "code": 8807}}]}, "coordinate_system": {"subtype": "Cartesian", "axis": [{"name": "Easting", "abbreviation": "E", "direction": "east", "unit": "metre"}, {"name": "Northing", "abbreviation": "N", "direction": "north", "unit": "metre"}]}, "scope": "Cadastre, engineering survey, topographic mapping (large scale).", "area": "Croatia - onshore.", "bbox": {"south_latitude": 42.34, "west_longitude": 13.43, "north_latitude": 46.54, "east_longitude": 19.43}, "id": {"authority": "EPSG", "code": 3765}}
+
+2026-09-05 12:59:10,324 [INFO] STARTEN DER BEREINIGUNGSPIPELINE
+2026-09-05 12:59:10,325 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 12:59:10,546 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 12:59:10,547 [INFO] > Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-09-05 12:59:10,547 [INFO] > Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-09-05 12:59:10,548 [INFO] > Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-09-05 12:59:10,548 [INFO] > Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-09-05 12:59:10,549 [INFO] > Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-09-05 12:59:10,550 [INFO] > Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-09-05 12:59:10,550 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 12:59:10,550 [INFO] > Zeilenumbrüche entfernt: 587
+2026-09-05 12:59:10,551 [INFO] > Excel-Artefakte entfernt: 27
+2026-09-05 12:59:10,551 [INFO] > Whitespace-Korrekturen: 2274
+2026-09-05 12:59:10,551 [INFO] > Platzhalter entfernt: 7462
+2026-09-05 12:59:10,552 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
+2026-09-05 12:59:10,552 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-09-05 12:59:10,553 [INFO] Schritt 2: Bereinige Spalte 'grad'...
+2026-09-05 12:59:10,560 [INFO] Spalte 'grad': 7464 Werte erfolgreich standardisiert.
+2026-09-05 12:59:10,561 [INFO] Schritt 3: Entferne Spalte 'adresa' vollständig...
+2026-09-05 12:59:10,563 [INFO] Spalte 'adresa' wurde erfolgreich gelöscht.
+2026-09-05 12:59:10,564 [INFO] Schritt: Passe Spalte 'vrsta' an das offizielle Webregister an...
+2026-09-05 12:59:10,567 [INFO] Spalte 'vrsta': 7517 Datensätze auf Register-Namen aktualisiert.
+2026-09-05 12:59:10,568 [INFO] Schritt: Wert in 'klasifikacija' angepasst. 'kopneno-podvodno arheološko nalazište' -> 'kopneno/podvodno arheološka zona/nalazište' (1 Feld(er) korrigiert).
+2026-09-05 12:59:10,569 [INFO] Schritt 2: Extraktion von 'register_artefacts' aus 'registarski_broj'...
+2026-09-05 12:59:10,580 [INFO] Spalte 'registarski_broj': 469 Werte aufgeteilt und Reste nach 'register_artefacts' verschoben.
+2026-09-05 12:59:10,582 [WARNING] Spalte 'registarski_broj': 3 Zeilen entsprachen nicht dem erwarteten Format (Buchstaben-Zahlen) und wurden übersprungen. Betroffene Werte: ['RRI 381-1975', 'ZDU_191', 'RRI 380-1975']
+2026-09-05 12:59:10,583 [WARNING] Spalte 'register_artefacts': 8 extrahierte Artefakte sind KEINE exakt 4-stellige Zahl (Jahresangabe). Bereinigte Fehlerwerte: ['73', '1973. OD 9.5. 1973', '1973. od 9.5.1973', '1973. od 16.1. 1973', ', Bg-171/1-78', '/2-76', '24-65'] | Aus Originaleinträgen: ['ROS-442', 'ROS-0405', 'ROSROS-0404', 'ROS-0352', 'RRI-0427', 'KB-174', 'ZST-148']
+2026-09-05 12:59:10,583 [INFO] Extraktion von 'register_artefacts' beendet.
+2026-09-05 12:59:10,584 [INFO] Manuelle Korrektur spezieller Register-Fehler...
+2026-09-05 12:59:10,593 [INFO] Schritt 3: Parsing von 'datacija' in numerische Jahreszahlen...
+2026-09-05 12:59:10,918 [INFO] Spalte 'datacija': 7008 Werte erfolgreich in 'year_start' und 'year_end' (als Integer) umgewandelt.
+2026-09-05 12:59:10,918 [INFO] Parsing von 'datacija' beendet.
+2026-09-05 12:59:10,919 [INFO] Schritt 4: Extrahieren der Mittelpunkt-Koordinaten aus 'geometry'...
+2026-09-05 12:59:11,038 [INFO] Mittelpunkte für 7517 Geometrien erfolgreich berechnet.
+2026-09-05 12:59:11,039 [INFO] Neue Spalten 'longitude' und 'latitude' (in WGS84) wurden hinzugefügt.
+2026-09-05 12:59:11,076 [INFO] BEREINIGUNG UND ANALYSE ABGESCHLOSSEN
+2026-09-05 12:59:11,076 [INFO] Neue Dimensionen: 7517 Zeilen, 19 Spalten
+2026-09-05 12:59:11,077 [INFO] Speichere bereinigte Daten unter: cleaned_2026-08-26_geoportalnipp_rkd.parquet
+2026-09-05 12:59:11,165 [INFO] Speichern erfolgreich.
+
+2026-09-05 12:59:11,178 [INFO] STARTE ANALYSE & BEREINIGUNG FÜR: 2026-08-26_geoportalnipp_rkd.parquet
+2026-09-05 12:59:11,209 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 12:59:11,431 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 12:59:11,432 [INFO] > Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-09-05 12:59:11,433 [INFO] > Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-09-05 12:59:11,433 [INFO] > Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-09-05 12:59:11,434 [INFO] > Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-09-05 12:59:11,434 [INFO] > Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-09-05 12:59:11,434 [INFO] > Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-09-05 12:59:11,435 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 12:59:11,435 [INFO] > Zeilenumbrüche entfernt: 587
+2026-09-05 12:59:11,436 [INFO] > Excel-Artefakte entfernt: 27
+2026-09-05 12:59:11,436 [INFO] > Whitespace-Korrekturen: 2274
+2026-09-05 12:59:11,436 [INFO] > Platzhalter entfernt: 7462
+2026-09-05 12:59:11,437 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
+2026-09-05 12:59:11,438 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061

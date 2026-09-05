@@ -1162,3 +1162,35 @@
 2026-08-28 01:34:13,439 [INFO] > Platzhalter entfernt: 7462
 2026-08-28 01:34:13,439 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
 2026-08-28 01:34:13,440 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-09-05 06:50:53,645 [INFO] STARTE ANALYSE & BEREINIGUNG FÜR: 2026-08-26_geoportalnipp_rkd.parquet
+2026-09-05 06:50:53,711 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 06:50:53,931 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 06:50:53,931 [INFO] > Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-09-05 06:50:53,932 [INFO] > Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-09-05 06:50:53,932 [INFO] > Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-09-05 06:50:53,933 [INFO] > Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-09-05 06:50:53,933 [INFO] > Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-09-05 06:50:53,934 [INFO] > Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-09-05 06:50:53,934 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 06:50:53,935 [INFO] > Zeilenumbrüche entfernt: 587
+2026-09-05 06:50:53,935 [INFO] > Excel-Artefakte entfernt: 27
+2026-09-05 06:50:53,935 [INFO] > Whitespace-Korrekturen: 2274
+2026-09-05 06:50:53,936 [INFO] > Platzhalter entfernt: 7462
+2026-09-05 06:50:53,936 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
+2026-09-05 06:50:53,937 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061
+2026-09-05 12:58:47,775 [INFO] STARTE ANALYSE & BEREINIGUNG FÜR: 2026-08-26_geoportalnipp_rkd.parquet
+2026-09-05 12:58:47,846 [INFO] Schritt 1: Detaillierter Text-Clean gestartet...
+2026-09-05 12:58:48,080 [INFO] --- Fehlerstatistik pro Spalte ---
+2026-09-05 12:58:48,081 [INFO] > Spalte 'naziv': 38 Änderungen (whitespaces: 38)
+2026-09-05 12:58:48,081 [INFO] > Spalte 'adresa': 7 Änderungen (whitespaces: 7)
+2026-09-05 12:58:48,082 [INFO] > Spalte 'registarki_broj_n': 14922 Änderungen (placeholders: 7461, invalid_to_nan: 7461)
+2026-09-05 12:58:48,082 [INFO] > Spalte 'datacija': 513 Änderungen (whitespaces: 4, invalid_to_nan: 509)
+2026-09-05 12:58:48,083 [INFO] > Spalte 'autor': 1741 Änderungen (whitespaces: 1, invalid_to_nan: 1740)
+2026-09-05 12:58:48,083 [INFO] > Spalte 'opis': 2840 Änderungen (linebreaks: 587, excel_artifacts: 27, whitespaces: 2224, placeholders: 1, invalid_to_nan: 1)
+2026-09-05 12:58:48,084 [INFO] --- Globale Fehlerzusammenfassung ---
+2026-09-05 12:58:48,084 [INFO] > Zeilenumbrüche entfernt: 587
+2026-09-05 12:58:48,085 [INFO] > Excel-Artefakte entfernt: 27
+2026-09-05 12:58:48,085 [INFO] > Whitespace-Korrekturen: 2274
+2026-09-05 12:58:48,085 [INFO] > Platzhalter entfernt: 7462
+2026-09-05 12:58:48,086 [INFO] > Ungültige Texte zu NaN konvertiert: 9711
+2026-09-05 12:58:48,086 [INFO] Gesamtanzahl behobener Anomalien über alle Spalten: 20061

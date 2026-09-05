@@ -1,10 +1,15 @@
 ## Open-Data-Portal Kroatien
 
 ```{python}
+#| label: data-gov-hr-initial
+#| echo: false
 from pathlib import Path
 import sys
 import duckdb
 import pandas as pd
+import requests
+from datetime import datetime, timezone
+import plotly.express as px
 
 import logging
 
@@ -33,6 +38,25 @@ DATA_RAW.mkdir(parents=True, exist_ok=True)
 ```
 
 Auf European data wird als Quelle für das kroatische ***Register für Kulturgüter*** das ***Open Data Portal Kroatien*** angegeben. Öffnet man den Link, findet man dort die Adresse des Portals https://data.gov.hr/.
+
+Recherchiert man dagegen bei Google und folgt direkt dem ersten Ergebnis "Portal otvorenih podataka", weigern sich Firefox und Bitdefender die Seite aufzurufen, da dort die Adresse `https://www.data.gov.hr` hinterlegt ist und dafür kein Zertifikat vorhanden ist. Man muss das "www" aus der Adresse manuell entfernen.
+
+::: {.callout-caution collapse="true" icon="false" title="Firefox: Warum sieht die Website gefährlich aus?"}
+
+Die Website wurde so eingerichtet, dass sie nur sichere Verbindungen zulässt. Es gibt jedoch ein Problem mit dem Zertifikat der Website. Es ist möglich, dass jemand Böswilliges versucht, sich als die Website auszugeben. Websites verwenden Zertifikate, die von einer Zertifizierungsstelle ausgestellt wurden, um zu bestätigen, dass sie wirklich sind, für wen sie sich ausgeben. Firefox vertraut dieser Website nicht, weil das Zertifikat nicht für www.data.gov.hr gilt. Das Zertifikat ist nur gültig für: gov.hr, *.gov.hr.
+Was können Sie dagegen tun?
+
+www.data.gov.hr verwendet eine Sicherheitstechnologie namens "HTTP Strict Transport Security (HSTS)", durch welche Firefox nur über gesicherte Verbindungen mit der Website verbinden darf. Daher kann keine Ausnahme für die Website hinzugefügt werden.
+
+Das Zertifikat der Website ansehen
+
+Weitere Informationen zu Fehlern bei sicheren Verbindungen
+
+Fehlercode: SSL_ERROR_BAD_CERT_DOMAIN
+
+30. Aug. 2026 18:33:50 MESZ
+    
+:::
 
 Im Portal selbst findet man den Datensatz als [Registar kulturnih dobara](https://data.gov.hr/ckan/en/dataset/kulturna-dobra).
 
@@ -94,38 +118,53 @@ CSV: `https://data.gov.hr/ckan/dataset/c0410787-33b1-4299-b92c-9bbf38dd8bbf/reso
 #### Abfrage und Auswertung der Paket-Metadaten
 
 ```{python}
-#| label: get-package-metadata
-#| code-fold: true
-def fetch_ckan_metadata(api_url:str) -> list[tuple[str, str]]:
-    con = duckdb.connect(database=":memory:")
+#| label: ckan-package-metadata
+def fetch_ckan_metadata(api_url: str) -> pd.DataFrame:
+    """Fetch and flatten CKAN metadata from a JSON API endpoint.
 
-    query = f"""
-        WITH raw_data AS (
-            SELECT * FROM read_json_auto('{api_url}', maximum_object_size=10485760)
-        ),
-        keys_extracted AS (
-            SELECT unnest(json_keys(result)) AS field_key
-            FROM raw_data
-        ),
-        key_value_pairs AS (
-            SELECT
-                k.field_key AS metadata_field,
-                CAST(r.result->>k.field_key AS VARCHAR) AS raw_val
-            FROM raw_data r, keys_extracted k
-        )
-        SELECT
-            metadata_field,
-            COALESCE(NULLIF(raw_val, ''), 'keine Angabe') AS value
-        FROM key_value_pairs
+    Reads the JSON response from the given CKAN API URL using DuckDB,
+    extracts all keys and values from the `result` object, and returns
+    them as a long-format DataFrame with one row per metadata field.
+    Empty or missing values are replaced with "keine Angabe".
+
+    Args:
+        api_url: URL of the CKAN API endpoint returning a JSON object
+            with a top-level `result` field.
+
+    Returns:
+        DataFrame with columns `metadata_field` and `value`.
+
+    Raises:
+        duckdb.Error: If the query execution or JSON parsing fails.
     """
+    with duckdb.connect(database=":memory:") as con:
+        query = f"""
+            WITH raw_data AS (
+                SELECT * FROM read_json_auto('{api_url}', maximum_object_size=10485760)
+            ),
+            keys_extracted AS (
+                SELECT unnest(json_keys(result)) AS field_key
+                FROM raw_data
+            ),
+            key_value_pairs AS (
+                SELECT
+                    k.field_key AS metadata_field,
+                    CAST(r.result->>k.field_key AS VARCHAR) AS raw_val
+                FROM raw_data r, keys_extracted k
+            )
+            SELECT
+                metadata_field,
+                COALESCE(NULLIF(raw_val, ''), 'missing') AS value
+            FROM key_value_pairs
+        """
 
-    try:
-        return con.sql(query)
-    except duckdb.Error as e:
-        logger.critical(
-            f"Kritischer Fehler beim Abruf von {api_url}: {e}"
-        )
-        raise
+        try:
+            return con.sql(query).df()
+        except duckdb.Error as e:
+            logger.critical(
+                f"Critical error retrieving data from {api_url}: {e}"
+            )
+            raise
 
 ```
 
@@ -135,24 +174,77 @@ def fetch_ckan_metadata(api_url:str) -> list[tuple[str, str]]:
 ```{python}
 api_url = "https://data.gov.hr/ckan/api/3/action/package_show?id=kulturna-dobra"
 package_metadata = fetch_ckan_metadata(api_url)
-package_metadata.df()
+with pd.option_context("display.max_colwidth", None):
+    display(package_metadata)
 ```
 
 :::
 
-Die Sichtung der Paket-Metadaten klärt jetzt die auf **European data** vergebene Punktzahl deutlich:
 
-* kroatische statt englische Angaben
-* fehlende Metadaten
-* irreführende oder sich widersprechende Angaben
+**Lizenzdaten**
 
-**Beispiel: Lizenzdaten**
+Der Wert `access_rights` ist auf `public` gesetzt. Gleichzeitig suggeriert der Wert `isopen:'false'`, dass der Datensatz **nicht** öffentlich zugänglich ist. Dies lässt sich darauf zurückführen, dass das System (CKAN) die kroatische Lizenz nicht als offen erkennt.
 
-Der Wert `isopen:'false'` suggeriert, dass der Datensatz **nicht** öffentlich zugänglich ist. Direkt danach wird aber angegeben: `license_id:'open-licence'`. Des Weiteren wird als Lizenz nicht - wie im europäischen Open-Data-Act als wünschenswert - eine Creative-Commons-Lizenz aufgeführt, sondern mit `license_title:'Otvorena dozvola (OD)'` eine nationale kroatische Lizenz (auf Kroatisch statt Englisch) angezeigt.
+Direkt danach wird angegeben: `license_id:'open-licence'`. Des Weiteren wird als Lizenz mit `license_title: 'Otvorena dozvola (OD)'` ("offene Lizenz") eine nationale kroatische Lizenz angezeigt. Ruft man die Lizenz auf, stößt man abermals auf eine Sprachbarriere, da es keine englische Übersetzung gibt.
 
-**Beispiel: Themen-Zuordnung**
+**Europäische Rechtsgrundlage**
 
-Während der Datensatz auf EU-Ebene im Rahmen der High-value datasets der Kategorie ***Geographical names*** zugeordnet wird (`hvd_category`), ordnet das kroatische Portal diesen mit `theme:'population_and_society'` einer ganz anderen Kategorie von Daten zu.
+Für `applicable_legislation` ist `http://data.europa.eu/eli/reg_impl/2023/138/oj` angegeben. Es handelt sich um die "Durchführungsverordnung (EU) 2023/138 der Kommission vom 21. Dezember 2022 zur Festlegung bestimmter hochwertiger Datensätze und der Modalitäten ihrer Veröffentlichung und Weiterverwendung (Text von Bedeutung für den EWR)". Laut Rechtsgrundlage und laut Angabe im Feld `hvd_category: http://data.europa.eu/bna/c_6c2bb82d` gehören die Daten des Registers zur Datenkategorie 1) Georaum, da es sich um Schutzgebiete handelt und sind als "high-value dataset" klassifiziert. Folgt man dem Link erhält man `<skos:prefLabel xml:lang="en">Geographical names</skos:prefLabel>`. Der Wert `is_hdv: 1` bestätigt dies zusätzlich. Die vorliegenden Daten enthalten aber keinerlei Geodaten, wie wir noch sehen werden.
+
+**Autor**
+
+Der Wert `autor: Služba za javnu komunikaciju Ministarstva` teilt mit, dass es sich um das "Amt für öffentliche Kommunikation des Ministeriums" handelt, gibt aber nicht den Namen des Ministeriums an. Es muss aus dem Wert `author_email: marija.siskoomrcen@min-kulture.hr` erschlossen werden, dass es sich um das Ministerium für Kultur und Medien handelt. Auch ist hier die Email eines konkreten Mitarbeiters hinterlegt, der natürlich wechseln kann.
+
+**Nationale Rechtsgrundlage**
+
+Im Feld `conforms_to` werden die nationalen Rechtsgrundlagen aufgeführt.
+
+**Koordinator und Maintainer**
+
+Die Werte für `coordinator` und `coordinator_email` fehlen, das gleiche gilt für `maintainer` und `maintainer_email`.
+
+**Aktualisierungsrate**
+
+Obwohl `data_refresh_frequency: daily` angegeben wird, bleibt die tatsächliche Aktualisierung offen. Der Wert von `metadata_modified` ändert sich täglich (doch die Metadaten verändern sich seit meiner Recherche nicht) und der Wert `resources: [{"cache_last_updated":null,"cache_url":null,"...` sagt aus, dass die Dateien nicht auf dem CKAN-Server gespiegelt werden, man greift also direkt auf den Original-Server der Behörde zu. Da kein Cache vorhanden ist, gibt es auch keine URL dazu.
+
+**Statistische Daten**
+
+Der Wert `includes_statistical_data: True` suggeriert das Vorhandensein von statistischen Daten. Wie wir sehen werden, sind aber keine statistischen Daten vorhanden. Es handelt sich im Grunde genommen um eine Inventarliste. Verursacht wird dieser Wert vermutlich durch die falsche Zuordnung zum Thema "Bevölkerung und Gesellschaft", bei dem es sich tasächlich um statistische Daten handelt.
+
+**Themen-Zuordnung**
+
+Während der Datensatz auf EU-Ebene im Rahmen der High-value datasets der Kategorie ***Geographical names*** zugeordnet wird, ordnet das kroatische Portal diesen mit `theme:'population_and_society'` einem anderem, statistischen Thema zu.
+
+**URL**
+
+Dataset-URL (Landing Page / url): Der eigentliche Permalink zur Website des Portals, auf der dieser Datensatz mit seiner Beschreibung visualisiert wird (z. B. [https://data.gov.hr/dataset/](https://data.gov.hr/dataset/)...).
+Beim Anlegen des Eintrags in CKAN wurde keine offizielle Quell-URL oder Landingpage hinterlegt. Man kann zwar die Datei herunterladen, aber den redaktionellen Ursprung im Portal nicht direkt über eine stabile Web-Adresse verlinken (Permalink).
+
+**Version**
+
+Fehlende Versionskontrolle: Open-Data-Richtlinien (und insbesondere FAIR-Prinzipien) fordern klare Versionsangaben für Datensätze, die sich regelmäßig ändern.
+Wenn die Version fehlt, weiß ein automatisierter ETL-Prozess oder ein Endnutzer nicht, ob es sich um den Stand von 2023, 2026 oder eine ungetestete Zwischenversion handelt. Man kann sich hier nur mühsam auf den last_modified-Zeitstempel der Ressource verlassen.
+
+**Resources**
+
+Fehlende Beschreibungen: Während das CSV- und XML-Feld für `description` einen leeren String `""` enthalten, ist das JSON-Feld explizit null. Es gibt auf Ressourcenebene keinerlei textliche Dokumentation darüber, welche Spalten konkret enthalten sind oder wie das Schema aufgebaut ist.
+
+**Tags**
+Die Tags stammen direkt aus dem kroatischen Denkmalschutzrecht und unterteilen das Register in drei Hauptkategorien sowie einen Oberbegriff:
+
+* kulturna baština (Kulturerbe): Der übergeordnete Dachbegriff für das gesamte Themenfeld.
+* kulturno dobro (Kulturgut): Die generelle Bezeichnung für ein geschütztes Objekt.
+* nepokretno kulturno dobro (Unbewegliches Kulturgut): Architektur, Denkmäler, historische Gebäude, archäologische Stätten oder historische Gärten/Parks.
+* nematerijalno kulturno dobro (Immaterielles Kulturgut): Traditionen, Bräuche, Handwerkskünste, mündliche Überlieferungen oder darstellende Künste (gemäß UNESCO-Konvention).
+
+Die Bedeutung von vocabulary_id: null
+
+In CKAN bedeutet ein Wert von null für das Feld vocabulary_id, dass es sich um freie (unkontrollierte) Tags handelt, die direkt von den Erstellern beim Hochladen vergeben wurden, anstatt aus einem zentralen, standardisierten Vokabular (einer kontrollierten Taxonomie oder einem Thesaurus) zu stammen.
+
+* Kein semantisches Netz / Ontologie: Das bedeutet, dass das Portal diese Begriffe nicht automatisch mit übergeordneten Normdaten (wie Wikidata, Eurovoc oder europäischen Thesauri) verknüpft. Sie existieren nur als reine Text-Schlagworte auf dem Datensatz.
+* Keine Hierarchie auf API-Ebene: Obwohl fachlich eine Logik existiert (z. B. dass nepokretno kulturno dobro eine Unterart von kulturno dobro ist), weiß das CKAN-System das strukturell nicht. Für das System sind das einfach vier voneinander unabhängige Strings.
+
+Für eine saubere Datenanalyse oder den Import in ein semantisches Web-Modell (RDF/OWL) bedeutet dies, dass man diese flachen Strings selbst in eine saubere Klassenhierarchie überführen muss, da das Portal sie rein als unstrukturierte Freitext-Schlagworte liefert.
 
 #### Abfrage und Auswertung der Ressourcen-Metadaten
 
@@ -161,18 +253,17 @@ Während der Datensatz auf EU-Ebene im Rahmen der High-value datasets der Katego
 ```{python}
 api_url = "https://data.gov.hr/ckan/api/3/action/resource_show?id=c9a9bce6-1b70-45ec-b2cf-d3f93bca7a02"
 ressource_metadata = fetch_ckan_metadata(api_url)
-ressource_metadata.df()
+ressource_metadata
 ```
 
 :::
 
-Die Metadaten der Ressource zeigen, dass es sich nicht um einen echten API-Endpunkt handelt, sondern um hochgeladene Dateien. Direkte Abfragen (z. B. SQL oder API-Aufrufe) sind nicht möglich, da:
+Die Metadaten der Ressource zeigen, dass es sich nicht um einen echten API-Endpunkt handelt, sondern um hochgeladene Dateien. Direkte Abfragen unter verwendung von z.B. SQL sind nicht möglich, da:
 
 * die Ressource über url_type: "upload" verfügt,
 * der DataStore deaktiviert ist (datastore_active: false),
-* keine strukturierte Datenbank-Anbindung existiert.
 
-Die Aktualisierung der Dateien erfolgt manuell, wie die Metadaten (last_modified und metadata_modified vom 25.08.2026) und das Fehlen von Cache-Mechanismen (cache_last_updated: "keine Angabe") belegen.
+Die Aktualisierung der Dateien erfolgt zwar täglich, wie die Werte von `last_modified` und `metadata_modified` zeigen das Fehlen von Cache-Mechanismen `cache_last_updated: "missing"` und eines Hashes `hash: missing`. Das lässt keinen Rückschluss darauf zu, ob sich tatsächlich Daten geändert haben.
 
 Zudem existiert kein festes Schema für die Dateien:
 
@@ -181,9 +272,30 @@ Zudem existiert kein festes Schema für die Dateien:
 
 Folgen:
 
-* Keine automatisierte Verarbeitung möglich, da die Datenstruktur instabil ist.
+* Keine automatisierte Verarbeitung möglich, da die Datenstruktur potentiell instabil ist.
 * Die Struktur muss vor jeder Analyse geprüft und ggf. manuell angepasst werden.
-* Durch den fehlenden Hash (hash: "keine Angabe") kann keine inhaltliche Veränderung der Datei nachvollzogen werden.
+* Durch den fehlenden Hash (hash: "missing") kann keine inhaltliche Veränderung der Datei nachvollzogen werden.
+
+### Untersuchung des Updateverlaufs
+
+Das Dataset verfügt über einen Tab ***Activity Stream***. Dieser zeigt, dass jeden Abend um ca. 19:20 Uhr drei Cronjobs angestoßen werden, offenbar ein Cronjob für jede der drei Dateien (JSON, XML, CSV). Schaut man sich die Details an, so findet man bei allen Cronjobs der Stichprobe (1 Woche) unter dem Link ***Changes*** folgende Angabe:
+
+::: {.callout-warning collapse="false" icon="false" title="Changes"}
+On August 28, 2026 at 7:18:43 PM +0200, Gravatar omega-admin:
+
+* No fields were updated. See the metadata diff for more details.
+  
+On August 28, 2026 at 7:18:42 PM +0200, Gravatar omega-admin:
+
+* No fields were updated. See the metadata diff for more details.
+
+On August 28, 2026 at 7:18:39 PM +0200, Gravatar omega-admin:
+
+* No fields were updated. See the metadata diff for more details.
+
+:::
+
+Zwar gibt es ein Dropdown ***View changes from ... to*** aber der Datumsbereich lässt sich nicht verändern. Man kann also jede Änderung mur als Einzelanzeige anzeigen lassen und nicht als Liste. Das erschwert zusätzlich die Suche nach einer tatsächlichen Aktualisierung.
 
 ### Erste Datensichtung und Strukturanalyse
 
@@ -195,6 +307,8 @@ Noch vor einem Download der Daten lässt sich für die Formate JSON, XML und CSV
 * Spaltennamen sind ausschließlich auf Kroatisch vorhanden
 * Datenwerte sind nicht bereinigt: führende Leerzeichen und Excel-Artefakte am Ende von Werten: `\n\r`
 * Keine maschinenverwertbare Normalisierung der Daten
+* Emails von Mitarbeitern örtlicher Museen mir vollem Namen
+* Telefonnummern und Handynummern von Mitarbeitern örtlicher Museen
 
 ::: {.callout-note collapse="true" icon="false" title="Exemplarischer JSON-Datensatz"}
 ```json
@@ -289,16 +403,15 @@ Noch vor einem Download der Daten lässt sich für die Formate JSON, XML und CSV
 
 #### Zwischenfazit
 
-In den Metadaten finden sich **keine** Angaben zur Datenquelle (resources). Die Inspektion der ausgelieferten Daten legt allerdings den Schluss nahe, dass es sich nicht um den Export aus einem normalisierten Datenbanksystem handelt, sondern um eine automatisierte Konvertierung einer **Excel-Tabelle** des Ministeriums für Kultur und Medien. Speziell die vorliegenden Formatierungsartefakte zeigen, dass **keinerlei** Bereinigung der Daten stattgefunden hat. Für eine sinnvolle Weiterverwendung ist daher zwingend ein vorgelagerter Schritt zur **Bereinigung und Normalisierung** unerlässlich.
+In den Metadaten finden sich keine Angaben zur Datenquelle (resources). Die Inspektion der ausgelieferten Daten legt allerdings den Schluss nahe, dass es sich nicht um den Export aus einem normalisierten Datenbanksystem handelt, sondern um eine automatisierte Konvertierung einer **Excel-Tabelle** des Ministeriums für Kultur und Medien. Speziell die vorliegenden Formatierungsartefakte zeigen, dass keinerlei Bereinigung der Daten stattgefunden hat. Für eine sinnvolle Weiterverwendung ist daher ein vorgelagerter Schritt zur **Bereinigung und Normalisierung** unerlässlich.
+
+Für eine automatisierte Abfrage der Daten über die CKAN-API ist der Datensatz nicht geeignet, da die Daten lediglich als Datei abgelegt und nicht in CKAN eingespeist werden. Da eine tatsächliche Änderung der Daten über die API nicht ersichtlich ist, müsste die gesamte Datei täglich heruntergeladen und auf Seiten des Empfängers geprüft werden. Es können nicht nur unvorhersagbar neue Daten enthalten sein, sondern auch unvorhersagbar eine Änderung der Spaltennamen und/oder Spaltenanzahl stattfinden. Dadurch entsteht ein in den meisten Fällen unnötiger Datenverkehr und die Notwendigkeit einer permanenten Überprüfung des Datenschemas.
 
 ### Download der JSON-Datei
 
 ::: {.callout-note collapse="true" icon="false" title="Downloadcode"}
 
 ```python
-import requests
-from datetime import datetime, timezone
-
 utc_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 full_path = DATA_RAW / f"{utc_date}_datagovhr_rkd.json"
 
@@ -317,10 +430,25 @@ with open(full_path, "wb") as file:
 ### Umwandlung in Parquet und Bewertung der Rohdaten
 
 ```{python}
-#| label: raw-data-analysis
-#| echo: true
-
+#| label: ckan-convert-json-to-parquet
 def convert_latest_json_to_parquet(data_raw: Path) -> Path:
+    """
+    Convert the most recent JSON file in the given directory to a Parquet file.
+
+    Searches the given directory for files matching the pattern
+    "*_datagovhr_rkd.json", selects the (alphabetically/chronologically)
+    latest file, and converts it into a Parquet file with the same
+    filename (but with a .parquet extension) using DuckDB.
+
+    Args:
+        data_raw: Path to the directory containing the raw JSON data.
+
+    Returns:
+        Path to the generated Parquet file.
+
+    Raises:
+        FileNotFoundError: If no matching JSON files are found in the directory.
+    """
     json_files = sorted(data_raw.glob("*_datagovhr_rkd.json"))
     if not json_files:
         raise FileNotFoundError("Keine passenden JSON-Dateien im Verzeichnis gefunden.")
@@ -335,7 +463,27 @@ def convert_latest_json_to_parquet(data_raw: Path) -> Path:
     print(f"Parquet-Datei: {parquet_output.name}\n")
     return parquet_output
 
+```
+
+```{python}
+#| label: ckan-extract-metadata
 def extract_metadata(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Build a summary table with metadata for each column of a DataFrame.
+
+    For each column, this computes the data type, the number and percentage
+    of missing values, the number and percentage of unique values, and,
+    for string columns, the maximum string length, leading whitespace
+    occurrences, and embedded newline occurrences.
+
+    Args:
+        df: The DataFrame to analyze.
+
+    Returns:
+        A DataFrame with one row per column of the input DataFrame and the
+        computed metadata as columns, indexed by the original column
+        position ("index").
+    """
     total_rows = len(df)
     metadata = []
     for idx, col in enumerate(df.columns):
@@ -371,6 +519,10 @@ def extract_metadata(df: pd.DataFrame) -> pd.DataFrame:
         })
     return pd.DataFrame(metadata).set_index("index")
 
+```
+
+```{python}
+#| label: ckan-show-metadata
 parquet_output = convert_latest_json_to_parquet(DATA_RAW)
 df = pd.read_parquet(parquet_output)
 
@@ -381,15 +533,12 @@ print(f"Zeilen: {total_rows}\n")
 
 metadata_df = extract_metadata(df)
 metadata_df
+
 ```
 
 
 ```{python}
-#| label: plot-unique-values
-#| echo: true
-
-import plotly.express as px
-
+#| label: ckan-plot-metadata
 plot_df = metadata_df.reset_index()
 
 fig = px.bar(
@@ -425,6 +574,7 @@ fig.show()
 ```
 
 ```{python}
+#| echo: false
 %reset -f
 
 ```
@@ -437,7 +587,9 @@ Die automatisierte Auswertung und deren visuelle Aufbereitung legen fundamentale
 * **Redundanzen in Textfeldern:** Die Objektbezeichnungen (`Naziv`) und die detaillierten Beschreibungen (`Opis_dobra`) weisen Mehrfachnennungen auf.
 * **Strukturelle Verunreinigungen:** Die hohe Anzahl an Feldern mit führenden Whitespaces und Zeilenumbruch-Artefakten (`\r\n`) untermauert die Hypothese eines unbereinigten Excel-Exports. Eine automatisierte String-Bereinigung ist zwingend erforderlich.
 * **Potenzial zur Kategoriengenerierung:** Spalten mit einer geringen Anzahl eindeutiger Werte (z. B. `Zupanija`, `Klasifikacija` oder `Pravni_status`) eignen sich im weiteren Verlauf hervorragend für eine Transformation in den Datentyp `Category`, um den Speicherbedarf zu minimieren und spätere Aggregationen zu erleichtern.
+* zu viele Werte für `Zupanija`, es gibt nur 21 Gespanschaften in Kroatien
+* Geodaten fehlen vollständig
 
 ### Fazit für den weiteren Projektverlauf
 
-Allein diese vorbereitende Strukturanalyse zeigt empirisch, dass der Datensatz in seinem vorliegenden Zustand die Kriterien eines direkt verwertbaren *High-Value Datasets* verfehlt. Die Behebung dieser Mängel (Data Cleaning) und die Überführung in ein konsistentes, graphisches Modell bilden das Kernziel der weiteren Analyse.
+Allein diese vorbereitende Strukturanalyse zeigt, dass der Datensatz in seinem vorliegenden Zustand die Kriterien eines direkt verwertbaren *High-Value Datasets* verfehlt. Die Behebung dieser Mängel (Data Cleaning) und die Überführung in ein konsistentes Modell bilden das Kernziel der weiteren Analyse.

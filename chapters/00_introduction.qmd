@@ -1,5 +1,11 @@
 ## Einleitung
 
+::: {.callout-caution collapse="false" icon="false" title="Projektstand"}
+Dieses Projekt ist nicht abgeschlossen und befindet sich in der weiteren Ausarbeitung.<br>
+Auch die Codes müssen noch überarbeitet werden.<br>
+Am Ende erfolgt die Übersetzung ins Englische.
+:::
+
 Dieses Analyseprojekt entstand als Abschlussarbeit eines vierwöchigen Zertifikatskurses zum „Data Analyst“.
 
 Aufgrund meines biografischen Hintergrunds besteht seit langem ein tiefes Interesse an den Themen Open Source, Open Access und Open Data sowie ein persönlicher Bezug zu Kroatien.
@@ -7,3 +13,5 @@ Aufgrund meines biografischen Hintergrunds besteht seit langem ein tiefes Intere
 Das ursprüngliche Ziel dieser Arbeit war es, die praktischen Verwertungsmöglichkeiten der Daten aus dem Register der Kulturgüter Kroatiens zu analysieren. Im Verlauf des Projekts stellte sich jedoch heraus, dass der Aufwand für die rechtliche und strukturelle Kontextualisierung sowie die mangelhafte Datenqualität den zeitlichen Rahmen des Kurses sprengten. Allein die tiefgehende Recherche des EU- und nationalen Rechts sowie die vergleichende Untersuchung verschiedener Datenquellen – darunter das European Data Portal, das nationale Portal data.gov.hr, das Geoportal nipp.hr und das Webregister des kroatischen Kulturministeriums – erforderten einen erheblichen Teil der Projektdauer.
 
 Um dem datenanalytischen Anspruch dennoch gerecht zu werden, wurde das Projekt in zwei Phasen unterteilt. Die erste Phase im Rahmen des Kurses konzentriert sich vollständig auf das Erarbeiten des Hintergrundwissens, die vielschichtige Datensichtung, das Datenverständnis sowie eine grundlegende Datenbereinigung und erste elementare Visualisierungen. In einer anschließenden zweiten Phase nach dem Kurs folgen die weiterführende Normalisierung der bereinigten Daten, deren Verknüpfung mit anderen identifizierten Open-Data-Ressourcen - wie eKultura bzw. Europeana - und der Aufbau einer graphenbasierten Modellierung.
+
+D
